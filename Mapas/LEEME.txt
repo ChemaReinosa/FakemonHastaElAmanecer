@@ -1,0 +1,26 @@
+CARPETA DE MAPAS
+================
+Cada mapa es un archivo .json en esta carpeta (junto a PokeZombies_v_16.html).
+Mapas/index.json es la lista de archivos que se cargan (el navegador no puede listar carpetas):
+   ["kino_der_toten.json","mi_mapa.json"]
+Si hay más de un mapa aparece un selector "Mapa:" al elegir criatura.
+Si abres el HTML con doble clic: Datos de criaturas > "Elegir carpeta del juego" (también lee Mapas/).
+
+FORMATO (formato:1)
+  nombre, ancho, alto          tamaño del mundo en px
+  subtitulo, ayuda             texto del menú y del apartado "Mapa" de Cómo se juega (opcionales)
+  inicio {x,y}                 donde reapareces / empiezas
+  zonaInicio                   id de la zona inicial (abierta desde el principio)
+  cajaInicio [ids], cajaMueve  salas donde puede empezar la Caja Misteriosa, prob. de que se mude
+  decor [{tipo:"butacas",x,y,x2,y2,dx,dy}]   decorado de fondo
+  zonas [{id,nombre,x,y,w,h,c1,c2,estilo,luz, barricadas:[["T|B|L|R",x,y]], props:[[x,y,w,h,color,tipo]]}]
+        estilo: checker|madera|industrial|escenario|platea|cesped|grada|normal   (tipos: muro, butacas = bloquean paso y disparos; porteria, banquillo, torniquete, cono, sofa, mesa, mostrador, taquilla, camilla, planta... = decorado que estorba el paso)
+        campo:true    (solo con estilo cesped) dibuja las marcas de un campo de fútbol, eje largo vertical
+        asiento:"#rrggbb" color de los asientos (estilo grada y props butacas)
+        siempre:true  zona accesible sin puertas (solo por teleportador)
+        alto:true     sala elevada: desde ella se dispara por encima de las paredes
+        limite:30     segundos máximos en la sala alta · retorno:"lobby" zona a la que te devuelve
+        vent:"S|N|E|W" lado de la ventana de la sala alta (hacia donde mira la cámara)
+  puertas [{id,a,b,x,y,w,h, coste:N | energia:true | libre:true}]
+  objetos [{tipo,zona,x,y,lado, ...}]   tipos: panel(tier|mov) baya(baya) caja interruptor tele mt frag
+Deja siempre un hueco (~20-30 px) entre zonas que no estén unidas por una puerta.
