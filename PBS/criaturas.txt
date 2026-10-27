@@ -12,9 +12,8 @@ Height=0.6
 Weight=10.0
 Color=Red
 Kind=Aprendiz caballero
-Pokedex=A menudo finje tener una espada, y pese a no tenerla, no teme batirse en duelo con nadie. Se oculta bajo su capa, por lo que nunca nadie ha visto su verdadero rostro.
-Evolutions=PARREESH,Level,20
-
+Descripción=A menudo finje tener una espada, y pese a no tenerla, no teme batirse en duelo con nadie. Se oculta bajo su capa, por lo que nunca nadie ha visto su verdadero rostro.
+Evolutions=PARREESH
 [902]
 Name=Parreesh
 InternalName=PARREESH
@@ -30,9 +29,8 @@ Height=1.6
 Weight=60.0
 Color=Gray
 Kind=Caballero cadete
-Pokedex=Pese a no ser un experto total con la espada, maneja una serie de movimientos de lucha letales. Nadie sabe lo que hay bajo su armadura, pero parece ser que ¿nada?
-Evolutions=THERIDUEL,Level,38
-
+Descripción=Pese a no ser un experto total con la espada, maneja una serie de movimientos de lucha letales. Nadie sabe lo que hay bajo su armadura, pero parece ser que ¿nada?
+Evolutions=THERIDUEL
 [903]
 Name=Theriduel
 InternalName=THERIDUEL
@@ -48,7 +46,7 @@ Height=1.9
 Weight=94.0
 Color=Gray
 Kind=Armadura luchadora
-Pokedex=Finalmente su cuerpo entero se convirtió en la propia armadura. No solo posee un gran poder con buenos movimientos, maneja todo su cuerpo con gran elegancia.
+Descripción=Finalmente su cuerpo entero se convirtió en la propia armadura. No solo posee un gran poder con buenos movimientos, maneja todo su cuerpo con gran elegancia.
 Evolutions=
 
 [904]
@@ -66,9 +64,8 @@ Height=0.4
 Weight=6.0
 Color=Pink
 Kind=Larva
-Pokedex=Larva transformada debido a los cambios en el ambiente espacial. Posee inusuales habilidades cósmicas. Se dice que cuando se retuerce, está concentrando su poder.
-Evolutions=EUNAPSE,Level,20
-
+Descripción=Larva transformada debido a los cambios en el ambiente espacial. Posee inusuales habilidades cósmicas. Se dice que cuando se retuerce, está concentrando su poder.
+Evolutions=EUNAPSE
 [905]
 Name=Eunapse
 InternalName=EUNAPSE
@@ -84,9 +81,8 @@ Height=1.5
 Weight=35.0
 Color=Gray
 Kind=Larva mudando
-Pokedex=Se encuentra en un proceso de metamorfosis que lo hace aumentar constantemente su tamaño. La tela biscosa que lo rodea concentra poder en su interior.
-Evolutions=XENYCEPS,Level,38
-
+Descripción=Se encuentra en un proceso de metamorfosis que lo hace aumentar constantemente su tamaño. La tela biscosa que lo rodea concentra poder en su interior.
+Evolutions=XENYCEPS
 [906]
 Name=Xenyceps
 InternalName=XENYCEPS
@@ -102,7 +98,7 @@ Height=2.0
 Weight=80.0
 Color=Gray
 Kind=Parásito espacial
-Pokedex=Pese a su enorme tamaño, su peso no lo es tanto. Acostumbra a atemorizar solo con su presencia. Posee un terrible poder psíquico que además puede esclavizar a otros bichos.
+Descripción=Pese a su enorme tamaño, su peso no lo es tanto. Acostumbra a atemorizar solo con su presencia. Posee un terrible poder psíquico que además puede esclavizar a otros bichos.
 Evolutions=
 
 [907]
@@ -119,9 +115,8 @@ Height=0.5
 Weight=8.0
 Color=Black
 Kind=Chacal Ionizante
-Pokedex=Pese a no ser un gran depredador, intenta llamar la atención de sus presas ocultandose en las sombras, para ello utiliza sus llamativos tonos azules.
-Evolutions=STALTRUM,Level,20
-
+Descripción=Pese a no ser un gran depredador, intenta llamar la atención de sus presas ocultandose en las sombras, para ello utiliza sus llamativos tonos azules.
+Evolutions=STALTRUM
 [908]
 Name=Staltrum
 InternalName=STALTRUM
@@ -137,9 +132,8 @@ Height=1.3
 Weight=37.0
 Color=Black
 Kind=Cazador Ionizante
-Pokedex=Con sus dotes de cazador más desarrolladas, suele engañar a sus presas para que se acerquen atraídos por sus bellos colores. Después las golpea con su cola, la cual tiene aromas venenosos.
-Evolutions=ULTRANATOR,Level,38
-
+Descripción=Con sus dotes de cazador más desarrolladas, suele engañar a sus presas para que se acerquen atraídos por sus bellos colores. Después las golpea con su cola, la cual tiene aromas venenosos.
+Evolutions=ULTRANATOR
 [909]
 Name=Ultranator
 InternalName=ULTRANATOR
@@ -155,7 +149,7 @@ Height=1.7
 Weight=70.0
 Color=Black
 Kind=Bestia Ionizante
-Pokedex=Un depredador voraz, que tras su apacible rostro esconde un instinto sádico. Las jorobas de su espalda bombean algunos de los venenos más mortales.
+Descripción=Un depredador voraz, que tras su apacible rostro esconde un instinto sádico. Las jorobas de su espalda bombean algunos de los venenos más mortales.
 Evolutions=
 
 [795]
@@ -173,9 +167,8 @@ Height=0.5
 Weight=2.6
 Color=Green
 Kind=Pájaro no volador
-Pokedex=Es habitual verlo recorriendo las praderas intentando volar. Suele acurrucarse entre los pies de los arboles.
-Evolutions=GAZIG,Level,20
-
+Descripción=Es habitual verlo recorriendo las praderas intentando volar. Suele acurrucarse entre los pies de los arboles.
+Evolutions=GAZIG
 [796]
 Name=Gazig
 InternalName=GAZIG
@@ -191,9 +184,8 @@ Height=1.2
 Weight=15.0
 Color=Gray
 Kind=Pájaro pícaro
-Pokedex=Recorre praderas y bosques en busca de presas. Al viajar en grupo pueden juntarse decenas de ellos para sobrevolar zonas.
-Evolutions=GUIZUEÑA,Level,35
-
+Descripción=Recorre praderas y bosques en busca de presas. Al viajar en grupo pueden juntarse decenas de ellos para sobrevolar zonas.
+Evolutions=GUIZUEÑA
 [797]
 Name=Guizueña
 InternalName=GUIZUEÑA
@@ -209,7 +201,7 @@ Height=1.6
 Weight=48.6
 Color=Gray
 Kind=Majestuoso
-Pokedex=Su cuerpo repleto de hojas le proporciona ataques aéreos afilados. Solo con agitar sus alas, muchos pokemon huyen.
+Descripción=Su cuerpo repleto de hojas le proporciona ataques aéreos afilados. Solo con agitar sus alas, muchos pokemon huyen.
 Evolutions=
 
 [798]
@@ -226,9 +218,8 @@ Height=0.6
 Weight=8.8
 Color=Brown
 Kind=Pequeño oso
-Pokedex=Se aloja sigilosamente entre los arbustos montañosos y las cuevas, su ardiente nariz lo mantiene caliente.
-Evolutions=DORIOS,Level,20
-
+Descripción=Se aloja sigilosamente entre los arbustos montañosos y las cuevas, su ardiente nariz lo mantiene caliente.
+Evolutions=DORIOS
 [799]
 Name=Dorios
 InternalName=DORIOS
@@ -243,9 +234,8 @@ Height=1.2
 Weight=52.4
 Color=Brown
 Kind=Nómada
-Pokedex=Un pokemon ágil. Recorre las montañas y cuevas sin descanso, como un nómada. Son algo cascarrabias, se pillan un mosqueo a la más mínima.
-Evolutions=PARDORIUS,Level,38
-
+Descripción=Un pokemon ágil. Recorre las montañas y cuevas sin descanso, como un nómada. Son algo cascarrabias, se pillan un mosqueo a la más mínima.
+Evolutions=PARDORIUS
 [800]
 Name=Pardorius
 InternalName=PARDORIUS
@@ -260,7 +250,7 @@ Height=1.8
 Weight=125.8
 Color=Brown
 Kind=Montañoso
-Pokedex=Suele rondar las zonas montañosas, se deja ver muy poco. Aguanta los inviernos usando sus llamas para mantener el calor.
+Descripción=Suele rondar las zonas montañosas, se deja ver muy poco. Aguanta los inviernos usando sus llamas para mantener el calor.
 Evolutions=
 
 [801]
@@ -277,9 +267,8 @@ Height=0.4
 Weight=5.9
 Color=Gray
 Kind=Pececito
-Pokedex=Recorre los ríos y pantanos de la región. Es un pokemon solitario y poco sociable, pero no suele huir ante situaciones difíciles.
-Evolutions=CARPORT,Level,20
-
+Descripción=Recorre los ríos y pantanos de la región. Es un pokemon solitario y poco sociable, pero no suele huir ante situaciones difíciles.
+Evolutions=CARPORT
 [802]
 Name=Carport
 InternalName=CARPORT
@@ -294,9 +283,8 @@ Height=1.3
 Weight=60.5
 Color=Gray
 Kind=Pez pesado
-Pokedex=Sube a contracorriente algunas de las riadas más fuertes. Es habitual verlo observando fuera del agua. Su pesada cola está en un proceso de metalización.
-Evolutions=CARPOREON,Level,36
-
+Descripción=Sube a contracorriente algunas de las riadas más fuertes. Es habitual verlo observando fuera del agua. Su pesada cola está en un proceso de metalización.
+Evolutions=CARPOREON
 [803]
 Name=Carporeon
 InternalName=CARPOREON
@@ -312,5 +300,108 @@ Height=1.9
 Weight=169.5
 Color=Gray
 Kind=Bestia acuática
-Pokedex=Una bestia anfibia que merodea por ocultas zonas pantanosas. Usa su enorme barriga de acero para aplastar enemigos.
+Descripción=Una bestia anfibia que merodea por ocultas zonas pantanosas. Usa su enorme barriga de acero para aplastar enemigos.
+Evolutions=
+
+[913]
+Name=Lobi
+InternalName=LOBI
+Type1=NORMAL
+Type2=DARK
+BaseStats=35,55,35,35,30,30
+Rareness=255
+Abilities=RUNAWAY,QUICKFEET
+HiddenAbility=RATTLED
+Special=DASH
+StartMove=siniestro_1
+Height=0.5
+Weight=13.6
+Color=Gray
+Kind=Merodeador
+Descripción=No suele dejarse ver, es bastante precavido, pero una vez está cara a cara no se amilana ante nadie.
+Evolutions=LOBICU
+[914]
+Name=Lobicu
+InternalName=LOBICU
+Type1=DARK
+BaseStats=80,90,75,70,70,70
+Rareness=80
+Abilities=INTIMIDATE,QUICKFEET
+HiddenAbility=MOXIE
+Special=DASH
+StartMove=siniestro_1
+Height=1.3
+Weight=37.0
+Color=Gray
+Kind=Lobo
+Descripción=Habitualmente en grupos organizados, los lobicus bajan a los pueblos en busca de carne fácil. Odiado por los ganaderos.
+Evolutions=LOBIQUERIUS
+[915]
+Name=Lobiquerius
+InternalName=LOBIQUERIUS
+Type1=DARK
+BaseStats=90,110,80,95,100,80
+Rareness=80
+Abilities=INTIMIDATE,QUICKFEET
+HiddenAbility=MOXIE
+Special=DASH
+StartMove=siniestro_1
+Height=1.8
+Weight=51.0
+Color=Gray
+Kind=Lobo Alfa
+Descripción=Todo un líder, temido y a la vez admirado por todo pokémon de la montaña. Su crueldad puede ser su mejor baza.
+Evolutions=
+
+[910]
+Name=Sob
+InternalName=SOB
+Type1=BUG
+Type2=FAIRY
+BaseStats=55,65,50,42,50,43
+Rareness=180
+Abilities=OBLIVIOUS,WATERABSORB
+HiddenAbility=THICKFAT
+Special=ESCUDO
+StartMove=hada_4
+Height=0.8
+Weight=10
+Color=Brown
+Kind=Sobao
+Descripción=Es habitual verlo en cocinas o fábricas, allá donde pueda haber hornos. Es algo despistado y en ocasiones, eso le mete involuntariamente en jaleos.
+Evolutions=SOBUS
+[911]
+Name=Sobus
+InternalName=SOBUS
+Type1=BUG
+Type2=FAIRY
+BaseStats=75,78,65,60,60,65
+Rareness=110
+Abilities=OBLIVIOUS,WATERABSORB
+HiddenAbility=THICKFAT
+Special=ESCUDO
+StartMove=hada_4
+Height=1.2
+Weight=19
+Color=Brown
+Kind=Sobao
+Descripción=Goloso y curioso, a menudo se ofrece como pinche en las cocinas para poder husmear y comer algo.
+Evolutions=SOBARUS
+
+[912]
+Name=Sobarus
+InternalName=SOBARUS
+Type1=BUG
+Type2=FAIRY
+BaseStats=95,95,90,70,70,85
+Rareness=50
+Abilities=OBLIVIOUS,WATERABSORB
+HiddenAbility=THICKFAT
+Special=ESCUDO
+StartMove=hada_4
+Height=1.7
+Weight=30
+Color=Brown
+Kind=Sobao
+Descripción=Goloso y curioso, a menudo se ofrece como pinche en las cocinas para poder husmear y comer algo.
 Evolutions=
