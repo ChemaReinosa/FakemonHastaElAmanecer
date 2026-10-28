@@ -72,16 +72,7 @@ body[data-tema=claro] .mj{background:#f4f4ea;border-color:#999}body[data-tema=cl
 #netSt{position:absolute;right:6px;top:18px;font:bold 9px monospace;text-shadow:1px 1px #000;pointer-events:none;display:none;z-index:6}
 #salaCod{font:bold 52px monospace;letter-spacing:10px;color:#ffd24a;text-shadow:3px 3px 0 #000;user-select:all}
 body.netGuest #difBox{display:none}
-#oCod{font:bold 26px monospace;letter-spacing:6px;text-transform:uppercase;text-align:center;width:100%;padding:8px 6px;border-radius:8px;border:2px solid #ffd24a;background:#10131a;color:#fff}
-#online{gap:14px}
-.oBox{width:min(360px,88vw);padding:14px;border:2px solid #3f5a3b;border-radius:14px;background:linear-gradient(#1a2418,#0f150e);box-shadow:0 4px 0 #0a0f08,0 8px 18px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:stretch;gap:9px;text-align:center}
-.oBox .mB{width:100%}
-.oLbl{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#9f6}
-.oHint{font-size:12px;line-height:1.4;opacity:.8}
-.oOr{display:flex;align-items:center;gap:12px;width:min(360px,88vw);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:#789}
-.oOr i{flex:1;height:2px;background:linear-gradient(90deg,transparent,#456,transparent)}
-.mB:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.5)}.mB:disabled:active{transform:none}
-body[data-tema=claro] .oBox{background:linear-gradient(#f4f8ea,#d8e2c6);border-color:#264}body[data-tema=claro] .oLbl{color:#264}
+#oCod{font:bold 26px monospace;letter-spacing:6px;text-transform:uppercase;text-align:center;width:9em;padding:6px;border-radius:8px;border:2px solid #ffd24a;background:#10131a;color:#fff}
 .screen h1{margin:0;font-size:clamp(24px,6vw,44px);color:#9f6;letter-spacing:2px;text-shadow:3px 3px 0 #264}
 .screen h2{margin:0;color:#ffd24a}
 .btn{font:bold 17px "Courier New",monospace;padding:10px 22px;min-width:220px;background:#2a3a2a;color:#fff;border:2px solid #7c7;border-radius:6px;cursor:pointer}
@@ -119,7 +110,6 @@ body[data-tema=claro] .card{background:#f4f4ea;border-color:#999}body[data-tema=
 #iPress{margin-top:min(5vh,34px);font:bold min(2.3vw,3.8vh) "Courier New",monospace;letter-spacing:.25em;text-transform:uppercase;color:#ffe9a8;text-shadow:0 2px 0 #000,0 0 12px #000;animation:iblink 1.3s infinite}
 #iPress .tc{display:none}body.touch #iPress .tc{display:inline}body.touch #iPress .kb{display:none}
 #iFull{display:none;position:absolute;z-index:3;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));padding:9px 14px;font:bold 14px "Courier New",monospace;color:#fff;background:rgba(20,28,20,.82);border:2px solid #7c7;border-radius:8px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-#iVer{position:absolute;z-index:3;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));text-align:right;font:clamp(10px,1.5vw,13px)/1.45 "Courier New",monospace;color:rgba(232,228,214,.78);text-shadow:0 1px 0 #000,0 0 6px #000,0 0 10px #000;pointer-events:none;letter-spacing:.04em}
 body.touch #iFull{display:block}#iFull.nofs{display:none!important}#iFull:active{background:#4a6a4a}
 @keyframes iflick{0%,90%,100%{opacity:1}91%{opacity:.5}92%{opacity:1}94%{opacity:.35}95%{opacity:1}}
 @keyframes idrip{0%{height:0;opacity:1}45%{height:.3em;opacity:1}85%{height:.3em;opacity:.9}100%{height:.3em;opacity:0}}
@@ -224,48 +214,6 @@ body[data-tema=claro] .setCard{background:rgba(0,0,0,.04);border-color:#9a9}body
 @media (max-width:720px){#selMain{grid-template-columns:1fr}#cards{max-height:none}}
 @media (max-height:700px){#selDet img,#selDet canvas{width:104px;height:104px}#selDet{padding:10px 14px;gap:4px}#cards{max-height:min(46vh,400px)}.dBtn{padding:6px}.dBtn .dIc{font-size:18px}#mapSel,#sel{gap:8px}}
 @media (max-height:520px){.scrT{font-size:22px!important}.scrSub{display:none}#selDet img,#selDet canvas{width:110px;height:110px}}
-/* ---------- Elegir criatura en móvil: compacto (vertical y horizontal) ---------- */
-@media (max-width:720px) and (orientation:portrait),(orientation:landscape) and (max-height:560px){
- #sel{padding:10px 10px 14px;gap:8px}
- #sel .stepper{font-size:10px;gap:6px;margin-top:0}#sel .stepper span{gap:5px}#sel .stepper span b{width:17px;height:17px;font-size:10px}#sel .stepper i{width:20px}
- #sel .scrT{font-size:20px!important}#sel .scrSub{display:none}
- #selMain{width:100%;gap:8px}
- #selDet{display:grid;grid-template-columns:84px 1fr;grid-template-rows:auto auto 1fr auto auto auto;grid-template-areas:"img n" "img c" "img e" "x x" "st st" "sp sp";column-gap:10px;row-gap:4px;align-items:center;justify-items:start;padding:10px 12px;border-radius:14px;text-align:left}
- #selDet>:first-child{grid-area:img;align-self:center}
- #selDet img,#selDet canvas{width:84px;height:84px}
- #selDet .dN{grid-area:n;font-size:17px;text-align:left;align-self:end}
- #selDet .chips{grid-area:c;justify-content:flex-start;align-self:start}
- #selDet .dEv{grid-area:e;text-align:left;align-self:start;font-size:10.5px}
- #selDet .dDex{grid-area:x;max-width:none;text-align:left;font-size:11px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
- #selDet .stats{grid-area:st;grid-template-columns:54px 1fr 24px 54px 1fr 24px;gap:3px 6px;font-size:10px;margin-top:0}
- #selDet .dEsp{grid-area:sp;font-size:11px;padding:4px 8px}
- #selDet .stats,#selDet .dEsp,#selDet .dDex{justify-self:stretch}
- #cards .card{padding:6px 4px;border-radius:11px;gap:2px;box-shadow:0 2px 0 #090d08}
- #cards .card:hover{transform:none}
- #cards .card img,#cards .card canvas{width:56px;height:56px}
- #cards .card b{font-size:10.5px;line-height:1.15;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- #cards .card .chips{display:none}#cards .card small{font-size:9px}#cards .card .lk{font-size:9px}
- #cards .card.sel::after{right:4px;top:7px;width:15px;height:15px;font-size:10px;line-height:15px}
- #cards,#cards *{touch-action:pan-x pan-y}
- .difLbl{font-size:10px;letter-spacing:.25em}#difBox{gap:5px;width:100%}#difRow{gap:7px}
- .dBtn{flex-direction:row;justify-content:center;gap:6px;padding:7px 4px;font-size:13px;border-radius:10px}.dBtn .dIc{font-size:16px}
- #difDesc{font-size:11px;line-height:1.3;min-height:0}
- #selBtns{gap:10px;width:100%;margin-bottom:0;flex-wrap:nowrap}#selBtns .mB.main{flex:1;min-width:0;font-size:17px;padding:11px 12px}
-}
-/* móvil vertical: las criaturas van en una tira que se desliza */
-@media (max-width:720px) and (orientation:portrait){
- #selMain{grid-template-columns:minmax(0,1fr)}
- #cards{display:flex;gap:8px;min-width:0;overflow-x:auto;overflow-y:hidden;max-height:none;margin:0 -10px;width:calc(100% + 20px);padding:6px 10px 10px;scroll-snap-type:x proximity;scrollbar-width:none}
- #cards::-webkit-scrollbar{display:none}
- #cards .card{flex:0 0 82px;width:82px;scroll-snap-align:start}
-}
-/* móvil horizontal: detalle a la izquierda y rejilla pequeña a la derecha */
-@media (orientation:landscape) and (max-height:560px){
- #sel .stepper{display:none}
- #selMain{grid-template-columns:minmax(250px,310px) minmax(0,1fr);gap:10px;align-items:start}
- #cards{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:7px;max-height:calc(100vh - 175px);max-height:calc(100dvh - 175px);padding:4px 4px 8px}
- #difBox{width:min(560px,76vw)}#selBtns{width:min(560px,76vw)}
-}
 /* tema claro */
 body[data-tema=claro] #mapSel,body[data-tema=claro] #sel{background:radial-gradient(ellipse at 50% 0%,#f4f8ea 0%,#e2e8d2 60%,#d2d8c0 100%)}
 body[data-tema=claro] #mapSel::before,body[data-tema=claro] #sel::before{background:radial-gradient(ellipse at 50% 110%,rgba(160,20,20,.12),transparent 60%)}
@@ -331,7 +279,6 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <div id="iSub"><b></b><span>Supervivencia por oleadas</span><b></b></div>
   <div id="iPress"><span class="kb">Pulsa una tecla o haz clic</span><span class="tc">Toca la pantalla</span></div>
  </div>
- <div id="iVer"></div>
 </div>
 <div class="screen" id="menu">
  <div id="mTop"><h1 id="mT"><span class="pk">Fakem<span class="ball"></span>n</span><span class="zb">Hasta el Amanecer<i></i><i></i><i></i><i></i><i></i></span></h1>
@@ -421,11 +368,10 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
   <div class="opc soloTactil">Opacidad <input type="range" id="pOp" min="20" max="100" step="5" style="width:150px"> <b id="pOpv"></b></div>
   <div class="opc soloTactil"><button class="btn sm" id="pEditCtrl">🎛 Colocar botones</button> <button class="btn sm" id="pFull">⛶ Pantalla completa</button></div></div>
  <button class="btn" id="pAjBack">Volver</button></div>
-<div class="screen" id="online"><h2>🌐 Cooperativo online</h2>
- <div class="txt" style="max-width:360px;font-size:13px;opacity:.9;text-align:center">2 jugadores. Uno crea la sala y le pasa el código al otro, que lo escribe abajo.</div>
- <div class="oBox"><div class="oLbl">Soy el anfitrión</div><button class="mB main" id="oCrear"><span>＋</span>Crear sala</button><div class="oHint">Elegirás mapa, dificultad y criatura, y te daremos un código para tu amigo.</div></div>
- <div class="oOr"><i></i><span>o</span><i></i></div>
- <div class="oBox"><div class="oLbl">Tengo un código</div><input id="oCod" maxlength="8" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="mB" id="oUnir" disabled><span>→</span>Unirse</button></div>
+<div class="screen" id="online"><h2>🌐 Cooperativo online (2 jugadores)</h2>
+ <div class="txt" style="max-width:420px;font-size:13px;opacity:.9">Uno crea la sala (elige mapa, dificultad y criatura) y le pasa el código corto al otro, que pulsa «Unirse».</div>
+ <button class="mB main" id="oCrear"><span>＋</span>Crear sala</button>
+ <div style="display:flex;flex-direction:column;gap:8px;align-items:center"><input id="oCod" maxlength="8" placeholder="CÓDIGO" autocomplete="off"><button class="mB" id="oUnir"><span>→</span>Unirse</button></div>
  <button class="btn sm" id="oBack">‹ Volver</button></div>
 <div class="screen" id="sala"><h2 id="salaT">Sala online</h2><div id="salaCod"></div><div class="txt" id="salaTxt" style="max-width:420px"></div>
  <button class="mB main" id="salaGo" style="display:none"><span>▶</span>Empezar</button><button class="btn" id="salaCancel">Cancelar</button></div>
@@ -603,7 +549,7 @@ let CRIATURAS=[];
 const HABS={
  nova:{nombre:'Onda Nova',cd:22},
  escudo:{nombre:'Escudo',cd:28},
- dash:{nombre:'Sprint',cd:12}
+ dash:{nombre:'Carrera',cd:12}
 };
 
 /* ---------- B. MOVIMIENTOS ----------
@@ -1067,9 +1013,9 @@ function tzBadge(c,x,y,k){let b=TZ_BADGE[k];if(!b){const S=TZ_SHEET.img,fila=TZ_
    ronda = ronda en la que sale. ia: 'embiste' | 'jauria' | 'teleport' | 'invoca' · z = aspecto (ver ENEMIGOS) */
 const JEFES=[
  {ronda:11,bestia:true,nombre:'Brutus, el Coloso',hp:700,vel:34,dano:30,r:13,ia:'embiste',tipo:'lucha',z:{kind:'h',piel:'#9a6a5a',camisa:'#3a2a2a',pant:'#2a2a30',pelo:'#111',gordo:1,boss:1}},
- {ronda:18,nombre:'Doctor Putrefacto',hp:600,vel:30,dano:14,r:10,ia:'teleport',tipo:'veneno',z:{kind:'h',piel:'#b8c4b0',camisa:'#e8ecee',pant:'#556',pelo:'#ddd',medico:1,boss:1}},
- {ronda:23,nombre:'Matriarca Infectada',hp:800,vel:26,dano:18,r:11,ia:'invoca',tipo:'bicho',z:{kind:'h',piel:'#7a9a6a',camisa:'#6a2a4a',pant:'#2a2a2a',pelo:'#4a3a2a',boss:1}},
- {ronda:28,nombre:'La Jauría',hp:0,vel:0,dano:0,r:0,ia:'jauria'}
+ {ronda:16,nombre:'Doctor Putrefacto',hp:600,vel:30,dano:14,r:10,ia:'teleport',tipo:'veneno',z:{kind:'h',piel:'#b8c4b0',camisa:'#e8ecee',pant:'#556',pelo:'#ddd',medico:1,boss:1}},
+ {ronda:21,nombre:'Matriarca Infectada',hp:800,vel:26,dano:18,r:11,ia:'invoca',tipo:'bicho',z:{kind:'h',piel:'#7a9a6a',camisa:'#6a2a4a',pant:'#2a2a2a',pelo:'#4a3a2a',boss:1}},
+ {ronda:26,nombre:'La Jauría',hp:0,vel:0,dano:0,r:0,ia:'jauria'}
 ];
 /* Rondas en las que SOLO salen perros zombi (añade más números para más rondas de perros) */
 const RONDAS_PERROS=[5];
@@ -1078,15 +1024,15 @@ const MAX_PERROS=6;
 
 /* ---------- E. BAYAS (máx. 4 equipadas) ---------- */
 const BAYAS=[
- {id:'zidra',nombre:'Titan',coste:2500,color:'#c21d00',desc:'+50% vida máxima'},
- {id:'atania',nombre:'Cadencia+',coste:3000,color:'#a2b800',desc:'-30% enfriamiento entre movimientos'},
- {id:'ziuela',nombre:'Stamin-Up',coste:3000,color:'#ffe15c',desc:'+30% velocidad'},
- {id:'pebre',nombre:'Una mas',coste:4000,color:'#69017e',desc:'Revives solo 1 vez'},
- {id:'hibis',nombre:'Daño+',coste:4000,color:'#0039bd',desc:'+20% daño'},
- {id:'meloc',nombre:'Robavidas',coste:2500,color:'#9d4efd',desc:'Curas 5 PV al matar (cada 5 s)'},
- {id:'radar',nombre:'Radar',coste:2000,color:'#30c3c5',desc:'Ves cuántos zombis quedan en cada ronda'},
+ {id:'zidra',nombre:'Zidra',coste:2500,color:'#4ddb4d',desc:'+50% vida máxima'},
+ {id:'atania',nombre:'Atania',coste:3000,color:'#3d7bff',desc:'-30% enfriamiento entre movimientos'},
+ {id:'ziuela',nombre:'Ziuela',coste:3000,color:'#ffd92e',desc:'+30% velocidad'},
+ {id:'pebre',nombre:'Pebre',coste:4000,color:'#ec2f35',desc:'Revives solo 1 vez'},
+ {id:'hibis',nombre:'Hibis',coste:4000,color:'#f04fd2',desc:'+20% daño'},
+ {id:'meloc',nombre:'Meloc',coste:2500,color:'#ff8a1e',desc:'Curas 5 PV al matar (cada 5 s)'},
+ {id:'radar',nombre:'Radar',coste:2000,color:'#a46bff',desc:'Ves cuántos zombis quedan en cada ronda'},
  /* slot:true = no ocupa uno de los 4 huecos de bayas: se compra una vez y desbloquea el 5.º hueco de ataque */
- {id:'lepa',nombre:'Patada de Mula',coste:5000,color:'#027500',desc:'Desbloquea un 5.º hueco de ataque',slot:true}
+ {id:'lepa',nombre:'Lepa',coste:5000,color:'#25d3b5',desc:'Desbloquea un 5.º hueco de ataque',slot:true}
 ];
 const bayaTiene=b=>b.slot?!!G.slot5:G.perks.includes(b.id);
 const BAYA=Object.fromEntries(BAYAS.map(b=>[b.id,b]));
@@ -1156,13 +1102,6 @@ const NET_CORR_SALTO=80;   /* diferencia (px) a partir de la cual el invitado se
 const NET_INTERP=1;   /* 1 = el invitado suaviza zombis y compañero entre dos actualizaciones del anfitrión; 0 = los dibuja tal cual llegan */
 const NET_INTERP_K=0.9;   /* velocidad de la interpolación respecto al intervalo entre actualizaciones (1 = llega justo a la siguiente; menos de 1 = va un poco más lenta y absorbe retrasos) */
 const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad no se interpola y salta a su nueva posición */
-/* Versión del juego: súbela aquí cada vez que cambies algo (se ve abajo a la derecha en la pantalla de inicio).
-   Los archivos de datos pueden declarar la suya: criaturas.txt con una línea «# Version: 1.2» y cada mapa .json con "version":"1.2". */
-const VERSION='1.29.2';
-function refreshVer(){const el=$('iVer');if(!el)return;const L=['Juego v'+VERSION];
- try{const m=/^\s*#\s*versi[oó]n\s*[:=]?\s*(\S+)/im.exec(PBS_TEXT||'');if(m)L.push('criaturas.txt v'+m[1].replace(/^v/i,''))}catch(e){}
- try{const ms=Object.values(MAPAS).filter(x=>x.data&&x.data.version!=null&&String(x.data.version)!=='');ms.slice(0,4).forEach(x=>L.push(x.nombre+' v'+String(x.data.version).replace(/^v/i,'')));if(ms.length>4)L.push('…')}catch(e){}
- el.innerHTML='';L.forEach(t=>{const d=document.createElement('div');d.textContent=t;el.appendChild(d)})}
 const NET={modo:'local'};let PBS_TEXT='';
 const DIFS={
  facil:{n:'Fácil',hp:.8,vel:.9,dano:.7,cant:.8,cand:.6,desc:'Zombis con menos vida, más lentos y menos numerosos. Sueltan menos caramelos (x0,6).'},
@@ -1250,19 +1189,27 @@ function loadImgObj(kind,id){const o={ok:false,el:null,w:0,h:0},urls=imgUrls(kin
 function ensureChr(cr){cr.stages.forEach(st=>{if(!st.chr)st.chr=loadImgObj('chr',st.id)})}
 const FRAME_DIRS={down:0,left:1,right:2,up:3};   /* fila de la hoja 4x4 para cada dirección (editable) */
 function sheetInfo(im){const r=im.w/im.h;if(r>.7&&r<1.45)return{cols:4,fw:im.w/4,fh:im.h/4,dirs:true};if(r>=1.45){const n=Math.max(1,Math.round(r));return{cols:n,fw:im.w/n,fh:im.h,dirs:false}}return{cols:1,fw:im.w,fh:im.h,dirs:false}}
+/* Sprites de Characters: la hoja (p. ej. 64x64 por fotograma) se dibuja a ~20-30 px; reducir de golpe sin suavizar deja ruido. Con SPRITE_SUAVIZADO=1 cada fotograma se reduce una vez (por pasos, con filtro) y se cachea; 0 = comportamiento anterior (píxel a píxel). */
+const SPRITE_SUAVIZADO=1;
+function chrReducido(ch,si,fw2,fh2){const key=fw2+'x'+fh2;if(ch.sc&&ch.sc.key===key)return ch.sc;const rows=si.dirs?4:1,cv=document.createElement('canvas');cv.width=si.cols*fw2;cv.height=rows*fh2;const x=cv.getContext('2d');x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+ for(let r=0;r<rows;r++)for(let k=0;k<si.cols;k++){let w=si.fw,h=si.fh,src=ch.el,sx=k*si.fw,sy=r*si.fh;
+  while(w/2>fw2*1.01||h/2>fh2*1.01){const nw=Math.max(fw2,Math.round(w/2)),nh=Math.max(fh2,Math.round(h/2)),t=document.createElement('canvas');t.width=nw;t.height=nh;const tx=t.getContext('2d');tx.imageSmoothingEnabled=true;tx.imageSmoothingQuality='high';tx.drawImage(src,sx,sy,w,h,0,0,nw,nh);src=t;sx=0;sy=0;w=nw;h=nh}
+  x.drawImage(src,sx,sy,w,h,k*fw2,r*fh2,fw2,fh2)}
+ return ch.sc={key,cv,fw2,fh2}}
 function drawCreature(c,x,y,cr,et,aim,moving,animT,o){o=o||{};const st=cr.stages[et],ch=st.chr;
  if(ch&&ch.ok){const si=sheetInfo(ch),ca=Math.cos(aim),sa=Math.sin(aim);let row=0,flip=false;
   if(si.dirs)row=Math.abs(ca)>Math.abs(sa)?(ca>0?FRAME_DIRS.right:FRAME_DIRS.left):(sa>0?FRAME_DIRS.down:FRAME_DIRS.up);else flip=ca<0;
   const col=moving?Math.floor(animT/1.4)%si.cols:0,th=clamp(14+st.height*9,16,36),dw=th*si.fw/si.fh;
   c.save();c.translate(Math.round(x),Math.round(y));if(o.rot)c.rotate(o.rot);c.fillStyle='rgba(0,0,0,.4)';c.fillRect(-Math.round(dw/3),4,Math.round(dw*.66),3);if(flip)c.scale(-1,1);
-  c.drawImage(ch.el,col*si.fw,row*si.fh,si.fw,si.fh,-Math.round(dw/2),Math.round(6-th),Math.round(dw),Math.round(th));c.restore();return}
+  if(SPRITE_SUAVIZADO){const fw2=Math.max(1,Math.round(dw)),fh2=Math.max(1,Math.round(th)),sc=chrReducido(ch,si,fw2,fh2);c.drawImage(sc.cv,col*fw2,(si.dirs?row:0)*fh2,fw2,fh2,-Math.round(fw2/2),6-fh2,fw2,fh2)}
+  else c.drawImage(ch.el,col*si.fw,row*si.fh,si.fw,si.fh,-Math.round(dw/2),Math.round(6-th),Math.round(dw),Math.round(th));c.restore();return}
  drawCrit(c,x,y,Math.cos(aim)<0,moving?Math.floor(animT)%2:0,st.pal,1.15+et*.2,st.forma,{et,rot:o.rot})}
 function battlerEl(st){const urls=imgUrls('btl',st.id);let i=0;const im=new Image();im.loading='lazy';im.alt=st.nombre;
  im.onerror=()=>{i++;if(i<urls.length)im.src=urls[i];else{const k=document.createElement('canvas');k.width=k.height=56;drawCrit(k.getContext('2d'),28,34,false,0,st.pal,2.3,st.forma,{et:0});im.replaceWith(k)}};im.src=urls[0];return im}
 function applyData(text){let list=[];try{list=buildCreatures(text)}catch(e){}if(!list.length){list=buildCreatures(DEFAULT_PBS);DATA_SRC='ejemplo'}
  CRIATURAS=list;PBS_TEXT=DATA_SRC==='ejemplo'?DEFAULT_PBS:text;if(!CRIATURAS.some(c=>c.id===selId))selId=CRIATURAS[0].id;refreshDatos()}
 let SPR_OK=null;
-function refreshDatos(){refreshVer();const esc=s=>String(s).replace(/[<>&]/g,''),mp=MAPA_ID?Object.keys(MAPAS).length:0,txtOk=DATA_SRC!=='ejemplo';
+function refreshDatos(){const esc=s=>String(s).replace(/[<>&]/g,''),mp=MAPA_ID?Object.keys(MAPAS).length:0,txtOk=DATA_SRC!=='ejemplo';
  const t='Criaturas cargadas: '+CRIATURAS.length+' · Origen: '+DATA_SRC+' · Mapas: '+(MAPA_ID?mp+' ('+MAPA_SRC+')':'¡NINGUNO CARGADO! Falta Mapas/*.json')+(MAPA_ERR.length?' · Errores: '+esc(MAPA_ERR.join('; ')):'');$('mDatosSt').textContent=t;
  const row=(c,txt)=>'<div class="ck '+c+'"><i>'+(c==='ok'?'✔':c==='warn'?'!':'✘')+'</i><span>'+txt+'</span></div>';
  $('datosChk').innerHTML=row(txtOk?'ok':'no','<b>Criaturas</b> (PBS/criaturas.txt): '+(txtOk?CRIATURAS.length+' · '+esc(DATA_SRC):'sin cargar, uso criaturas de ejemplo'))
@@ -2851,7 +2798,7 @@ function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(
  $('finTxt').innerHTML='<div class="finSp"></div><div>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const chipsHtml=tipos=>'<div class="chips">'+tipos.map(t=>'<span class="chip" style="background:'+tipoColor(t)+'">'+cap(t)+'</span>').join('')+'</div>';
-function buildSel(){const box=$('cards'),sx=box.scrollLeft,sy=box.scrollTop;box.innerHTML='';
+function buildSel(){const box=$('cards');box.innerHTML='';
  CRIATURAS.forEach(c=>{const lock=c.desbloqueo&&save.record<c.desbloqueo,et=0,st=c.stages[0];
   const d=document.createElement('div');d.className='card'+(lock?' lock':'')+(selId===c.id?' sel':'');d.style.setProperty('--tc',tipoColor(c.tipos[0]));d.appendChild(battlerEl(st));
   d.insertAdjacentHTML('beforeend','<b>'+st.nombre+'</b>'+chipsHtml(c.tipos)+(lock?'<span class="lk">🔒 Récord ronda '+c.desbloqueo+'</span>':'<small>'+st.calc.hp+' PV</small>'));
@@ -2859,8 +2806,7 @@ function buildSel(){const box=$('cards'),sx=box.scrollLeft,sy=box.scrollTop;box.
  const c=CRIATURAS.find(x=>x.id===selId);if(c){const et=0,st=c.stages[et],S=st.stats,mx=Math.max(120,...Object.values(S));
   const bars=[['PV',S.hp,'#ee5555'],['Ataque',S.atk,'#ff9933'],['Defensa',S.def,'#ffcc44'],['Velocidad',S.spe,'#55ccff'],['At. Esp.',S.spa,'#aa77ff'],['Def. Esp.',S.spd,'#77dd99']].map(([l,v,col])=>'<span>'+l+'</span><span class="sb"><i style="width:'+Math.min(100,v/mx*100)+'%;background:'+col+'"></i></span><span class="sv">'+v+'</span>').join('');
   const det=$('selDet');det.innerHTML='';det.style.setProperty('--tc',tipoColor(c.tipos[0]));det.appendChild(battlerEl(st));
-  det.insertAdjacentHTML('beforeend','<div class="dN">'+st.nombre+'</div>'+chipsHtml(c.tipos)+(c.stages.length>1?'<div class="dEv">'+c.stages.map((s,i)=>i===et?'<em>'+s.nombre+'</em>':s.nombre).join(' → ')+'</div>':'')+(st.dex?'<div class="dDex">'+st.dex+'</div>':'')+'<div class="stats">'+bars+'</div><div class="dEsp">✨ Especial (Q): <b>'+HABS[habFor(c,et)].nombre+'</b></div>')}
- box.scrollLeft=sx;box.scrollTop=sy;if(!sx&&box.clientWidth&&box.scrollWidth>box.clientWidth+4){const s=box.querySelector('.card.sel');if(s)box.scrollLeft=Math.max(0,s.offsetLeft-(box.clientWidth-s.offsetWidth)/2)}}
+  det.insertAdjacentHTML('beforeend','<div class="dN">'+st.nombre+'</div>'+chipsHtml(c.tipos)+(c.stages.length>1?'<div class="dEv">'+c.stages.map((s,i)=>i===et?'<em>'+s.nombre+'</em>':s.nombre).join(' → ')+'</div>':'')+(st.dex?'<div class="dDex">'+st.dex+'</div>':'')+'<div class="stats">'+bars+'</div><div class="dEsp">✨ Especial (Q): <b>'+HABS[habFor(c,et)].nombre+'</b></div>')}}
 function refreshMenu(){$('mSfx').textContent='Efectos: '+(save.cfg.sfx?'sí':'no');$('mMus').textContent='Música: '+(save.cfg.musica?'sí':'no');$('mTema').textContent='Tema: '+save.cfg.tema;document.body.dataset.tema=save.cfg.tema;document.documentElement.style.setProperty('--op',save.cfg.opac/100);$('mVm').value=$('pVm').value=save.cfg.volMus;$('mVmv').textContent=$('pVmv').textContent=save.cfg.volMus+'%';$('mVs').value=$('pVs').value=save.cfg.volSfx;$('mVsv').textContent=$('pVsv').textContent=save.cfg.volSfx+'%';$('mOp').value=$('pOp').value=save.cfg.opac;$('mOpv').textContent=$('pOpv').textContent=save.cfg.opac+'%'}
 function refreshDif(){const k=difKey();document.querySelectorAll('#difRow [data-d]').forEach(b=>b.classList.toggle('act',b.dataset.d===k));$('difDesc').textContent=DIFS[k].desc}
 document.querySelectorAll('#difRow [data-d]').forEach(b=>b.onclick=()=>{save.cfg.dif=b.dataset.d;persist();refreshDif()});
@@ -2874,8 +2820,7 @@ function buildShop(){$('tiendaCand').innerHTML='Caramelos disponibles: <b>🍬 '
 $('mTienda').onclick=()=>{audioInit();buildShop();show('tienda')};$('tBack').onclick=()=>show('menu');
 $('mJugar').onclick=async()=>{audioInit();if(!MAPA_ID){await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return}}buildMaps();show('mapSel')};$('mOnline').onclick=async()=>{audioInit();if(!MAPA_ID){await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return}}show('online')};
 $('oCrear').onclick=()=>{NET.creando=true;buildMaps();show('mapSel')};
-$('oUnir').onclick=()=>{const c=$('oCod').value.trim().toUpperCase();if(c.length>=3)netUnirse(c)};
-$('oCod').oninput=()=>{$('oUnir').disabled=$('oCod').value.trim().length<3};$('oCod').onkeydown=e=>{if(e.key==='Enter'&&!$('oUnir').disabled)$('oUnir').click()};$('oBack').onclick=()=>show('menu');
+$('oUnir').onclick=()=>{const c=$('oCod').value.trim().toUpperCase();if(c.length>=3)netUnirse(c)};$('oBack').onclick=()=>show('menu');
 $('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('netMsgOk').onclick=()=>{G=null;show('menu')};
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
 $('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}newGame(CRIATURAS.find(c=>c.id===selId));show(null)};
@@ -3386,7 +3331,11 @@ function titleGo(){if(T.out)return;T.out=true;try{audioInit()}catch(e){}const el
  setTimeout(()=>{const d=T.datosPend;T.datosPend=false;show(d?'datos':'menu');el.classList.remove('out');T.out=false},350)}
 $('inicio').addEventListener('click',titleGo);
 addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||/^F\d+$/.test(e.key))return;if($('inicio').classList.contains('on'))titleGo()});
-refreshVer();loadTypeSheet();startTitle();
+/*@EDITOR_START*/
+const O={"JEFES":{"#1":{"ronda":18},"#2":{"ronda":23},"#3":{"ronda":28}},"BAYAS":{"zidra":{"nombre":"Titan","color":"#eb0000"},"atania":{"nombre":"Cadencia+"},"ziuela":{"nombre":"Stamin-Up"},"pebre":{"nombre":"Una más","color":"#f471e3"},"hibis":{"nombre":"Daño+","color":"#f6911e"},"meloc":{"nombre":"Robavidas","color":"#841fff"},"radar":{"color":"#30c3c5"},"lepa":{"color":"#36d416","nombre":"Patada de Mula"}}};
+(function(){for(const s in O){let c;try{c=eval(s)}catch(e){continue}for(const k in O[s]){const t=Array.isArray(c)?c.find((x,i)=>(x.id!==undefined?x.id:'#'+i)===k):c[k];if(!t)continue;for(const p in O[s][k]){const a=p.split(".");let o=t;while(a.length>1&&o)o=o[a.shift()];if(o)o[a[0]]=O[s][k][p]}}}})();
+/*@EDITOR_END*/
+loadTypeSheet();startTitle();
 /* =====================================================================
    FASE 3 · RED (cooperativo online de 2 jugadores)
    - El anfitrión simula todo; el invitado solo envía controles y dibuja el estado recibido.
