@@ -48,6 +48,15 @@ body.touch.pausado .ghost{z-index:55}
 #pCtrl{font-size:12px;line-height:1.55;max-width:560px;padding:12px 16px;text-align:left;background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.2);border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.45)}#pausa.ctrl{background:rgba(8,8,14,.78)}body[data-tema=claro] #pCtrl{background:rgba(255,255,255,.72);border-color:rgba(0,0,0,.25);color:#222}body.touch #pCtrl,body.touch #pVerCtrl{display:none!important}
 #banner{position:absolute;left:0;right:0;top:32%;text-align:center;font-family:Georgia,"Times New Roman",serif;font-weight:900;font-size:calc(var(--u)*36);letter-spacing:.06em;line-height:1;color:#c01818;text-shadow:0 0 .35em rgba(255,70,40,.75),.035em .035em 0 #000,-.03em -.03em 0 #000;display:none;pointer-events:none;z-index:9}
 #banner.go{display:block;animation:ban 1.6s ease-out forwards}
+#muerte{position:absolute;inset:0;display:none;pointer-events:none;z-index:9;font-family:Georgia,"Times New Roman",serif;font-weight:900;text-align:center}
+#muerte .vg{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(90,0,0,0) 35%,rgba(110,0,0,.55) 100%);animation:mvg .6s ease-out}
+#muerte .bx{position:absolute;left:0;right:0;top:16%}
+#muerte .t{font-size:calc(var(--u)*50);line-height:1;letter-spacing:.07em;color:#b30000;text-shadow:0 .03em 0 #7a0000,0 .07em .01em #5a0000,0 .14em .12em rgba(150,0,0,.85),.04em .04em 0 #000,-.03em -.03em 0 #000;animation:mmu .55s cubic-bezier(.2,1.6,.4,1)}
+#muerte .dr{width:min(70%,calc(var(--u)*300));height:calc(var(--u)*34);margin:-.02em auto 0;background:repeating-linear-gradient(90deg,#a00000 0 calc(var(--u)*5),transparent calc(var(--u)*5) calc(var(--u)*17),#a00000 calc(var(--u)*17) calc(var(--u)*20),transparent calc(var(--u)*20) calc(var(--u)*41));-webkit-mask-image:linear-gradient(#000 20%,transparent);mask-image:linear-gradient(#000 20%,transparent);transform-origin:top;animation:mdr 1.6s ease-out}
+#muerte .c{font-size:calc(var(--u)*18);color:#fff;letter-spacing:.05em;margin-top:calc(var(--u)*8);text-shadow:.06em .06em 0 #000,0 0 .5em rgba(255,40,40,.7)}
+@keyframes mmu{0%{opacity:0;transform:scale(2.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes mdr{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
+@keyframes mvg{0%{opacity:0}100%{opacity:1}}
 @keyframes ban{0%{opacity:0;transform:scale(2)}13%{opacity:1;transform:scale(1)}70%{opacity:1;transform:scale(1.03)}100%{opacity:0;transform:scale(1.2)}}
 #hRonda{background:rgba(120,12,12,.8)!important;font-size:1.3em;letter-spacing:.08em;border:1px solid #d44}
 body.touch #hud{font-size:max(11px,calc(var(--u)*6.5))}
@@ -267,7 +276,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <div id="hud">
  <div id="top"><span id="hRonda"></span><span id="hEnem" style="display:none"></span><span id="hMoney"></span><span id="hCand"></span><span id="hGren"></span><span id="hZona"></span></div>
  <div id="boss"><span id="bossname"></span><div id="bossbar"><div id="bossfill"></div></div></div>
- <div id="netSt"></div><div id="hP2"><div class="n"></div><div class="b"><i></i></div><div class="s"></div></div><div id="msg"></div><div id="banner"></div><div id="prompt"></div>
+ <div id="netSt"></div><div id="hP2"><div class="n"></div><div class="b"><i></i></div><div class="s"></div></div><div id="msg"></div><div id="banner"></div><div id="muerte"><div class="vg"></div><div class="bx"><div class="t">HAS MUERTO</div><div class="dr"></div><div class="c" id="muerteC"></div></div></div><div id="prompt"></div>
  <div id="bl"><div id="hpbar"><div id="hpfill"></div><span id="hptxt"></span></div><div id="lives"></div><div id="perks"></div></div>
  <div id="slots"></div>
 </div></div></div>
@@ -364,7 +373,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <b>PC:</b> WASD/flechas mover · ratón apuntar · clic atacar · 1-5, rueda del ratón o X/Z cambiar movimiento · G lanzar granada · R recargar · E interactuar (mantén E para reparar barricadas) · Q habilidad especial · P/Esc pausa.<br>
 <b>Móvil:</b> joystick izquierdo = mover; joystick derecho = apuntar y atacar. Botones E, R, Q, G (granada) y ARMA (cambiar de movimiento); también puedes <b>tocar directamente el movimiento</b> que quieras en la barra de movimientos. En Ajustes (o en la pausa) puedes <b>colocar cada botón donde quieras</b> y activar la <b>pantalla completa</b>.<br><br>
 Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada tiene 5 tablones y cada uno te da +5 ₽). Gana ₽ golpeando (+5), matando (+40) y con golpes críticos (+60). Abre puertas, compra movimientos en los paneles de pared, bebidas (máx. 4) en las máquinas, prueba la Caja Misteriosa y activa la energía en la Azotea para usar la Máquina mejoras. Para usar el teleportador debes activar antes su <b>base de vuelta</b> (la plataforma azul del minimapa, donde regresas); se gasta en cada viaje. Al volver, el teleportador y la base necesitan un tiempo de recarga (lo verás al acercarte), y no puedes ir a la sala de mejoras mientras un <b>jefe</b> siga vivo.<br>
-<b>Tipos de zombi:</b> cada zombi tiene un tipo (lo ves por el borde de color y el símbolo sobre su cabeza). Tus ataques hacen el doble de daño si son súper eficaces contra él, la mitad si son poco eficaces y casi nada si es inmune, con la misma tabla que en Pokémon (agua apaga a fuego, eléctrico no afecta a tierra...). Los movimientos normales son neutros, salvo contra roca y acero (poco eficaces) y fantasma (poco eficaces). A medida que avanzan las rondas aparecen más tipos.<br><br>Cada criatura puede usar movimientos de los tipos de su línea evolutiva (un planta que evoluciona a volador ya aprende movimientos de volador de pequeño), los normales y unos pocos de tipos afines (lucha, bicho, veneno...): las paredes y la Caja solo te ofrecen los compatibles, así que puedes variar tu repertorio. Cada ronda recibes 2 granadas (máx. 4) del elemento de tu criatura. Tienes 3 vidas. Los enemigos sueltan Caramelos Raros (5%; los jefes 10): con 50 y 100 tu criatura evoluciona durante esa partida, <b>al terminar la ronda</b>. Cada partida empieza de cero: solo se guardan los récords y el bestiario.<br><br><b>Movimientos:</b> tienes 4 huecos; la bebida Patada de Mula (en las máquinas de bebidas, no ocupa hueco de bebida) desbloquea un 5.º. La tecla <b>2</b> es siempre el Placaje de emergencia; si compras un ataque con todos los huecos ocupados, eliges cuál sustituir. En móvil, toca E para reparar sin mantener el dedo. <b>M</b> muestra/oculta el minimapa (solo se ven las salas que ya has abierto). <span id="ayMapa"></span> En el menú, el <b>Bestiario</b> recoge las criaturas que has jugado y sus evoluciones, y al elegir criatura puedes escoger la dificultad.</div>
+<b>Tipos de zombi:</b> cada zombi tiene un tipo (lo ves por el borde de color y el símbolo sobre su cabeza). Tus ataques hacen el doble de daño si son súper eficaces contra él, la mitad si son poco eficaces y casi nada si es inmune, con la misma tabla que en Pokémon (agua apaga a fuego, eléctrico no afecta a tierra...). Los movimientos normales son neutros, salvo contra roca y acero (poco eficaces) y fantasma (poco eficaces). A medida que avanzan las rondas aparecen más tipos.<br><br>Cada criatura puede usar movimientos de los tipos de su línea evolutiva (un planta que evoluciona a volador ya aprende movimientos de volador de pequeño), los normales y unos pocos de tipos afines (lucha, bicho, veneno...): las paredes y la Caja solo te ofrecen los compatibles, así que puedes variar tu repertorio. Cada ronda recibes 2 granadas (máx. 4) del elemento de tu criatura. Tienes 3 vidas. Los enemigos sueltan Caramelos Raros (5%; los jefes 10): con 50 y 100 (o los que fije cada criatura en criaturas.txt) tu criatura evoluciona durante esa partida, <b>al terminar la ronda</b>. Cada partida empieza de cero: solo se guardan los récords y el bestiario.<br><br><b>Movimientos:</b> tienes 4 huecos; la bebida Patada de Mula (en las máquinas de bebidas, no ocupa hueco de bebida) desbloquea un 5.º. La tecla <b>2</b> es siempre el Placaje de emergencia; si compras un ataque con todos los huecos ocupados, eliges cuál sustituir. En móvil, toca E para reparar sin mantener el dedo. <b>M</b> muestra/oculta el minimapa (solo se ven las salas que ya has abierto). <span id="ayMapa"></span> En el menú, el <b>Bestiario</b> recoge las criaturas que has jugado y sus evoluciones, y al elegir criatura puedes escoger la dificultad.</div>
 <button class="btn" id="aBack">Volver</button></div>
 <div class="screen" id="pausa"><h2>Pausa</h2><button class="btn" id="pCont">Continuar</button><button class="btn" id="pAjBtn">⚙ Ajustes</button><button class="btn sm" id="pVerCtrl">Ver controles</button><button class="btn sm" id="pGuardar">💾 Guardar partida (JSON)</button><div id="pCtrl" style="display:none"><b>Controles</b><br>WASD / flechas: mover · Ratón: apuntar · Clic o Espacio: atacar<br>1-5, rueda del ratón o Z/X: cambiar de movimiento · R: recargar · G: granada<br>E: interactuar (mantén E para reparar barricadas) · Q: habilidad especial<br>M: minimapa · P / Esc: pausa<br>Minimapa: amarillo = puerta de pago · rojo = puerta de energía / interruptor · verde = abierta · rosa = Caja · turquesa = Máquina de MT · azul claro = teleportador · azul = base de vuelta (verde si está activada)</div><button class="btn" id="pMenu">Abandonar partida</button></div>
 <div class="screen" id="pAjustes"><h2>⚙ Ajustes</h2>
@@ -418,7 +427,7 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
    Cada criatura "base" (la que no es evolución de otra) es jugable; su línea evolutiva sale del campo Evolutions.
    Campos usados: Name, InternalName, Type1, Type2, BaseStats (PS,Ataque,Defensa,Velocidad,At.Esp,Def.Esp), Height, Color,
                   Kind, Descripción (o Descripcion), Evolutions, Weight, Abilities y HiddenAbility (estos tres guardados, sin uso aún)
-                  y los opcionales Special (NOVA|ESCUDO|DASH: fuerza la habilidad Q) y StartMove (id de MOVIMIENTOS que la criatura aprende sola al empezar la ronda 2; la partida empieza solo con Placaje). El resto se ignora.
+                  y los opcionales Special (NOVA|ESCUDO|DASH|STOP: fuerza la habilidad Q) y StartMove (id de MOVIMIENTOS que la criatura aprende sola al empezar la ronda 2; la partida empieza solo con Placaje). El resto se ignora.
    Si no se encuentra el archivo se usan las criaturas de ejemplo de DEFAULT_PBS (más abajo).
    TIPOS: tipo PBS -> [tipo interno, color, nombres de los 6 movimientos del tipo: ráfaga, cono, rayo, área(energía), especial(energía), exclusivo].
    Cada criatura solo puede usar movimientos de sus tipos (Type1/Type2) más los normales. */
@@ -554,10 +563,12 @@ Height=1.2
 `;
 let CRIATURAS=[];
 /* Habilidades Q: cd = enfriamiento en segundos */
+const STOP_N=5,STOP_DIV=3,STOP_T=5;
 const HABS={
  nova:{nombre:'Onda Nova',cd:22},
  escudo:{nombre:'Escudo',cd:28},
- dash:{nombre:'Carrera',cd:12}
+ dash:{nombre:'Carrera',cd:12},
+ stop:{nombre:'Stop',cd:24}   /* los STOP_N zombis más cercanos van STOP_DIV veces más lentos durante STOP_T s */
 };
 
 /* ---------- B. MOVIMIENTOS ----------
@@ -1115,11 +1126,12 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
    1.34 · Gráficos nuevos y más detallados para los jefes (Brutus, Doctor Putrefacto, Matriarca Infectada) y para los perros zombi
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.34';
+const VERSION='1.35';
 const NET={modo:'local'};let PBS_TEXT='';
 const DIFS={
  facil:{n:'Fácil',hp:.8,vel:.9,dano:.7,cant:.8,cand:.6,desc:'Zombis con menos vida, más lentos y menos numerosos. Sueltan menos caramelos (x0,6).'},
@@ -1253,16 +1265,20 @@ function habOf(s){if(s.spe>=Math.max(s.atk,s.spa)+5)return'dash';if((s.def+s.spd
 function habFor(cr,et){const st=cr.stages[et]||cr.stages[0],sp=st&&st.special?st.special.toLowerCase():null;return sp&&Object.hasOwn(HABS,sp)?sp:cr.habBase}
 function stageOf(r,tipos){const p=(r.BaseStats||'50,50,50,50,50,50').split(',').map(x=>+x);const stats={hp:p[0]||50,atk:p[1]||50,def:p[2]||50,spe:p[3]||50,spa:p[4]||50,spd:p[5]||50};
  const base=COLORES[r.Color]||tipoColor(tipos[0]);return{nombre:r.Name,internal:r.InternalName,id:r._id,stats,height:parseFloat(r.Height)||.8,weight:parseFloat(r.Weight)||10,kind:r.Kind||'',dex:r['Descripción']||r.Descripcion||r.Pokedex||'',special:(r.Special||'').trim()||null,startMove:(r.StartMove||'').trim()||null,abilities:(r.Abilities||'').split(',').map(s=>s.trim()).filter(Boolean),hidden:(r.HiddenAbility||'').trim(),pal:makePal(base),forma:formaOf(tipos[0],r.InternalName),calc:calcStage(stats),chr:null,tipos:(()=>{const t=[tipoKey(r.Type1)];if(r.Type2){const k=tipoKey(r.Type2);if(k!==t[0])t.push(k)}return t})()}}
+/* Caramelos necesarios (acumulados) para cada evolución. En PBS: Evolutions=SIGUIENTE,Caramelos,75 (si el método no es Caramelos, se usan 50 y 100). */
+const EVO_CAND_DEF=[50,100];
+function evoReq(p,g){const m=(p[1]||'').toLowerCase(),n=parseInt(p[2],10);return /^(caramelos?|candy|candies)$/.test(m)&&n>0?n:EVO_CAND_DEF[g]}
 function buildCreatures(text){
  const raw=parsePBS(text).filter(r=>r.Name&&r.InternalName),byInt={},target=new Set();
  raw.forEach(r=>{byInt[r.InternalName.toUpperCase()]=r});
  raw.forEach(r=>{const p=(r.Evolutions||'').split(',').map(x=>x.trim());for(let i=0;i<p.length;i+=3)if(p[i])target.add(p[i].toUpperCase())});
  let bases=raw.filter(r=>!target.has(r.InternalName.toUpperCase()));if(!bases.length)bases=raw;
  const list=[];
- for(const b of bases){const chain=[b];let c=b;for(let g=0;g<2;g++){const p=(c.Evolutions||'').split(',').map(x=>x.trim());const nx=p[0]&&byInt[p[0].toUpperCase()];if(!nx||chain.includes(nx))break;chain.push(nx);c=nx}
+ for(const b of bases){const chain=[b],req=[];let c=b;for(let g=0;g<2;g++){const p=(c.Evolutions||'').split(',').map(x=>x.trim());const nx=p[0]&&byInt[p[0].toUpperCase()];if(!nx||chain.includes(nx))break;chain.push(nx);req.push(evoReq(p,g));c=nx}
+  for(let i=1;i<req.length;i++)if(req[i]<req[i-1])req[i]=req[i-1];
   const k1=tipoKey(b.Type1),k2=b.Type2?tipoKey(b.Type2):null,tipos=[k1];if(k2&&k2!==k1)tipos.push(k2);
   const stages=chain.map(r=>stageOf(r,tipos));
-  list.push({id:b.InternalName.toUpperCase(),sid:b._id,tipo:k1,tipos,stages,hab:habOf(stages[0].stats),habBase:habOf(stages[0].stats),exclusivo:EXCL[k1]||k1+'_x',rareza:+b.Rareness||255})}
+  list.push({id:b.InternalName.toUpperCase(),sid:b._id,tipo:k1,tipos,stages,evoCand:req,hab:habOf(stages[0].stats),habBase:habOf(stages[0].stats),exclusivo:EXCL[k1]||k1+'_x',rareza:+b.Rareness||255})}
  list.forEach((c,i)=>{c.desbloqueo=i<LIBRES_AL_INICIO?0:DESBLOQUEO_RONDA});
  return list}
 function imgUrls(kind,id){const dir=kind==='chr'?'Characters':'Battlers',names=[String(id),pad3(id)],u=[];for(const n of names){const f=FILES[kind][n.toLowerCase()];if(f)u.push(f)}for(const n of names)u.push('Graphics/'+dir+'/'+n+'.png');return u}
@@ -1369,7 +1385,7 @@ async function initData(){let text=null;
  if(text==null){text=DEFAULT_PBS;DATA_SRC='ejemplo'}
  applyData(text);loadTypeSheet();await initMapas();probarSprites().then(refreshDatos);
  if(((DATA_SRC==='ejemplo'&&location.protocol==='file:')||!MAPA_ID)){let ask=true;try{ask=!sessionStorage.getItem('dataAsked');sessionStorage.setItem('dataAsked','1')}catch(e){}if(ask){if($('inicio').classList.contains('on'))T.datosPend=true;else show('datos')}}}
-const etapaDe=id=>{const n=G?G.candy:0,c=CRIATURAS.find(x=>x.id===id),mx=c?c.stages.length-1:2;return Math.min(mx,n>=100?2:n>=50?1:0)};
+const etapaDe=id=>{const n=G?G.candy:0,c=CRIATURAS.find(x=>x.id===id),mx=c?c.stages.length-1:2,rq=(c&&c.evoCand)||EVO_CAND_DEF;let e=0;for(let i=0;i<mx;i++)if(n>=(rq[i]??EVO_CAND_DEF[i]))e=i+1;return Math.min(mx,e)};
 const ELCOL={fuego:['#f52','#fa3','#ffe08a'],agua:['#2a9cf0','#7fd3ff','#ffffff'],planta:['#4aa832','#8ee05a','#d8ff90'],electrico:['#f5e642','#ffffff','#fff59a']};
 for(const pk in TIPOS){const k=TIPOS[pk][0];if(!ELCOL[k])ELCOL[k]=[TIPOS[pk][1],shade(TIPOS[pk][1],.4),'#ffffff']}
 /* tono claro del tipo para el borde/centro de los golpes cuerpo a cuerpo (nunca blanco puro: se conserva el color del tipo) */
@@ -2258,7 +2274,7 @@ function drawFxIso(c){
 function drawHudWorld(c){
  for(const e of G.enemies){const[X,Y]=w2s(e.x,e.y,0),yb=Math.round(Y-15-e.r);
   if(e.hp<e.maxhp&&!e.boss){c.fillStyle='#300';c.fillRect(Math.round(X)-6,yb,12,2);c.fillStyle='#e33';c.fillRect(Math.round(X)-6,yb,Math.max(0,12*e.hp/e.maxhp),2)}
-  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(X)-6+k*3,yb-3,2,2);k++}}
+  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.stopT,'#9ef'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(X)-6+k*3,yb-3,2,2);k++}}
  // marcas de interacción
  for(const it of G.items){if(!iv(it)||(it.tipo==='puerta'&&(it.d.abierta||!(it.d.za.visto||it.d.zb.visto))))continue;const a=.4+.4*Math.sin(G.t*4+it.x),[X,Y]=w2s(it.x,it.y,it.tipo==='puerta'?HW+6:32);
   c.fillStyle=it.tipo==='puerta'?'rgba(255,200,60,'+a+')':it.tipo==='interruptor'&&!G.power?'rgba(255,60,60,'+a+')':'rgba(120,255,200,'+a*.7+')';c.fillRect(Math.round(X)-1,Math.round(Y),2,2)}
@@ -2512,13 +2528,18 @@ function addCandy(n){const id=G.cr.id;G.candy+=n;txtL(G.P.x,G.P.y,14,'+'+n+' Car
  if(etapaDe(id)>G.et&&!G.evoPend){G.evoPend=true;msg('¡Tu criatura evolucionará al terminar la ronda!',3.5);sfx('evo')}}
 function hurt(d){if(G.telep||G.inv>0||G.shield>0||debil()||G.estado==='fin')return;const P=G.P;P.hp-=d*(G.defMul||1);G.lastHit=G.t;G.shake=.15;sfx('dano');
  if(P.hp<=0)faint()}
+/* segundos de cuenta atrás hasta reaparecer tras morir (con 1 jugador) */
+const DEBIL_REAPARECER=5;
 function faint(){const P=G.P;P.hp=0;
  if(G.perks.includes('pebre')){G.perks=G.perks.filter(p=>p!=='pebre');applyStats();P.hp=Math.min(50,G.maxHp);G.inv=2.5;msg('¡La Baya Pebre te revive!',3);sfx('evo');ring(P.x,P.y,50,'#f66',.6);return}
  G.lives--;const p=G.players[G.act],N=G.players.length;
+ /* al morir pierdes las bebidas compradas (incluida la Patada de Mula y el ataque del 5.º hueco) */
+ let tenia=false;{tenia=G.perks.length>0||G.slot5;G.perks=[];if(G.slot5){G.slot5=false;const o=G.slots[4];if(o){G.own.delete(o);delete G.ms[o]}G.slots.length=4;if(G.cur>=4)setCur(EMERG)}
+  applyStats();G.P.hp=0}
  if(G.lives<=0){p.deb=p.out=true;if(G.players.every(q=>q.deb||q.out)){gameOver();return}msg('¡Sin vidas! Quedas fuera de la partida',3);return}
- p.deb=true;G.debilT=1.8;
+ p.deb=true;G.debilT=DEBIL_REAPARECER;
  if(N>1){p.revT=REVIVIR_VENTANA;p.revP=0;p.espera=false;p.revSeen=-9;if(G.players.every(q=>q.deb||q.out)){gameOver();return}msg('¡Debilitado! Tu compañero puede revivirte ('+REVIVIR_VENTANA+' s)',3);return}
- msg('¡Debilitado! Vidas: '+G.lives,2)}
+ msg('Vidas restantes: '+G.lives+(tenia?' · Has perdido tus bebidas':''),4,true)}
 /* Revivir a un jugador (se ejecuta con ese jugador como activo): se levanta en (x,y) con la fracción f de su vida */
 function reviveAt(p,x,y,f){const g=G,P=g.P;p.deb=false;p.espera=false;p.revP=0;P.x=x;P.y=y;P.hp=Math.max(1,g.maxHp*f);g.inv=3;g.shield=0;
  for(const e of g.enemies)if(e.state==='in'&&dist(e.x,e.y,P.x,P.y)<90){const a=Math.atan2(e.y-P.y,e.x-P.x);moveE(e,Math.cos(a)*70,Math.sin(a)*70,e.def.vuela)}
@@ -2756,6 +2777,7 @@ function drawGolpes(c){for(const f of G.fx){if(f.t!=='golpe')continue;const o=f.
 function useHab(){if(G.evo||G.telep||G.habCd>0||debil()||G.estado!=='ronda'&&G.estado!=='descanso')return;const h=G.cr.hab,P=G.P;G.habCd=HABS[h].cd;sfx('hab');
  if(h==='nova'){const dm=70*G.dmgMul;for(const e of G.enemies)if(!e.muerto&&dist(e.x,e.y,P.x,P.y)<85&&los(P.x,P.y,e.x,e.y,zoneP()))hit(e,dm,null,Math.atan2(e.y-P.y,e.x-P.x),220);ring(P.x,P.y,85,'#fa4',.5);partic(P.x,P.y,'#fa4',20,100,.6,2);G.shake=.2}
  else if(h==='escudo'){G.shield=3;ring(P.x,P.y,18,'#8cf',.4)}
+ else if(h==='stop'){const cerca=G.enemies.filter(e=>!e.muerto).sort((a,b)=>dist(a.x,a.y,P.x,P.y)-dist(b.x,b.y,P.x,P.y)).slice(0,STOP_N);for(const e of cerca){e.stopT=STOP_T;ring(e.x,e.y,16,'#9ef',.5);partic(e.x,e.y,'#9ef',8,40,.5,2)}ring(P.x,P.y,40,'#9ef',.5);G.shake=.1;txtL(P.x,P.y,18,cerca.length?'¡STOP!':'Sin zombis cerca','#9ef')}
  else{G.dash=.25;{const sl=sticks.l.id!==null&&(sticks.l.x||sticks.l.y),mv=moveVec();G.dashA=sl?scrAng(sticks.l.x,sticks.l.y):(mv[0]||mv[1])?scrAng(mv[0],mv[1]):G.aim}G.inv=Math.max(G.inv,.35)}}
 function moveVec(){let mx=0,my=0;if(keys.w||keys.arrowup)my--;if(keys.s||keys.arrowdown)my++;if(keys.a||keys.arrowleft)mx--;if(keys.d||keys.arrowright)mx++;return[mx,my]}
 
@@ -2869,9 +2891,9 @@ function bossAI(e,dt,sp){const P=G.P,d=dist(e.x,e.y,P.x,P.y);
  else if(e.ia==='invoca'){chase(e,sp,dt,100);e.bt-=dt;if(e.bt<=0){for(let i=0;i<2;i++){const x=e.x+rnd(-18,18),y=e.y+rnd(-18,18);if(okPos(x,y,6,false))mk(ENE.comun,x,y,'in',e.bar)}ring(e.x,e.y,30,'#9d6',.5);e.bt=5}}}
 function updEnemies(dt){const N=G.players.length;G.bossRef=null;if(N>1)for(const q of G.players)q.alto=HAY_ALTO&&!!zoneAt(q.P.x,q.P.y).alto;{const P=G.P;if(Math.random()<dt*.08&&G.enemies.some(e=>!e.muerto&&dist(e.x,e.y,P.x,P.y)<200))sfx('groan')}
  for(const e of G.enemies){if(N>1)setActive(objetivo(e));const P=G.P;e.flash-=dt;e.cobro-=dt;e.cd-=dt;e.anim+=dt*(e.vel/20+3);
-  if(e.quema>0){e.quema-=dt;e.hp-=6*dt}if(e.veneno>0){e.veneno-=dt;e.hp-=4*dt}if(e.lento>0)e.lento-=dt;if(e.marca>0)e.marca-=dt;
+  if(e.quema>0){e.quema-=dt;e.hp-=6*dt}if(e.veneno>0){e.veneno-=dt;e.hp-=4*dt}if(e.lento>0)e.lento-=dt;if(e.stopT>0)e.stopT-=dt;if(e.marca>0)e.marca-=dt;
   if(e.hp<=0&&!e.muerto){killAs(e)}if(e.muerto)continue;if(e.boss)G.bossRef=e;
-  if(e.stun>0){e.stun-=dt;continue}if(e.rapi===undefined)e.rapi=!e.boss&&!e.def.ladra&&Math.random()<.04;const tope=G.speed*(e.def.ladra?1.15:e.rapi?1.1:1),sp=Math.min(e.vel,tope)*(e.lento>0?.5:1);
+  if(e.stun>0){e.stun-=dt;continue}if(e.rapi===undefined)e.rapi=!e.boss&&!e.def.ladra&&Math.random()<.04;const tope=G.speed*(e.def.ladra?1.15:e.rapi?1.1:1),sp=Math.min(e.vel,tope)*(e.lento>0?.5:1)*(e.stopT>0?1/STOP_DIV:1);
   if(e.state==='out'){const b=e.bar;e.ang=Math.atan2(b.iy-e.y,b.ix-e.x);
    if(b.hp>0){if(e.cd<=0){b.hp=Math.max(0,b.hp-18);e.cd=1;sfx('madera')}}
    else{const a=Math.atan2(b.iy-e.y,b.ix-e.x);e.x+=Math.cos(a)*sp*dt;e.y+=Math.sin(a)*sp*dt;if(dist(e.x,e.y,b.ix,b.iy)<4)e.state='in'}continue}
@@ -2985,7 +3007,7 @@ function mudarCaja(it){if(Math.random()>=CAJA_MUEVE)return;const otras=G.items.f
 function pickMove(){const pool=MOVIMIENTOS.filter(m=>!m.exclusivo&&m.id!=='placaje'&&permitido(m.id));const L=learnset(G.cr),w={común:50,rara:30,épica:15,legendaria:5},wm=m=>w[m.rareza]*(L.prop.has(m.id)?2:1);let tot=0;pool.forEach(m=>tot+=wm(m));let r=Math.random()*tot;for(const m of pool){r-=wm(m);if(r<=0)return m.id}return pool[0].id}
 
 /* ---------- Pantallas / modales ---------- */
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));if(id)$(id).classList.add('on');if(id==='menu'||id==='ajustes'||id==='pAjustes')refreshMenu();if(id==='ajustes'||id==='pausa'||id==='pAjustes')refreshFull();document.body.classList.toggle('jugando',!id&&!!G&&G.estado!=='fin');document.body.classList.toggle('pausado',id==='pausa'||id==='pAjustes')}
+function show(id){if(id){const mu=$('muerte');if(mu)mu.style.display='none'}document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));if(id)$(id).classList.add('on');if(id==='menu'||id==='ajustes'||id==='pAjustes')refreshMenu();if(id==='ajustes'||id==='pausa'||id==='pAjustes')refreshFull();document.body.classList.toggle('jugando',!id&&!!G&&G.estado!=='fin');document.body.classList.toggle('pausado',id==='pausa'||id==='pAjustes')}
 function modal(t,ops,noCancel,onCancel){if(G.act){if(NET.modo==='host'&&G.players[G.act].remote)netModal(t,ops,noCancel,onCancel);return}if(NET.modo==='local')G.pausa=true;G.modal=true;$('modalT').textContent=t;const b=$('modalB');b.innerHTML='';ops.forEach(o=>{const x=document.createElement('button');x.className='btn';x.textContent=o.t;x.onclick=()=>{close();o.f()};b.appendChild(x)});
  if(!noCancel){const c=document.createElement('button');c.className='btn sm';c.textContent=onCancel?'No, gracias':'Cancelar';c.onclick=()=>{close();if(onCancel)onCancel()};b.appendChild(c)}function close(){if(NET.modo==='local')G.pausa=false;G.modal=false;show(null)}show('modal')}
 function togglePause(){if(!G||G.estado==='fin'||G.modal)return;if(NET.modo!=='local'&&G.players.length>1){NET.ovl=!NET.ovl;if(NET.ovl){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(NET.ovl?'pausa':null);return}G.pausa=!G.pausa;if(G.pausa){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(G.pausa?'pausa':null)}
@@ -3105,7 +3127,7 @@ $('slots').addEventListener('pointerdown',e=>{const s=e.target.closest('.sl');if
 /* ---------- HUD ---------- */
 function setT(el,t){if(el._t!==t){el.textContent=t;el._t=t}}
 function buildSlots(){G.hudBuilt=true;const b=$('slots');b.innerHTML='';for(let i=0;i<G.nSlots;i++){const d=document.createElement('div');d.className='sl';d.dataset.i=i;b.appendChild(d)}b._sig=''}
-function hud(){const g=G,P=g.P;setT($('hRonda'),'RONDA '+roman(g.round));setT($('bQs'),g.habCd>0?Math.ceil(g.habCd)+'s':'ESPECIAL');setT($('hGren'),'\u{1F4A3} '+g.granadas+'/'+GRAN_MAX);setT($('bGs'),'x'+g.granadas);{const he=$('hEnem'),rd=g.perks.includes('radar');if(he._v!==rd){he._v=rd;he.style.display=rd?'':'none'}if(rd)setT(he,'☠ '+(g.porSpawn+g.enemies.length+(g.bossPend?1:0)))}setT($('hMoney'),g.money+' ₽');setT($('hCand'),'🍬 '+g.candy+(g.et<g.cr.stages.length-1?'/'+(g.et?100:50):'')+(g.evoPend?' ✨':''));setT($('hZona'),'📍 '+(zoneP()||{nombre:''}).nombre+(g.papT>0&&(zoneP()||{}).alto?' · '+Math.ceil(g.papT)+' s':''));
+function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(me&&me.deb&&!me.out&&g.estado!=='fin');if(on){if(mu.style.display!=='block')mu.style.display='block';setT($('muerteC'),me.espera?'Reaparecerás al empezar la siguiente ronda':g.players.length===1?'Reapareces en '+Math.max(1,Math.ceil(g.debilT)):'Tu compañero puede reanimarte · '+Math.max(0,Math.ceil(me.revT||0)))}else if(mu.style.display!=='none')mu.style.display='none'}setT($('hRonda'),'RONDA '+roman(g.round));setT($('bQs'),g.habCd>0?Math.ceil(g.habCd)+'s':'ESPECIAL');setT($('hGren'),'\u{1F4A3} '+g.granadas+'/'+GRAN_MAX);setT($('bGs'),'x'+g.granadas);{const he=$('hEnem'),rd=g.perks.includes('radar');if(he._v!==rd){he._v=rd;he.style.display=rd?'':'none'}if(rd)setT(he,'☠ '+(g.porSpawn+g.enemies.length+(g.bossPend?1:0)))}setT($('hMoney'),g.money+' ₽');setT($('hCand'),'🍬 '+g.candy+(g.et<g.cr.stages.length-1?'/'+(g.et?100:50):'')+(g.evoPend?' ✨':''));setT($('hZona'),'📍 '+(zoneP()||{nombre:''}).nombre+(g.papT>0&&(zoneP()||{}).alto?' · '+Math.ceil(g.papT)+' s':''));
  $('hpfill').style.width=(Math.max(0,P.hp)/g.maxHp*100)+'%';setT($('hptxt'),Math.ceil(Math.max(0,P.hp))+'/'+g.maxHp);setT($('lives'),'♥'.repeat(Math.max(0,g.lives))+(g.habCd>0?'  Q '+Math.ceil(g.habCd)+'s':'  Q listo ('+HABS[g.cr.hab].nombre+')'));
  const ps=g.perks.join(',');const pe=$('perks');if(pe._s!==ps){pe._s=ps;pe.innerHTML=g.perks.map(p=>'<b style="background:'+BAYA[p].color+'" title="'+BAYA[p].nombre+'">'+BAYA[p].nombre[0]+'</b>').join('')}
  const sl=$('slots'),now=g.t*1000;let sig='';const parts=[];
@@ -3301,7 +3323,7 @@ function drawEntities_old(){const c=ctx,P=G.P;const list=G.enemies.map(e=>[e.y,e
   const sc=Math.max(.85,e.r/6),sh=e.bs==='wind'?rnd(-1.5,1.5):0;if(e.boss){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,40,40,'+(.12+.07*Math.sin(G.t*5))+')';c.beginPath();c.arc(e.x,e.y-3,e.r*2.1,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
   drawZombie(c,e.x+sh,e.y,Math.cos(e.ang)<0,Math.floor(e.anim)%4,e.def.z,sc,{flash:e.flash>0,t:G.t,v:e.vr,tipo:e.tipo});
   if(e.hp<e.maxhp&&!e.boss){c.fillStyle='#300';c.fillRect(Math.round(e.x)-6,Math.round(e.y-e.r-9),12,2);c.fillStyle='#e33';c.fillRect(Math.round(e.x)-6,Math.round(e.y-e.r-9),Math.max(0,12*e.hp/e.maxhp),2)}
-  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(e.x)-6+k*3,Math.round(e.y-e.r-12),2,2);k++}
+  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.stopT,'#9ef'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(e.x)-6+k*3,Math.round(e.y-e.r-12),2,2);k++}
   }}
 function drawPlayer_old(){const c=ctx,P=G.P;if(G.inv>0&&!debil()&&Math.floor(G.t*14)%2)return;const sc=1.15+G.et*.2;
  if(G.evo){const k=Math.min(1,G.evo.t/1.8);c.globalCompositeOperation='lighter';c.globalAlpha=.25+.35*k;c.fillStyle='#bdf';c.beginPath();c.arc(P.x,P.y,10+k*18+Math.sin(G.t*20)*2,0,6.283);c.fill();c.globalAlpha=1;c.globalCompositeOperation='source-over'}
@@ -3704,7 +3726,7 @@ function netSnap(){const g=G;savePl();const S={t:'snap',n:++NET.seq,T:r2(g.t),ak
   d:p.deb?1:0,o:p.out?1:0,e:p.espera?1:0,rt:r1(p.revT||0),rp:r1(p.revP||0),au:p.ausente?1:0,al:p.alto?1:0,am:r2(p.s.aim||0)}));
  const ss=g.players.map(p=>JSON.stringify(netPJ(p.s)));S.ps=ss.map((s,i)=>{if(s===NET.lastS[i])return null;NET.lastS[i]=s;return JSON.parse(s)});
  S.en=g.enemies.map(e=>[netDefKey(e.def),r1(e.x),r1(e.y),r1(e.hp),r1(e.maxhp),r2(e.ang||0),r2(e.anim||0),e.flash>0?1:0,e.vr|0,e.tipo,e.state||'',e.bs||'',
-  (e.boss?1:0)|(e.jauria?2:0)|(e.muerto?4:0)|(e.quema>0?8:0)|(e.lento>0?16:0)|(e.veneno>0?32:0)|(e.stun>0?64:0)|(e.marca>0?128:0),r1(e.r),e._u||(e._u=++NET.uid)]);
+  (e.boss?1:0)|(e.jauria?2:0)|(e.muerto?4:0)|(e.quema>0?8:0)|(e.lento>0||e.stopT>0?16:0)|(e.veneno>0?32:0)|(e.stun>0?64:0)|(e.marca>0?128:0),r1(e.r),e._u||(e._u=++NET.uid)]);
  S.bo=g.bossRef?g.enemies.indexOf(g.bossRef):-1;
  S.bu=g.bullets.map(b=>{const m=b.m||{};return[r1(b.x),r1(b.y),r1(b.vx),r1(b.vy),b.r,b.color,MOV[m.id]===m?m.id:'',m.elem||'',m.efx||'',b.o|0,b.z?b.z.id:'',b.life>0?r2(b.life):0,b._u||(b._u=++NET.uid)]});
  S.eb=g.eb.map(b=>[r1(b.x),r1(b.y),r1(b.vx),r1(b.vy),b.r,r2(b.life),b._u||(b._u=++NET.uid)]);

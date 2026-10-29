@@ -13,7 +13,7 @@ Weight=10.0
 Color=Red
 Kind=Aprendiz caballero
 Descripción=A menudo finje tener una espada, y pese a no tenerla, no teme batirse en duelo con nadie. Se oculta bajo su capa, por lo que nunca nadie ha visto su verdadero rostro.
-Evolutions=PARREESH
+Evolutions=PARREESH,Caramelos,50
 [902]
 Name=Parreesh
 InternalName=PARREESH
@@ -30,7 +30,7 @@ Weight=60.0
 Color=Gray
 Kind=Caballero cadete
 Descripción=Pese a no ser un experto total con la espada, maneja una serie de movimientos de lucha letales. Nadie sabe lo que hay bajo su armadura, pero parece ser que ¿nada?
-Evolutions=THERIDUEL
+Evolutions=THERIDUEL,Caramelos,100
 [903]
 Name=Theriduel
 InternalName=THERIDUEL
@@ -65,7 +65,7 @@ Weight=6.0
 Color=Pink
 Kind=Larva
 Descripción=Larva transformada debido a los cambios en el ambiente espacial. Posee inusuales habilidades cósmicas. Se dice que cuando se retuerce, está concentrando su poder.
-Evolutions=EUNAPSE
+Evolutions=EUNAPSE,Caramelos,50
 [905]
 Name=Eunapse
 InternalName=EUNAPSE
@@ -82,7 +82,7 @@ Weight=35.0
 Color=Gray
 Kind=Larva mudando
 Descripción=Se encuentra en un proceso de metamorfosis que lo hace aumentar constantemente su tamaño. La tela biscosa que lo rodea concentra poder en su interior.
-Evolutions=XENYCEPS
+Evolutions=XENYCEPS,Caramelos,100
 [906]
 Name=Xenyceps
 InternalName=XENYCEPS
@@ -116,7 +116,7 @@ Weight=8.0
 Color=Black
 Kind=Chacal Ionizante
 Descripción=Pese a no ser un gran depredador, intenta llamar la atención de sus presas ocultandose en las sombras, para ello utiliza sus llamativos tonos azules.
-Evolutions=STALTRUM
+Evolutions=STALTRUM,Caramelos,50
 [908]
 Name=Staltrum
 InternalName=STALTRUM
@@ -133,7 +133,7 @@ Weight=37.0
 Color=Black
 Kind=Cazador Ionizante
 Descripción=Con sus dotes de cazador más desarrolladas, suele engañar a sus presas para que se acerquen atraídos por sus bellos colores. Después las golpea con su cola, la cual tiene aromas venenosos.
-Evolutions=ULTRANATOR
+Evolutions=ULTRANATOR,Caramelos,100
 [909]
 Name=Ultranator
 InternalName=ULTRANATOR
@@ -168,7 +168,7 @@ Weight=2.6
 Color=Green
 Kind=Pájaro no volador
 Descripción=Es habitual verlo recorriendo las praderas intentando volar. Suele acurrucarse entre los pies de los arboles.
-Evolutions=GAZIG
+Evolutions=GAZIG,Caramelos,50
 [796]
 Name=Gazig
 InternalName=GAZIG
@@ -185,7 +185,7 @@ Weight=15.0
 Color=Gray
 Kind=Pájaro pícaro
 Descripción=Recorre praderas y bosques en busca de presas. Al viajar en grupo pueden juntarse decenas de ellos para sobrevolar zonas.
-Evolutions=GUIZUEÑA
+Evolutions=GUIZUEÑA,Caramelos,100
 [797]
 Name=Guizueña
 InternalName=GUIZUEÑA
@@ -219,7 +219,7 @@ Weight=8.8
 Color=Brown
 Kind=Pequeño oso
 Descripción=Se aloja sigilosamente entre los arbustos montañosos y las cuevas, su ardiente nariz lo mantiene caliente.
-Evolutions=DORIOS
+Evolutions=DORIOS,Caramelos,50
 [799]
 Name=Dorios
 InternalName=DORIOS
@@ -235,7 +235,7 @@ Weight=52.4
 Color=Brown
 Kind=Nómada
 Descripción=Un pokemon ágil. Recorre las montañas y cuevas sin descanso, como un nómada. Son algo cascarrabias, se pillan un mosqueo a la más mínima.
-Evolutions=PARDORIUS
+Evolutions=PARDORIUS,Caramelos,100
 [800]
 Name=Pardorius
 InternalName=PARDORIUS
@@ -268,7 +268,7 @@ Weight=5.9
 Color=Gray
 Kind=Pececito
 Descripción=Recorre los ríos y pantanos de la región. Es un pokemon solitario y poco sociable, pero no suele huir ante situaciones difíciles.
-Evolutions=CARPORT
+Evolutions=CARPORT,Caramelos,50
 [802]
 Name=Carport
 InternalName=CARPORT
@@ -284,7 +284,7 @@ Weight=60.5
 Color=Gray
 Kind=Pez pesado
 Descripción=Sube a contracorriente algunas de las riadas más fuertes. Es habitual verlo observando fuera del agua. Su pesada cola está en un proceso de metalización.
-Evolutions=CARPOREON
+Evolutions=CARPOREON,Caramelos,100
 [803]
 Name=Carporeon
 InternalName=CARPOREON
@@ -321,7 +321,7 @@ Weight=10
 Color=Brown
 Kind=Sobao
 Descripción=Es habitual verlo en cocinas o fábricas, allá donde pueda haber hornos. Es algo despistado y en ocasiones, eso le mete involuntariamente en jaleos.
-Evolutions=SOBUS
+Evolutions=SOBUS,Caramelos,50
 [911]
 Name=Sobus
 InternalName=SOBUS
@@ -338,7 +338,7 @@ Weight=19
 Color=Brown
 Kind=Sobao
 Descripción=Goloso y curioso, a menudo se ofrece como pinche en las cocinas para poder husmear y comer algo.
-Evolutions=SOBARUS
+Evolutions=SOBARUS,Caramelos,100
 
 [912]
 Name=Sobarus
@@ -374,7 +374,7 @@ Weight=13.6
 Color=Gray
 Kind=Merodeador
 Descripción=No suele dejarse ver, es bastante precavido, pero una vez está cara a cara no se amilana ante nadie.
-Evolutions=LOBICU
+Evolutions=LOBICU,Caramelos,50
 [914]
 Name=Lobicu
 InternalName=LOBICU
@@ -390,7 +390,7 @@ Weight=37.0
 Color=Gray
 Kind=Lobo
 Descripción=Habitualmente en grupos organizados, los lobicus bajan a los pueblos en busca de carne fácil. Odiado por los ganaderos.
-Evolutions=LOBIQUERIUS
+Evolutions=LOBIQUERIUS,Caramelos,100
 [915]
 Name=Lobiquerius
 InternalName=LOBIQUERIUS
@@ -424,7 +424,7 @@ Weight=15
 Color=Red
 Kind=Renacuajo
 Descripción=Cuenta la leyenda que es un descendiente del hombre-pez de Lierganes, es tímido y acostumbra a esconderse de la gente
-Evolutions=NALIGERS
+Evolutions=NALIGERS,Caramelos,50
 [917]
 Name=Naligers
 InternalName=NALIGERS
@@ -441,7 +441,7 @@ Weight=40
 Color=Red
 Kind=Pez humanoide
 Descripción= Su desarrollo como hombre pez avanza y, pese a no poder caminar fuera del agua, pasa bastante tiempo reptando por las rocas. Tiene un gran sentido de la orientación.
-Evolutions=GARENILES
+Evolutions=GARENILES,Caramelos,100
 [918]
 Name=Gareniles
 InternalName=GARENILES
@@ -476,7 +476,7 @@ Weight=2.2
 Color=Purple
 Kind=Ratón Espacial
 Descripción=Suele flotar por algunos paramos de la galaxia. Es escurridizo. Su cola alberga la mayor parte de su poder psíquico.
-Evolutions=SPITANK
+Evolutions=SPITANK,Caramelos,75
 
 [920]
 Name=Spitank
