@@ -85,7 +85,9 @@ body[data-tema=claro] .mj{background:#f4f4ea;border-color:#999}body[data-tema=cl
 #salaCod{font:bold 52px monospace;letter-spacing:10px;color:#ffd24a;text-shadow:3px 3px 0 #000;user-select:all}
 body.netGuest #difBox{display:none}
 #oNick{font:bold 18px monospace;text-align:center;width:11em;max-width:80vw;padding:6px;border-radius:8px;border:2px solid #9f6;background:#10131a;color:#fff}
-#oNick,#oCod{-webkit-user-select:text;user-select:text;touch-action:manipulation}
+#oNick,#oCod,#sNick{-webkit-user-select:text;user-select:text;touch-action:manipulation}
+#sNickBox{display:flex;flex-direction:column;gap:4px;align-items:center;margin:6px 0}#sNickBox label{font-size:12px;color:#aaa}
+#sNick{font:bold 18px monospace;text-align:center;width:11em;max-width:80vw;padding:6px;border-radius:8px;border:2px solid #9f6;background:#10131a;color:#fff}
 #verTag{position:fixed;right:12px;bottom:8px;font-size:11px;letter-spacing:1px;opacity:.55;pointer-events:none;z-index:2}
 #bestiario *{touch-action:pan-y}
 #bestCards{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
@@ -351,6 +353,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   </div>
   <div id="difDesc"></div>
  </div>
+ <div id="sNickBox"><label for="sNick">Nickname</label><input id="sNick" maxlength="12" placeholder="TU NOMBRE" autocomplete="off" spellcheck="false"><div id="sNickErr" style="color:#f88;font-size:12px;min-height:14px"></div></div>
  <div id="selBtns"><button class="btn sm" id="sBack">‹ Mapa</button><button class="mB main" id="sGo"><span>▶</span>¡A sobrevivir!</button></div>
 </div>
 <div class="screen" id="datos"><div id="datosBox">
@@ -457,7 +460,7 @@ const EXCL={fuego:'cometa_ignea',agua:'maremoto',planta:'tormenta_hojas',electri
 /* Conversión de BaseStats a estadísticas de juego (editable) */
 function calcStage(s){return{hp:Math.round(clamp(40+s.hp,70,230)),vel:clamp(55+s.spe*.4,55,100),atkMul:clamp(.7+Math.max(s.atk,s.spa)*.006,.8,1.4),defMul:clamp(1.15-((s.def+s.spd)/2)/330,.65,1.1)}}
 /* Desbloqueo: las primeras LIBRES_AL_INICIO criaturas base del txt (los iniciales) se pueden usar siempre; el resto se desbloquea al llegar una vez a la ronda DESBLOQUEO_RONDA. */
-const LIBRES_AL_INICIO=6, DESBLOQUEO_RONDA=5;
+/* (sin bloqueos: todas las criaturas están disponibles desde el principio) */
 /* Evolución: tamaño (px del lienzo) del sprite del Fakemon nuevo, que se muestra 2 s */
 const EVO_SPRITE_TAM=110;
 const DEFAULT_PBS=`[9001]
@@ -993,6 +996,7 @@ const TZ_MUL={};for(const a in TZ_TABLA){const m=TZ_MUL[a]={},t=TZ_TABLA[a];
  [['x',TZ_SUPER],['p',TZ_POCO],['i',TZ_INMUNE]].forEach(([k,v])=>(t[k]||'').split(' ').forEach(d=>{if(d)m[d]=v}))}
 function tipoMult(att,def){if(att==='normal')att='neutro';if(att==='neutro'&&def==='fantasma')return TZ_INMUNE_NORMAL;const t=TZ_MUL[att];return t&&t[def||'neutro']!==undefined?t[def||'neutro']:1}
 function pickTipo(def){const r=G?G.round:1;let pool=TZ_POOL.filter(p=>r>=p[1]);
+ if(G&&def&&def.ladra&&def.tipos&&def.tipos.length===2){/* perros: alternan siniestro/fantasma, siempre 50% - 50% */if(G.perroAlt===undefined)G.perroAlt=Math.random()<.5;G.perroAlt=!G.perroAlt;return def.tipos[G.perroAlt?1:0]}
  if(def&&def.tipos){const a=pool.filter(p=>def.tipos.includes(p[0]));if(a.length)pool=a;else return def.ladra?def.tipos[Math.random()*def.tipos.length|0]:def.tipos[0]}
  let tot=0;pool.forEach(p=>tot+=p[2]);let x=Math.random()*tot;for(const p of pool){x-=p[2];if(x<=0)return p[0]}return'neutro'}
 const TZ_COLC={};const tzCol=k=>TZ_COLC[k]||(TZ_COLC[k]=tipoColor(k));
@@ -1130,6 +1134,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.37   
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
    1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
    1.34 · Gráficos nuevos y más detallados para los jefes (Brutus, Doctor Putrefacto, Matriarca Infectada) y para los perros zombi
@@ -1288,7 +1293,6 @@ function buildCreatures(text){
   const k1=tipoKey(b.Type1),k2=b.Type2?tipoKey(b.Type2):null,tipos=[k1];if(k2&&k2!==k1)tipos.push(k2);
   const stages=chain.map(r=>stageOf(r,tipos));
   list.push({id:b.InternalName.toUpperCase(),sid:b._id,tipo:k1,tipos,stages,evoCand:req,hab:habOf(stages[0].stats),habBase:habOf(stages[0].stats),exclusivo:EXCL[k1]||k1+'_x',rareza:+b.Rareness||255})}
- list.forEach((c,i)=>{c.desbloqueo=i<LIBRES_AL_INICIO?0:DESBLOQUEO_RONDA});
  return list}
 function imgUrls(kind,id){const dir=kind==='chr'?'Characters':'Battlers',names=[String(id),pad3(id)],u=[];for(const n of names){const f=FILES[kind][n.toLowerCase()];if(f)u.push(f)}for(const n of names)u.push('Graphics/'+dir+'/'+n+'.png');return u}
 function loadImgObj(kind,id){const o={ok:false,el:null,w:0,h:0},urls=imgUrls(kind,id);let i=0;(function next(){if(i>=urls.length)return;const im=new Image();im.onload=()=>{o.ok=true;o.el=im;o.w=im.naturalWidth;o.h=im.naturalHeight};im.onerror=next;im.src=urls[i++]})();return o}
@@ -2457,7 +2461,7 @@ function addPlayer(cr,bot){ensureChr(cr);const idx=G.players.length,sp=posInicio
  initJugador(cr,bot);
  if(idx){bfs(walkG,p.fG,p.P.x,p.P.y);bfs(walkF,p.fF,p.P.x,p.P.y);bfs(walkW,p.fW,p.P.x,p.P.y);savePl();loadPl(0)}
  return p}
-function addBot(){if(!G||NET.modo!=='local'||G.players.length>=MAX_JUGADORES)return;const o=CRIATURAS.find(c=>c.id!==G.cr.id&&!(c.desbloqueo&&save.record<c.desbloqueo))||G.cr;addPlayer(o,true);msg('Jugador 2 (bot) añadido: '+o.stages[0].nombre,3)}
+function addBot(){if(!G||NET.modo!=='local'||G.players.length>=MAX_JUGADORES)return;const o=CRIATURAS.find(c=>c.id!==G.cr.id&&true)||G.cr;addPlayer(o,true);msg('Jugador 2 (bot) añadido: '+o.stages[0].nombre,3)}
 /* Jugador al que persigue un enemigo: el vivo más cercano (si están todos caídos, el más cercano) */
 function objetivo(e){let bi=0,b=1e9,bi2=0,b2=1e9;const fuera=G.players.some(p=>!p.deb&&!p.alto);for(let i=0;i<G.players.length;i++){const p=G.players[i],d=dist(e.x,e.y,p.P.x,p.P.y);if(d<b2){b2=d;bi2=i}if(!p.deb&&!(fuera&&p.alto)&&d<b){b=d;bi=i}}return b<1e9?bi:bi2}
 function distJ(x,y){let m=1e9,m2=1e9;for(const p of G.players){const d=dist(x,y,p.P.x,p.P.y);if(d<m2)m2=d;if(!p.deb&&d<m)m=d}return m<1e9?m:m2}
@@ -2472,7 +2476,7 @@ function botInput(p){const g=G,P=g.P,J1=g.players[0];let best=null,bd=BOT_DIST_D
  else if(!J1.deb&&dist(P.x,P.y,J1.P.x,J1.P.y)>BOT_DIST_SEGUIR){const n=nextCell(P,J1.fG);if(n){const a=Math.atan2(n[1]-P.y,n[0]-P.x);x=Math.cos(a);y=Math.sin(a)}}
  return{x,y,aim,fire}}
 function newGame(cr){
- ensureChr(cr);mouse.down=false;for(const k in keys)keys[k]=false;dcx.clearRect(0,0,WW,WH);PUERTAS.forEach(d=>{d.abierta=!!d.libre});ZONAS.forEach(z=>z.revelada=false);recalcZonas();rebuildWalk();buildGrids();
+ ensureChr(cr);mouse.down=false;for(const k in keys)keys[k]=false;dcx.clearRect(0,0,WW,WH);PUERTAS.forEach(d=>{d.abierta=!!d.libre});ZONAS.forEach(z=>{z.revelada=false;z.pis=false});recalcZonas();rebuildWalk();buildGrids();
  G={uid:newUid(),players:[],act:0,t:0,estado:'descanso',pausa:false,modal:false,round:0,power:false,D:DIFS[difKey()],mini:true,
   enemies:[],bullets:[],eb:[],parts:[],fx:[],texts:[],
   shake:0,msgT:0,descT:3,porSpawn:0,spawnT:0,bossPend:false,bossT:0,fieldT:0,flick:0,cap:10,bossRef:null,gren:[],areas:[],teleCd:0,teleLock:0,papT:0,papW:false,premios:[],instaT:0,dobleT:0,rKills:0,dropDone:true,dropN:99};
@@ -2580,14 +2584,14 @@ function soltarPremio(e,forzar){let x=e.x,y=e.y;if(!walk(x,y,4)){if(e.bar){x=e.b
  let tot=0;PREMIOS.forEach(p=>tot+=p.peso);let r=Math.random()*tot,pr=PREMIOS[0];for(const p of PREMIOS){r-=p.peso;if(r<=0){pr=p;break}}
  if(forzar)pr=PREMIOS.find(p=>p.id===forzar)||pr;
  G.premios.push({x,y,p:pr,t:PREMIO_VIDA,z:zoneAt(x,y)});ring(x,y,16,pr.col,.5);partic(x,y,pr.col,10,60,.5,2);sfx('cajaok')}
-function cogerPremio(o){const p=o.p,P=G.P,av=(t,sg)=>forPl(()=>msg(t,sg));txtL(o.x,o.y,14,p.nombre,p.col);forPl(()=>banner(p.nombre.toUpperCase()));sfx('evo');ring(P.x,P.y,30,p.col,.5);partic(P.x,P.y,p.col,16,90,.6,2);
+function cogerPremio(o){const p=o.p,P=G.P,av=(t,sg)=>forPl(()=>msg(t,sg));if(p.id==='sangre')banner(p.nombre.toUpperCase());else{txtL(o.x,o.y,14,p.nombre,p.col);forPl(()=>banner(p.nombre.toUpperCase()))}sfx('evo');ring(P.x,P.y,30,p.col,.5);partic(P.x,P.y,p.col,16,90,.6,2);
  /* los premios afectan a todo el equipo */
  if(p.id==='muni'){forPl(()=>{for(const id of G.own)rellenar(id);const gn=GRAN_MAX-G.granadas;if(gn>0){G.granadas=GRAN_MAX;txtL(G.P.x,G.P.y-14,20,'+'+gn+' granada'+(gn>1?'s':''),'#ffb070')}});av('¡Munición máxima para todos tus ataques y granadas!',3)}
  else if(p.id==='carp'){for(const b of G.bars)b.hp=100;forPl(()=>{const n=ganar(100);txtL(G.P.x,G.P.y,24,'+'+n+' ₽','#ffd24a')});av('¡Carpintero! Ventanas reparadas · +100 ₽',3);sfx('reparar')}
  else if(p.id==='insta'){G.instaT=INSTA_T;av('¡Muerte instantánea! Zombis normales caen de un toque y los grandes sufren más daño ('+INSTA_T+' s)',3.5)}
  else if(p.id==='bomba'){let n=0;for(const e of G.enemies){if(e.muerto||e.boss||e.jauria)continue;e.sinExp=true;ring(e.x,e.y,22,'#f84',.5);kill(e);n++}
   G.fx.push({t:'flash',x:P.x,y:P.y,r:140,color:'#ffb050',life:.6,max:.6});ring(P.x,P.y,160,'#ff8a2a',.7);G.shake=.5;G.tflash=.25;sfx('explosion');{let m=0;forPl(()=>{m=ganar(200);txtL(G.P.x,G.P.y,24,'+'+m+' ₽','#ffd24a')});av('¡BOMBA! '+n+' zombis eliminados · +'+m+' ₽',3)}}
- else if(p.id==='sangre'){let n=0;forPl(()=>{n=ganar(200);txtL(G.P.x,G.P.y,24,'+'+n+' ₽','#ffd24a')});av('¡Dinero sangriento! +'+n+' ₽',3)}
+ else if(p.id==='sangre'){/* solo para el jugador que lo coge (G.act): dinero y mensaje */const n=ganar(200);txtL(G.P.x,G.P.y,24,'+'+n+' ₽','#ffd24a');msg('¡Dinero sangriento! +'+n+' ₽',3)}
  else if(p.id==='doble'){G.dobleT=DOBLE_T;av('¡Puntos dobles! Todo el dinero x2 durante '+DOBLE_T+' s',3.5)}}
 function updPremios(dt){const g=G;if(g.instaT>0)g.instaT-=dt;if(g.dobleT>0)g.dobleT-=dt;
  for(const o of g.premios){o.t-=dt;for(let i=0;i<g.players.length;i++){const p=g.players[i];if(p.deb)continue;if(dist(o.x,o.y,p.P.x,p.P.y)<13){o.t=-1;withPlayer(i,()=>cogerPremio(o));break}}}
@@ -3090,13 +3094,14 @@ function modal(t,ops,noCancel,onCancel){if(G.act){if(NET.modo==='host'&&G.player
  if(!noCancel){const c=document.createElement('button');c.className='btn sm';c.textContent=onCancel?'No, gracias':'Cancelar';c.onclick=()=>{close();if(onCancel)onCancel()};b.appendChild(c)}function close(){if(NET.modo==='local')G.pausa=false;G.modal=false;show(null)}show('modal')}
 function togglePause(){if(!G||G.estado==='fin'||G.modal)return;if(NET.modo!=='local'&&G.players.length>1){NET.ovl=!NET.ovl;if(NET.ovl){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(NET.ovl?'pausa':null);return}G.pausa=!G.pausa;if(G.pausa){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(G.pausa?'pausa':null)}
 function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(NET.modo==='host')netHostFin();save.record=Math.max(save.record,G.round);save.matados=(save.matados||0)+KT;
- save.records.push({ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();
+ save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();
  $('finTxt').style.cssText='display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:left';
- $('finTxt').innerHTML='<div class="finSp"></div><div>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
+ $('finTxt').innerHTML='<div class="finSp"></div><div>Jugador: <b>'+netClean((G.players[0]&&G.players[0].nombre)||save.cfg.nick||'')+'</b><br>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const chipsHtml=tipos=>'<div class="chips">'+tipos.map(t=>'<span class="chip" style="background:'+tipoColor(t)+'">'+cap(t)+'</span>').join('')+'</div>';
 function buildSel(){const box=$('cards');box.innerHTML='';
- CRIATURAS.forEach(c=>{const lock=c.desbloqueo&&save.record<c.desbloqueo,et=0,st=c.stages[0];
+ {const nb=$('sNickBox'),loc=!NET.creando&&NET.modo!=='guest';nb.style.display=loc?'':'none';if(loc&&!$('sNick').value)$('sNick').value=save.cfg.nick||''}
+ CRIATURAS.forEach(c=>{const lock=false,et=0,st=c.stages[0];
   const d=document.createElement('div');d.className='card'+(lock?' lock':'')+(selId===c.id?' sel':'');d.style.setProperty('--tc',tipoColor(c.tipos[0]));d.appendChild(battlerEl(st));
   d.insertAdjacentHTML('beforeend','<b>'+st.nombre+'</b>'+chipsHtml(c.tipos)+(lock?'<span class="lk">🔒 Récord ronda '+c.desbloqueo+'</span>':'<small>'+st.calc.hp+' PV</small>'));
   d.onclick=()=>{if(!lock){selId=c.id;buildSel()}};box.appendChild(d)});
@@ -3120,7 +3125,7 @@ $('oCrear').onclick=()=>{if(!netPideNick())return;NET.creando=true;buildMaps();s
 $('oUnir').onclick=()=>{if(!netPideNick())return;const c=$('oCod').value.trim().toUpperCase();if(c.length>=3)netUnirse(c)};$('oBack').onclick=()=>show('menu');
 $('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('netMsgOk').onclick=()=>{G=null;show('menu')};
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
-$('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}newGame(CRIATURAS.find(c=>c.id===selId));show(null)};
+$('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
 $('mBest').onclick=()=>{buildBest();show('bestiario')};$('bBack').onclick=()=>show('menu');
 function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
  CRIATURAS.forEach(c=>{const mx=save.bestiario[c.id],ok=mx!==undefined;if(ok)got++;const et=ok?Math.min(mx,c.stages.length-1):0,st=c.stages[et];
@@ -3129,7 +3134,7 @@ function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
   d.insertAdjacentHTML('beforeend',ok?'<b>'+st.nombre+'</b><small>'+c.tipos.join(' / ')+'</small><small>'+c.stages.map((s,i)=>i<=mx?s.nombre:'???').join(' → ')+'</small>':'<b>???</b><small>No descubierta</small>');
   box.appendChild(d)});
  $('bestCnt').textContent='Descubiertas: '+got+' / '+CRIATURAS.length+' · Evoluciones: '+Object.keys(save.bestiario).reduce((a,id)=>a+(+save.bestiario[id]||0),0)}
-$('mRec').onclick=()=>{let h='Récord: <b>ronda '+save.record+'</b> · Bajas totales: '+(save.matados||0)+'<br><br>';h+=save.records.length?save.records.map((r,i)=>(i+1)+'. Ronda '+r.ronda+' — '+r.matados+' bajas — '+r.cr+' ('+r.f+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';$('recTxt').innerHTML=h;show('records')};
+$('mRec').onclick=()=>{let h='Récord: <b>ronda '+save.record+'</b> · Bajas totales: '+(save.matados||0)+'<br><br>';h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+netClean(r.nick)+'</b> — ':'')+'Ronda '+r.ronda+' — '+r.matados+' bajas — '+r.cr+' ('+r.f+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';$('recTxt').innerHTML=h;show('records')};
 $('rBack').onclick=()=>show('menu');$('mAyuda').onclick=()=>show('ayuda');$('aBack').onclick=()=>show('menu');
 $('mAjustes').onclick=()=>show('ajustes');$('ajBack').onclick=()=>show('menu');$('mSfx').onclick=()=>{save.cfg.sfx=!save.cfg.sfx;persist();refreshMenu()};$('mMus').onclick=()=>{save.cfg.musica=!save.cfg.musica;persist();refreshMenu()};
 $('mTema').onclick=()=>{save.cfg.tema=save.cfg.tema==='oscuro'?'claro':'oscuro';persist();refreshMenu()};
@@ -3148,7 +3153,7 @@ function guardarPartida(){if(!G||G.estado==='fin')return;
   round:enRonda?G.round-1:G.round,money:G.money,kills:G.kills,candy:G.candy,power:!!G.power,lives:G.lives,hp:G.P.hp,perks:G.perks.slice(),slot5:!!G.slot5,habAlt:!!G.habAlt,granadas:G.granadas,
   smPend:G.smPend||null,slots:G.slots.slice(),own:[...G.own],cur:G.cur,teleRound:G.teleRound===undefined?null:G.teleRound,
   ms:Object.fromEntries(Object.keys(G.ms).map(id=>[id,{pp:G.ms[id].pp,res:G.ms[id].res,mt:!!G.ms[id].mt}])),
-  puertas:PUERTAS.map(p=>!!p.abierta),reveladas:ZONAS.filter(z=>z.revelada).map(z=>z.id),
+  puertas:PUERTAS.map(p=>!!p.abierta),reveladas:ZONAS.filter(z=>z.revelada).map(z=>z.id),pisadas:ZONAS.filter(z=>z.pis).map(z=>z.id),
   barricadas:G.bars.map(b=>b.hp),
   items:G.items.map(it=>({tipo:it.tipo,est:it.est||null,oculto:!!it.oculto,res:it.res||null}))};
  const blob=new Blob([JSON.stringify(d,null,1)],{type:'application/json'}),a=document.createElement('a');
@@ -3166,7 +3171,7 @@ function cargarPartida(d){
  for(const id of G.own){initMs(id);const m=(d.ms||{})[id];if(m){Object.assign(G.ms[id],{pp:m.pp,res:m.res,mt:!!m.mt})}}
  G.habAlt=!!d.habAlt;applyStats();setHab();G.cur=G.slots[d.cur]?d.cur:Math.max(0,G.slots.findIndex(x=>x));G.P.hp=Math.min(G.maxHp,Math.max(1,+d.hp||G.maxHp));
  (d.puertas||[]).forEach((a,i)=>{if(PUERTAS[i])PUERTAS[i].abierta=!!a});
- ZONAS.forEach(z=>z.revelada=(d.reveladas||[]).includes(z.id));
+ ZONAS.forEach(z=>{z.revelada=(d.reveladas||[]).includes(z.id);z.pis=(d.pisadas||[]).includes(z.id)});
  G.power=!!d.power;if(G.power)musMode='epico';
  recalcZonas();rebuildWalk();buildGrids();buildMap();
  (d.barricadas||[]).forEach((h,i)=>{if(G.bars[i])G.bars[i].hp=h});
@@ -3476,14 +3481,16 @@ function render_old(){ctx.imageSmoothingEnabled=false;ctx.fillStyle='#000';ctx.f
  if(G.evo){const k=Math.max(0,1-Math.abs(G.evo.t-1.8)/.6);if(k>0){ctx.fillStyle='rgba(255,255,255,'+(k*.85)+')';ctx.fillRect(0,0,W,H)}}
  drawMini()}
 /* Minimapa (tecla M): zonas, puertas (amarillo = de pago, rojo = de energía, verde = abierta), Caja, Máquina de MT, teleportador e interruptor de energía */
+/* salas visitadas: se marcan al pisarlas cualquier jugador (solo afecta al minimapa) */
+function markPis(){if(!G||!G.players)return;for(const p of G.players){if(p.out||!p.P)continue;const z=zoneAt(p.P.x,p.P.y);if(z)z.pis=true}if(G.P){const z=zoneAt(G.P.x,G.P.y);if(z)z.pis=true}}
 function drawMini(){if(!G.mini)return;const c=ctx,s=1/20,mw=Math.round(WW*s),mh=Math.round(WH*s),mx=W-mw-8,my=32;
  /* todo en píxeles enteros para que el minimapa se vea nítido (sin bordes difuminados) */
  const R=(x,y,w,h,mn)=>{const x0=Math.round(mx+x*s),y0=Math.round(my+y*s),x1=Math.round(mx+(x+w)*s),y1=Math.round(my+(y+h)*s);c.fillRect(x0,y0,Math.max(mn||1,x1-x0),Math.max(mn||1,y1-y0))};
  const D=(x,y)=>c.fillRect(Math.round(mx+x*s)-1,Math.round(my+y*s)-1,3,3);
  c.save();c.imageSmoothingEnabled=false;c.globalAlpha=.92;c.fillStyle='rgba(0,0,0,.7)';c.fillRect(mx-3,my-3,mw+6,mh+6);
- for(const z of ZONAS){if(!z.visto)continue;c.fillStyle=z.abierta?'rgb(170,185,210)':'rgb(105,112,132)';R(z.x,z.y,z.w,z.h)}
- for(const p of PUERTAS){if(p.libre||!(p.za.visto||p.zb.visto))continue;c.fillStyle=p.abierta?'#5c5':p.energia?'#f44':'#ffb020';R(p.x,p.y,p.w,p.h,2)}
- for(const it of G.items){if(!iv(it)||it.tipo==='puerta')continue;if(it.tipo==='caja')c.fillStyle='#ff7ad9';else if(it.tipo==='tele')c.fillStyle='#8cf';else if(it.tipo==='mt')c.fillStyle='#4fd';else if(it.tipo==='hab')c.fillStyle='#fd4';else if(it.tipo==='interruptor')c.fillStyle=G.power?'#5d5':'#f44';else if(it.tipo==='base')c.fillStyle=G.baseOn?'#5f5':'#4af';else continue;D(it.x,it.y)}for(const s of ESC){c.fillStyle='#fc4';if(s.za.visto)D(s.ax,s.ay);if(s.zb.visto)D(s.bx,s.by)}
+ for(const z of ZONAS){if(!z.pis)continue;c.fillStyle=z.abierta?'rgb(170,185,210)':'rgb(105,112,132)';R(z.x,z.y,z.w,z.h)}
+ for(const p of PUERTAS){if(p.libre||!(p.za.pis||p.zb.pis))continue;c.fillStyle=p.abierta?'#5c5':p.energia?'#f44':'#ffb020';R(p.x,p.y,p.w,p.h,2)}
+ for(const it of G.items){if(!iv(it)||(it.z&&!it.z.pis)||it.tipo==='puerta')continue;if(it.tipo==='caja')c.fillStyle='#ff7ad9';else if(it.tipo==='tele')c.fillStyle='#8cf';else if(it.tipo==='mt')c.fillStyle='#4fd';else if(it.tipo==='hab')c.fillStyle='#fd4';else if(it.tipo==='interruptor')c.fillStyle=G.power?'#5d5':'#f44';else if(it.tipo==='base')c.fillStyle=G.baseOn?'#5f5':'#4af';else continue;D(it.x,it.y)}for(const s of ESC){c.fillStyle='#fc4';if(s.za.pis)D(s.ax,s.ay);if(s.zb.pis)D(s.bx,s.by)}
  {c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1;c.beginPath();[[0,0],[W,0],[W,H],[0,H]].forEach((q,i)=>{const w=s2w(q[0],q[1]),X=mx+w[0]*s,Y=my+w[1]*s;i?c.lineTo(X,Y):c.moveTo(X,Y)});c.closePath();c.stroke()}
  c.fillStyle=Math.floor(G.t*3)%2?'#fff':'#ffd24a';D(G.P.x,G.P.y);G.players.forEach((p,i)=>{if(i!==G.act&&!p.out){c.fillStyle='#8cf';D(p.P.x,p.P.y)}});
  c.restore()}
@@ -3492,7 +3499,7 @@ function drawMini(){if(!G.mini)return;const c=ctx,s=1/20,mw=Math.round(WW*s),mh=
 let last=0;
 let hudAcc=0,hudDt=1/30;
 function hudTick(dt){hudAcc+=dt;if(hudAcc>=.03){hudDt=hudAcc;hudAcc=0;hud()}}
-function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(G)markPis();
  if(G&&NET.modo==='guest'){if(G.estado!=='fin'&&(NET.fase==='juego'||NET.fase==='recon')){netGuestFrame(dt);if(G)hudTick(dt)}}else if(G&&!G.pausa&&G.estado!=='fin'){update(dt);if(G)hudTick(dt)}render()}
 function fit(){let s=Math.min(innerWidth/W,innerHeight/H);const si=Math.floor(s);if(si>=1&&s/si<1.15)s=si;const st=$('stage');st.style.width=W*s+'px';st.style.height=H*s+'px';st.style.setProperty('--u',s+'px')}
 window.addEventListener('resize',fit);fit();
