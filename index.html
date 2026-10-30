@@ -1133,7 +1133,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.36';
+const VERSION='1.37';
 const NET={modo:'local'};let PBS_TEXT='';
 const DIFS={
  facil:{n:'Fácil',hp:.8,vel:.9,dano:.7,cant:.8,cand:.6,desc:'Zombis con menos vida, más lentos y menos numerosos. Sueltan menos caramelos (x0,6).'},
@@ -1968,7 +1968,7 @@ P3.muro={h:HW,paint(c,x,y,w,d,col,p,ck){const pal=['#40383c','#37302f'],ch=ck||{
  faceS(c,x,y+d,0,w,HW,(m,ww,hh)=>{const R=Rr_(m);R('#211d21',0,0,ww,hh);brick(R,x,ww,hh,pal,x);R('rgba(255,255,255,.1)',0,0,ww,1);R('rgba(0,0,0,.5)',0,hh-3,ww,3);R('rgba(0,0,0,.18)',0,0,ww,hh)});
  faceE(c,x+w,y,0,d,HW,(m,ww,hh)=>{const R=Rr_(m);R('#211d21',0,0,ww,hh);brick(R,y,ww,hh,['#342c30','#2b2527'],y);R('rgba(0,0,0,.42)',0,0,ww,hh)});
  faceT(c,x,y,HW,w,d,m=>{Rr_(m)('#554c50',x,y,w,d);Rr_(m)('rgba(255,255,255,.12)',x,y,w,1)})}};
-P3.butacas={h:17,paint(c,x,y,w,d,col,p){const sc=p.z&&p.z.asiento,c0=sc||'#4a1a22';const rows=[];
+P3.butacas={h:17,paint(c,x,y,w,d,col,p){const sc=p.z&&p.z.asiento,c0=sc||'#4a1a22';if((p[6]|0)%360)return paintFacing(c,x,y,w,d,c0,p[6],'butacas');const rows=[];
  if(w>=d){for(let i=0;i<Math.floor(w/12);i++)rows.push([x+i*12+1,y,10,d,0])}else{for(let i=0;i<Math.floor(d/12);i++)rows.push([x,y+i*12+1,w,10,1])}
  for(const[sx,sy,sw,sd,v]of rows){if(!v){boxF(c,sx,sy,0,sw,sd,8,adj(c0,-.1));boxF(c,sx,sy,8,sw,4,9,c0);boxF(c,sx+1,sy+4,0,sw-2,sd-4,10,adj(c0,.18))}
   else{boxF(c,sx,sy,0,4,sd,17,c0);boxF(c,sx+4,sy+1,0,sw-4,sd-2,10,adj(c0,.18))}}}};
@@ -2009,6 +2009,10 @@ const propKey=p=>p[5]&&P3[p[5]]?p[5]:'generico';
 /* Giro (0/90/180/270 horario) de sofá y silla: se pinta en un marco canónico (respaldo arriba) y se gira cada caja a su sitio */
 function paintFacing(c,x,y,w,d,col,rot,t){const r=(((rot|0)/90)%4+4)%4,odd=r%2===1,CW=odd?d:w,CD=odd?w:d;
  const M=(u,v,lw,ld)=>r===0?[x+u,y+v,lw,ld]:r===1?[x+CD-v-ld,y+u,ld,lw]:r===2?[x+CW-u-lw,y+CD-v-ld,lw,ld]:[x+v,y+CW-u-lw,ld,lw];
+ if(t==='butacas'){const c0=col||'#4a1a22',bd=Math.min(4,CD),gs=[];   /* filas de asientos: cada uno = base + respaldo + cojín, respaldo en el borde de v menor */
+  for(let i=0;i<Math.max(1,Math.floor(CW/12));i++){const u=i*12+1;gs.push([[u,0,0,10,CD,8,adj(c0,-.1)],[u,0,8,10,bd,9,c0],[u+1,bd,0,8,CD-bd,10,adj(c0,.18)]])}
+  const dp=b=>{const m=M(b[0],b[1],b[3],b[4]);return m[0]+m[2]/2+m[1]+m[3]/2};gs.sort((a,b)=>dp(a[0])-dp(b[0]));
+  for(const s of gs)for(const b of s){if(b[4]<=0)continue;const m=M(b[0],b[1],b[3],b[4]);boxF(c,m[0],m[1],b[2],m[2],m[3],b[5],b[6])}return}
  const L=[],legs=[];
  if(t==='sofa'){const bk=Math.min(6,CD);L.push([0,0,0,CW,bk,18,col],[0,bk,0,2.5,CD-bk,13,adj(col,-.08)],[2.5,bk,0,CW-5,CD-bk,9,adj(col,.05)],[CW-2.5,bk,0,2.5,CD-bk,13,adj(col,-.08)])}
  else{col=col||'#8a6a44';const lw=2;for(const[u,v]of[[0,0],[CW-lw,0],[0,CD-lw],[CW-lw,CD-lw]])legs.push([u,v,0,lw,lw,8,adj(col,-.3)]);L.push([0,0,0,CW,2,22,adj(col,-.1)],[0,2,8,CW,CD-2,2.5,col])}
