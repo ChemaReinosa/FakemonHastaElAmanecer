@@ -1,0 +1,54 @@
+{
+ "formato":1,
+ "nombre":"Torre Z-6",
+ "subtitulo":"Seis pisos de pánico",
+ "ayuda":"Sube y baja por las escaleras del rellano: los zombis también las usan.",
+ "ancho":480,
+ "alto":288,
+ "inicio":{"x":112,"y":200},
+ "zonaInicio":"p0_hall",
+ "cajaInicio":["p0_sala","p2_sala","p4_sala"],
+ "cajaMueve":0.35,
+ "version":"1.0",
+ "zonas":[
+  {"id":"p0_hall","nombre":"VESTÍBULO","x":16,"y":24,"w":200,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["L",16,100],["L",16,190],["T",130,24]],"props":[[24,248,16,16,"#2f5a2f","planta"],[190,150,16,16,"#2f5a2f","planta"]]},
+  {"id":"p0_sala","nombre":"RECEPCIÓN","x":232,"y":24,"w":232,"h":248,"c1":"#463f3c","c2":"#4b4441","estilo":"madera","luz":0.5,"barricadas":[["R",464,100],["R",464,200],["T",348,24]],"props":[[250,50,70,20,"#5a4632","mostrador"],[420,240,54,18,"#44505f","sofa"]]},
+  {"id":"p1_hall","nombre":"RELLANO","piso":1,"x":16,"y":24,"w":200,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["L",16,100],["L",16,190],["T",130,24]],"props":[[24,248,16,16,"#2f5a2f","planta"],[190,150,16,16,"#2f5a2f","planta"]]},
+  {"id":"p1_sala","nombre":"OFICINAS","piso":1,"x":232,"y":24,"w":232,"h":248,"c1":"#46484e","c2":"#4b4d54","estilo":"normal","luz":0.5,"barricadas":[["R",464,100],["R",464,200],["T",348,24]],"props":[[300,110,40,20,"#6b5a44","mesa"],[390,170,40,20,"#6b5a44","mesa"],[250,40,26,18,"#6a727a","archivo"]]},
+  {"id":"p2_hall","nombre":"RELLANO","piso":2,"x":16,"y":24,"w":200,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["L",16,100],["L",16,190],["T",130,24]],"props":[[24,248,16,16,"#2f5a2f","planta"],[190,150,16,16,"#2f5a2f","planta"]]},
+  {"id":"p2_sala","nombre":"ARCHIVO","piso":2,"x":232,"y":24,"w":232,"h":248,"c1":"#38464c","c2":"#3d4c53","estilo":"industrial","luz":0.5,"barricadas":[["R",464,100],["R",464,200],["T",348,24]],"props":[[250,40,26,18,"#6a727a","archivo"],[290,40,26,18,"#6a727a","archivo"],[330,40,26,18,"#6a727a","archivo"],[420,230,28,24,"#9a6a38","cajas"]]},
+  {"id":"p3_hall","nombre":"RELLANO","piso":3,"x":16,"y":24,"w":200,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["L",16,100],["L",16,190],["T",130,24]],"props":[[24,248,16,16,"#2f5a2f","planta"],[190,150,16,16,"#2f5a2f","planta"]]},
+  {"id":"p3_sala","nombre":"LABORATORIO","piso":3,"x":232,"y":24,"w":232,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["R",464,100],["R",464,200],["T",348,24]],"props":[[420,50,22,22,"#53606a","tanque"],[250,240,30,24,"#3b4650","maquina"],[330,130,40,20,"#6b5a44","mesa"]]},
+  {"id":"p4_hall","nombre":"RELLANO","piso":4,"x":16,"y":24,"w":200,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["L",16,100],["L",16,190],["T",130,24]],"props":[[24,248,16,16,"#2f5a2f","planta"],[190,150,16,16,"#2f5a2f","planta"]]},
+  {"id":"p4_sala","nombre":"SALA DE MÁQUINAS","piso":4,"x":232,"y":24,"w":232,"h":248,"c1":"#38464c","c2":"#3d4c53","estilo":"industrial","luz":0.5,"barricadas":[["R",464,100],["R",464,200],["T",348,24]],"props":[[250,40,30,24,"#3b4650","maquina"],[330,40,30,24,"#3b4650","maquina"],[420,235,28,24,"#9a6a38","cajas"]]},
+  {"id":"p5_hall","nombre":"RELLANO","piso":5,"x":16,"y":24,"w":200,"h":248,"c1":"#3c3f48","c2":"#41444d","estilo":"checker","luz":0.5,"barricadas":[["L",16,100],["L",16,190],["T",130,24]],"props":[[24,248,16,16,"#2f5a2f","planta"],[190,150,16,16,"#2f5a2f","planta"]]},
+  {"id":"p5_azotea","nombre":"AZOTEA","piso":5,"x":232,"y":24,"w":232,"h":248,"c1":"#2a3038","c2":"#2f353d","estilo":"azotea","luz":0.5,"barricadas":[["R",464,100],["R",464,200],["T",348,24]],"props":[[420,60,24,22,"#8a6a44","cajon"],[440,240,16,16,"#2f5a2f","planta"]]}
+ ],
+ "puertas":[
+  {"id":"d_p0_hall_p0_sala","a":"p0_hall","b":"p0_sala","x":212,"y":118,"w":24,"h":48,"coste":500},
+  {"id":"d_p1_hall_p1_sala","a":"p1_hall","b":"p1_sala","x":212,"y":118,"w":24,"h":48,"coste":750},
+  {"id":"d_p2_hall_p2_sala","a":"p2_hall","b":"p2_sala","x":212,"y":118,"w":24,"h":48,"coste":1000},
+  {"id":"d_p3_hall_p3_sala","a":"p3_hall","b":"p3_sala","x":212,"y":118,"w":24,"h":48,"coste":1250},
+  {"id":"d_p4_hall_p4_sala","a":"p4_hall","b":"p4_sala","x":212,"y":118,"w":24,"h":48,"coste":1500},
+  {"id":"d_p5_hall_p5_azotea","a":"p5_hall","b":"p5_azotea","x":212,"y":118,"w":24,"h":48,"coste":1750}
+ ],
+ "objetos":[
+  {"tipo":"caja","zona":"p0_sala","x":360,"y":150},
+  {"tipo":"caja","zona":"p2_sala","x":360,"y":150},
+  {"tipo":"caja","zona":"p4_sala","x":360,"y":150},
+  {"tipo":"panel","zona":"p1_sala","x":320,"y":36,"lado":"T","tier":2},
+  {"tipo":"panel","zona":"p3_sala","x":320,"y":36,"lado":"T","tier":4},
+  {"tipo":"baya","zona":"p1_sala","x":420,"y":260,"lado":"B","baya":"zidra"},
+  {"tipo":"baya","zona":"p3_sala","x":400,"y":260,"lado":"B","baya":"hibis"},
+  {"tipo":"hab","zona":"p2_sala","x":420,"y":36,"lado":"T"},
+  {"tipo":"frag","zona":"p3_sala","x":250,"y":36,"lado":"T"},
+  {"tipo":"mt","zona":"p4_sala","x":420,"y":36,"lado":"T"}
+ ],
+ "escaleras":[
+  {"id":"esc1","a":"p0_hall","b":"p1_hall","ax":56,"ay":64,"bx":168,"by":236,"br":180},
+  {"id":"esc2","a":"p1_hall","b":"p2_hall","ax":56,"ay":64,"bx":168,"by":236,"br":180},
+  {"id":"esc3","a":"p2_hall","b":"p3_hall","ax":56,"ay":64,"bx":168,"by":236,"br":180},
+  {"id":"esc4","a":"p3_hall","b":"p4_hall","ax":56,"ay":64,"bx":168,"by":236,"br":180},
+  {"id":"esc5","a":"p4_hall","b":"p5_hall","ax":56,"ay":64,"bx":168,"by":236,"br":180}
+ ]
+}
