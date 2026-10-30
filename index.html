@@ -1881,7 +1881,7 @@ const mouseW=()=>s2w(mouse.x,mouse.y+9);
 /* entrada de pantalla (arriba/abajo/izq/der) -> vector de mundo con la misma magnitud */
 function inW(sx,sy){const m=Math.min(1,Math.hypot(sx,sy));if(!m)return[0,0];const v=sv2w(sx,sy),l=Math.hypot(v[0],v[1])||1;return[v[0]/l*m,v[1]/l*m]}
 function isoT(c,z){c.setTransform(KX,KY,-KX,KY,CX,CY-(z||0))}
-function setB(c,x,y,z,foot){c.setTransform(1,0,0,1,Math.round(isoX(x,y)+CX-x),Math.round(isoY(x,y)+CY-y-(z||0)-(foot==null?6:foot)))}
+function setB(c,x,y,z,foot){c.setTransform(1,0,0,1,Math.round(isoX(x,y)+CX)-Math.round(x),Math.round(isoY(x,y)+CY-(z||0)-(foot==null?6:foot))-Math.round(y))}
 function noT(c){c.setTransform(1,0,0,1,0,0)}
 
 /* ---- color ---- */
@@ -2908,7 +2908,7 @@ function chase(e,sp,dt,keep){const P=G.P;let tx=P.x,ty=P.y;const d=dist(e.x,e.y,
  if(d>40||rodeo||(!fly&&!lineaLibre(e.x,e.y,P.x,P.y,e.r,e.r+P.r))){const n=pathNext(e);if(n){tx=n[0];ty=n[1]}}
  let a=Math.atan2(ty-e.y,tx-e.x);e.ang=Math.atan2(P.y-e.y,P.x-e.x);if(keep&&d<keep&&los(e.x,e.y,P.x,P.y,null))return;
  if(e.unT>0)a+=e.unA;
- let sx=0,sy=0;for(const o of G.enemies){if(o===e||o.muerto)continue;const dd=dist(e.x,e.y,o.x,o.y),m=e.r+o.r;if(dd<m&&dd>.01){sx+=(e.x-o.x)/dd*(m-dd);sy+=(e.y-o.y)/dd*(m-dd)}}
+ let sx=0,sy=0;for(const o of G.enemies){if(o===e||o.muerto)continue;const m=e.r+o.r,ddx=e.x-o.x;if(ddx>m||ddx<-m)continue;const ddy=e.y-o.y;if(ddy>m||ddy<-m)continue;const dd=Math.hypot(ddx,ddy);if(dd<m&&dd>.01){sx+=(e.x-o.x)/dd*(m-dd);sy+=(e.y-o.y)/dd*(m-dd)}}
  let mv=moveE(e,Math.cos(a)*sp*dt+sx*.3,Math.sin(a)*sp*dt+sy*.3,fly);
  /* bloqueado del todo: prueba otras direcciones (esquinas, mesas, otros zombis) */
  if(!mv&&sp>0){for(const off of[.6,-.6,1.2,-1.2,1.9,-1.9]){if(moveE(e,Math.cos(a+off)*sp*dt,Math.sin(a+off)*sp*dt,fly)){mv=true;break}}}}
@@ -3206,7 +3206,7 @@ function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(m
   parts.push([h,Math.round(w/5)*5,cd,i===g.cur,id?tipoColor(MOV[id].elem):'#444'])}
  sig=JSON.stringify(parts);if(sl._sig!==sig){sl._sig=sig;[...sl.children].forEach((d,i)=>{const p=parts[i];d.className='sl'+(p[3]?' on':'')+(p[2]?' cd':'');d.style.setProperty('--tc',p[4]);d.innerHTML=p[0]+'<s style="width:'+p[1]+'%"></s>'})}
  const bo=g.bossRef,bd=$('boss');if(bo){bd.style.display='block';setT($('bossname'),bo.def.nombre);$('bossfill').style.width=Math.max(0,bo.hp/bo.maxhp*100)+'%'}else bd.style.display='none';
- if(g.msgT>0){g.msgT-=1/60}else $('msg').style.display='none';
+ if(g.msgT>0){g.msgT-=hudDt}else $('msg').style.display='none';
  let pt='';if(!debil()){const al=aliadoCaido(),it=nearItem();pt=al?(touchOn?'Mantén [E] para revivir…':'Mantén [E] para revivir a J'+numJ(al.idx)+' ('+Math.ceil(REVIVIR_TIEMPO-al.revP)+' s)'):it?itemPrompt(it):nearBar()?(g.repLatch?'Reparando… toca [E] para parar':touchOn?'Toca [E] para reparar':'Mantén [E] para poner tablones (+5 ₽ cada uno)'):''}else if(g.players.length>1&&!g.players[0].out){const p0=g.players[0];pt=p0.espera?'Caído: vuelves al empezar la siguiente ronda':'Caído: tu compañero puede revivirte ('+Math.ceil(p0.revT)+' s)'}const pr=$('prompt');if(pt){pr.style.display='block';setT(pr,pt)}else pr.style.display='none';hudJ2()}
 const numJ=i=>NET.modo==='guest'?(i?1:2):i+1;
 function hudJ2(){const el=$('hP2');if(G.players.length<2){el.style.display='none';return}const p=G.players[1],q=p.s;el.style.display='block';
@@ -3263,7 +3263,7 @@ function update(dt){const g=G;g.t+=dt;
    if(g.porSpawn>0&&g.spawnT<=0&&g.enemies.length<(g.perros?Math.min(g.cap,MAX_PERROS):g.cap)){spawnEnemy();g.porSpawn--;g.spawnT=g.perros?rnd(1.1,2.3):Math.max(.45,2-g.round*.07)}
    if(g.porSpawn<=0&&!g.bossPend&&g.enemies.length===0)finishRound()}}
  if(g.t-(g._rl||0)>.4){g._rl=g.t;checkRelearn();if(NET.modo==='host')for(const p of g.players)if(p.remote&&!p.out&&!p.modalOpen)withPlayer(p.idx,checkRelearn)}
- g.fieldT-=dt;if(g.fieldT<=0){for(const p of g.players){bfs(walkG,p.fG,p.P.x,p.P.y);bfs(walkF,p.fF,p.P.x,p.P.y);bfs(walkW,p.fW,p.P.x,p.P.y)}g.fieldT=.2}
+ g.fieldT-=dt;if(g.fieldT<=0){if(g._fk===undefined){for(const p of g.players){bfs(walkG,p.fG,p.P.x,p.P.y);bfs(walkF,p.fF,p.P.x,p.P.y);bfs(walkW,p.fW,p.P.x,p.P.y)}g._fk=0}else{g._fk=(g._fk+1)%3;for(const p of g.players){if(g._fk===0)bfs(walkG,p.fG,p.P.x,p.P.y);else if(g._fk===1)bfs(walkF,p.fF,p.P.x,p.P.y);else bfs(walkW,p.fW,p.P.x,p.P.y)}}g.fieldT=.07}
  if(g.estado!=='fin')updEnemies(dt);updPremios(dt);if(!G||G.estado==='fin'&&false)return;
  /* proyectiles */
  for(const b of g.bullets){b.life-=dt;const n=Math.max(1,Math.ceil(Math.hypot(b.vx,b.vy)*dt/4)),sx=b.vx*dt/n,sy=b.vy*dt/n;
@@ -3483,9 +3483,11 @@ function drawMini(){if(!G.mini)return;const c=ctx,s=1/20,mw=Math.round(WW*s),mh=
 
 /* ---------- Bucle principal ---------- */
 let last=0;
+let hudAcc=0,hudDt=1/30;
+function hudTick(dt){hudAcc+=dt;if(hudAcc>=.03){hudDt=hudAcc;hudAcc=0;hud()}}
 function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
- if(G&&NET.modo==='guest'){if(G.estado!=='fin'&&(NET.fase==='juego'||NET.fase==='recon')){netGuestFrame(dt);if(G)hud()}}else if(G&&!G.pausa&&G.estado!=='fin'){update(dt);if(G)hud()}render()}
-function fit(){const s=Math.min(innerWidth/W,innerHeight/H),st=$('stage');st.style.width=W*s+'px';st.style.height=H*s+'px';st.style.setProperty('--u',s+'px')}
+ if(G&&NET.modo==='guest'){if(G.estado!=='fin'&&(NET.fase==='juego'||NET.fase==='recon')){netGuestFrame(dt);if(G)hudTick(dt)}}else if(G&&!G.pausa&&G.estado!=='fin'){update(dt);if(G)hudTick(dt)}render()}
+function fit(){let s=Math.min(innerWidth/W,innerHeight/H);const si=Math.floor(s);if(si>=1&&s/si<1.15)s=si;const st=$('stage');st.style.width=W*s+'px';st.style.height=H*s+'px';st.style.setProperty('--u',s+'px')}
 window.addEventListener('resize',fit);fit();
 /* ---------- Botones táctiles personalizables ---------- */
 const CB={E:{id:'bE',s:74,l:'E',t:'USAR'},R:{id:'bR',s:58,l:'R',t:'RECARGA'},Q:{id:'bQ',s:58,l:'Q',t:'ESPECIAL'},W:{id:'bW',s:64,l:'⟳',t:'ARMA'},G:{id:'bG',s:58,l:'G',t:'GRANADA'},P:{id:'pauseBtn',s:36,l:'II',t:''}};
