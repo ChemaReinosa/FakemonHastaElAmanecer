@@ -683,7 +683,9 @@ const MOV=Object.fromEntries(MOVIMIENTOS.map(m=>[m.id,m]));
      Los 'aoe' (explosión a tu alrededor) no se transforman: son 'cerca' por naturaleza; si pones 'lejos' solo cambia la etiqueta m.alcance.
    Si quieres afinar un movimiento ya convertido (daño, rango, cadencia...), añade una línea en ALCANCE_AJUSTE.
    Los movimientos que no estén en la tabla (nuevos) usan el valor por defecto: cono/aoe -> cerca · proj/rayo -> lejos.
-   En el código puedes preguntar con m.alcance==='cerca'  o  esCerca(m) / esLejos(m). Las curas tienen alcance null. */
+   'medio' -> NUEVO: disparo a media distancia. Es un proyectil/rayo como 'lejos' pero con mucha menos cadencia, menos alcance y algo más de daño por disparo
+                (los factores se cambian en ALCANCE_MEDIO, justo antes de ALCANCE_AJUSTE). Se muestra como tipo 'Disparo'.
+   En el código puedes preguntar con m.alcance==='cerca'  o  esCerca(m) / esLejos(m) / esMedio(m). Las curas tienen alcance null. */
 const ALCANCE={
  /* ===== NORMAL ===== */
  placaje:               'cerca', // Placaje · Básico · hoy: cono
@@ -695,11 +697,11 @@ const ALCANCE={
  lanzallamas:           'lejos', // Lanzallamas · Área · hoy: cono
  lanza_ignea:           'lejos', // Lanza Ígnea · Preciso · hoy: rayo
  nova_ignea:            'cerca', // Nova Ígnea · Área · hoy: aoe
- llamarada:             'cerca', // Llamarada · Especial · hoy: aoe
+ llamarada:             'medio', // Llamarada · Especial · hoy: aoe
  cometa_ignea:          'lejos', // Cometa Ígneo · Exclusivo · EXCLUSIVO · hoy: proj
  x_punofuego:           'cerca', // Puño Fuego · Área · hoy: cono
  x_danzallama:          'lejos', // Danza Llama · Preciso · hoy: rayo
- x_bombaignea:          'lejos', // Bomba Ígnea · Preciso · hoy: rayo
+ x_bombaignea:          'medio', // Bomba Ígnea · Preciso · hoy: rayo
  x_enviteigneo:         'cerca', // Envite Ígneo · Área · hoy: aoe
  x_estallido:           'cerca', // Estallido · Especial · hoy: aoe
  /* ===== AGUA ===== */
@@ -710,9 +712,9 @@ const ALCANCE={
  tsunami:               'lejos', // Tsunami · Especial · hoy: aoe
  maremoto:              'lejos', // Maremoto · Exclusivo · EXCLUSIVO · hoy: aoe
  x_aquajet:             'cerca', // Aqua Jet · Ráfaga · hoy: proj
- x_salmuera:            'cerca', // Salmuera · Área · hoy: cono
+ x_salmuera:            'medio', // Salmuera · Área · hoy: cono
  x_acuacola:            'cerca', // Acua Cola · Preciso · hoy: proj
- x_martillazo:          'cerca', // Martillazo · Preciso · hoy: proj
+ x_martillazo:          'medio', // Martillazo · Preciso · hoy: proj
  x_salpicar:            'lejos', // Salpicar · Especial · hoy: aoe
  /* ===== PLANTA ===== */
  hoja_afilada:          'lejos', // Hoja Afilada · Ráfaga · hoy: proj
@@ -720,14 +722,14 @@ const ALCANCE={
  rayo_solar:            'lejos', // Rayo Solar · Preciso · hoy: rayo
  espinas:               'cerca', // Espinas · Área · hoy: aoe
  eclosion:              'cerca', // Eclosión · Especial · hoy: aoe
- tormenta_hojas:        'lejos', // Tormenta de Hojas · Exclusivo · EXCLUSIVO · hoy: proj
+ tormenta_hojas:        'medio', // Tormenta de Hojas · Exclusivo · EXCLUSIVO · hoy: proj
  x_gigadrenado:         'cerca', // Gigadrenado · Área · hoy: cono
  x_bombagermen:         'lejos', // Bomba Germen · Preciso · hoy: proj
  x_hojaaguda:           'lejos', // Hoja Aguda · Preciso · hoy: proj
  x_hojapunzante:        'lejos', // Hoja Punzante · Preciso · hoy: proj
- x_tormentafloral:      'lejos', // Tormenta Floral · Preciso · hoy: rayo
+ x_tormentafloral:      'medio', // Tormenta Floral · Preciso · hoy: rayo
  /* ===== ELECTRICO ===== */
- impactrueno:           'lejos', // Impactrueno · Ráfaga · hoy: proj
+ impactrueno:           'medio', // Impactrueno · Ráfaga · hoy: proj
  descarga:              'cerca', // Descarga · Área · hoy: cono
  rayo:                  'lejos', // Rayo · Preciso · hoy: rayo
  trueno:                'cerca', // Trueno · Área · hoy: aoe
@@ -736,7 +738,7 @@ const ALCANCE={
  x_punotrueno:          'cerca', // Puño Trueno · Área · hoy: cono
  x_chispazo:            'lejos', // Chispazo · Preciso · hoy: rayo
  x_electropico:         'lejos', // Electropico · Preciso · hoy: proj
- x_voltiocruel:         'lejos', // Voltio Cruel · Preciso · hoy: proj
+ x_voltiocruel:         'medio', // Voltio Cruel · Preciso · hoy: proj
  x_ataquefulgor:        'cerca', // Ataque Fulgor · Especial · hoy: aoe
  /* ===== NEUTRO ===== */
  neutro_1:              'cerca', // Golpe Cuerpo · Ráfaga · hoy: proj
@@ -744,22 +746,22 @@ const ALCANCE={
  neutro_3:              'cerca', // Hipercolmillo · Preciso · hoy: rayo
  neutro_4:              'lejos', // Onda Normal · Área · hoy: aoe
  neutro_5:              'cerca', // Gigaimpacto · Especial · hoy: aoe
- neutro_x:              'lejos', // Última Baza · Exclusivo · EXCLUSIVO · hoy: proj
+ neutro_x:              'medio', // Última Baza · Exclusivo · EXCLUSIVO · hoy: proj
  x_cornada:             'cerca', // Cornada · Área · hoy: cono
  x_cuchillada:          'cerca', // Cuchillada · Área · hoy: cono
  x_fuerza:              'lejos', // Fuerza · Preciso · hoy: proj
  x_velocextrema:        'lejos', // Veloc. Extrema · Preciso · hoy: proj
- x_vozarron:            'lejos', // Vozarrón · Preciso · hoy: rayo
+ x_vozarron:            'medio', // Vozarrón · Preciso · hoy: rayo
  x_bombahuevo:          'lejos', // Bomba Huevo · Preciso · hoy: proj
  /* ===== LUCHA ===== */
  lucha_1:               'cerca', // Puño Certero · Ráfaga · hoy: proj
- lucha_2:               'cerca', // Patada Giro · Área · hoy: cono
+ lucha_2:               'medio', // Patada Giro · Área · hoy: cono
  lucha_3:               'lejos', // Onda Vacío · Preciso · hoy: rayo
  lucha_4:               'cerca', // Sismopuño · Área · hoy: aoe
  lucha_5:               'cerca', // Plancha Total · Especial · hoy: aoe
  lucha_x:               'lejos', // Golpe Final · Exclusivo · EXCLUSIVO · hoy: proj
  x_ultrapuno:           'cerca', // Ultrapuño · Ráfaga · hoy: proj
- x_golpekarate:         'lejos', // Golpe Karate · Ráfaga · hoy: proj
+ x_golpekarate:         'medio', // Golpe Karate · Ráfaga · hoy: proj
  x_sablemistico:        'lejos', // Sablemístico · Preciso · hoy: rayo
  x_patadasalto:         'cerca', // Patada Salto · Preciso · hoy: proj
  x_abocajarro:          'cerca', // A Bocajarro · Área · hoy: aoe
@@ -767,17 +769,17 @@ const ALCANCE={
  volador_1:             'lejos', // Tornado · Ráfaga · hoy: proj
  volador_2:             'cerca', // Ala de Acero · Área · hoy: cono
  volador_3:             'cerca', // Pico Taladro · Preciso · hoy: rayo
- volador_4:             'cerca', // Vendaval · Área · hoy: aoe
+ volador_4:             'medio', // Vendaval · Área · hoy: aoe
  volador_5:             'cerca', // Ataque Aéreo · Especial · hoy: aoe
  volador_x:             'lejos', // Pájaro Osado · Exclusivo · EXCLUSIVO · hoy: proj
  x_aireafilado:         'lejos', // Aire Afilado · Área · hoy: cono
  x_ataqueala:           'cerca', // Ataque Ala · Área · hoy: cono
- x_ascensodraco:        'cerca', // Ascenso Draco · Área · hoy: aoe
+ x_ascensodraco:        'medio', // Ascenso Draco · Área · hoy: aoe
  /* ===== VENENO ===== */
  veneno_1:              'lejos', // Picotazo Venenoso · Ráfaga · hoy: proj
  veneno_2:              'cerca', // Bomba Lodo · Área · hoy: cono
  veneno_3:              'lejos', // Dardo Venenoso · Preciso · hoy: rayo
- veneno_4:              'cerca', // Residuos · Área · hoy: aoe
+ veneno_4:              'medio', // Residuos · Área · hoy: aoe
  veneno_5:              'cerca', // Toxitrón · Especial · hoy: aoe
  veneno_x:              'cerca', // Colmillo Letal · Exclusivo · EXCLUSIVO · hoy: proj
  x_colaveneno:          'cerca', // Cola Veneno · Ráfaga · hoy: proj
@@ -785,85 +787,85 @@ const ALCANCE={
  x_cargatoxica:         'cerca', // Carga Tóxica · Área · hoy: cono
  x_puyanociva:          'lejos', // Puya Nociva · Preciso · hoy: proj
  x_ondatoxica:          'lejos', // Onda Tóxica · Preciso · hoy: rayo
- x_lanzamugre:          'lejos', // Lanza Mugre · Área · hoy: aoe
+ x_lanzamugre:          'medio', // Lanza Mugre · Área · hoy: aoe
  /* ===== TIERRA ===== */
- tierra_1:              'lejos', // Bofetón Lodo · Ráfaga · hoy: proj
+ tierra_1:              'medio', // Bofetón Lodo · Ráfaga · hoy: proj
  tierra_2:              'cerca', // Excavar · Área · hoy: cono
  tierra_3:              'lejos', // Terratemblor · Preciso · hoy: rayo
  tierra_4:              'cerca', // Temblor · Área · hoy: aoe
  tierra_5:              'cerca', // Fisura · Especial · hoy: aoe
  tierra_x:              'lejos', // Tierra Viva · Exclusivo · EXCLUSIVO · hoy: proj
- x_taladradora:         'lejos', // Taladradora · Preciso · hoy: proj
+ x_taladradora:         'medio', // Taladradora · Preciso · hoy: proj
  x_milflechas:          'lejos', // Mil Flechas · Preciso · hoy: proj
  /* ===== ROCA ===== */
  roca_1:                'lejos', // Lanzarrocas · Ráfaga · hoy: proj
- roca_2:                'cerca', // Avalancha · Área · hoy: cono
+ roca_2:                'medio', // Avalancha · Área · hoy: cono
  roca_3:                'lejos', // Roca Afilada · Preciso · hoy: rayo
  roca_4:                'cerca', // Pedrada · Área · hoy: aoe
  roca_5:                'cerca', // Roca Gigante · Especial · hoy: aoe
  roca_x:                'lejos', // Poder Pasado · Exclusivo · EXCLUSIVO · hoy: proj
- x_rocaveloz:           'lejos', // Roca Veloz · Ráfaga · hoy: proj
+ x_rocaveloz:           'medio', // Roca Veloz · Ráfaga · hoy: proj
  x_tormentadediamantes: 'lejos', // Tormenta de Diamantes · Preciso · hoy: proj
  x_testarazo:           'cerca', // Testarazo · Especial · hoy: aoe
  /* ===== BICHO ===== */
  bicho_1:               'cerca', // Picadura · Ráfaga · hoy: proj
- bicho_2:               'lejos', // Zumbido · Área · hoy: cono
+ bicho_2:               'medio', // Zumbido · Área · hoy: cono
  bicho_3:               'lejos', // Pin Misil · Preciso · hoy: rayo
  bicho_4:               'cerca', // Tijera X · Área · hoy: aoe
  bicho_5:               'cerca', // Megacuerno · Especial · hoy: aoe
  bicho_x:               'lejos', // Danza Aleteo · Exclusivo · EXCLUSIVO · hoy: proj
- x_alataque:            'lejos', // Al Ataque · Preciso · hoy: proj
+ x_alataque:            'medio', // Al Ataque · Preciso · hoy: proj
  x_escaramuza:          'lejos', // Escaramuza · Preciso · hoy: proj
  /* ===== FANTASMA ===== */
  fantasma_1:            'cerca', // Lengüetazo · Ráfaga · hoy: proj
  fantasma_2:            'cerca', // Garra Umbría · Área · hoy: cono
  fantasma_3:            'lejos', // Bola Sombra · Preciso · hoy: rayo
  fantasma_4:            'cerca', // Puño Sombra · Área · hoy: aoe
- fantasma_5:            'cerca', // Sombra Letal · Especial · hoy: aoe
+ fantasma_5:            'medio', // Sombra Letal · Especial · hoy: aoe
  fantasma_x:            'lejos', // Maldición · Exclusivo · EXCLUSIVO · hoy: proj
  x_huesosombrio:        'lejos', // Hueso Sombrío · Preciso · hoy: proj
  x_golpefantasma:       'cerca', // Golpe Fantasma · Preciso · hoy: proj
- x_robasombra:          'lejos', // Robasombra · Preciso · hoy: proj
+ x_robasombra:          'medio', // Robasombra · Preciso · hoy: proj
  /* ===== ACERO ===== */
  acero_1:               'cerca', // Garra Metal · Ráfaga · hoy: proj
  acero_2:               'cerca', // Cabeza Hierro · Área · hoy: cono
  acero_3:               'lejos', // Foco Resplandor · Preciso · hoy: rayo
  acero_4:               'lejos', // Meteoro · Área · hoy: aoe
  acero_5:               'lejos', // Cañón Acero · Especial · hoy: aoe
- acero_x:               'lejos', // Hierro Final · Exclusivo · EXCLUSIVO · hoy: proj
+ acero_x:               'medio', // Hierro Final · Exclusivo · EXCLUSIVO · hoy: proj
  x_punobala:            'cerca', // Puño Bala · Ráfaga · hoy: proj
  x_cabezadehierro:      'cerca', // Cabeza de Hierro · Preciso · hoy: proj
  x_testarazoduro:       'cerca', // Testarazo Duro · Preciso · hoy: proj
- x_meteoimpacto:        'lejos', // Meteoimpacto · Preciso · hoy: proj
+ x_meteoimpacto:        'medio', // Meteoimpacto · Preciso · hoy: proj
  x_metalaser:           'lejos', // Metaláser · Especial · hoy: aoe
  /* ===== HIELO ===== */
- hielo_1:               'lejos', // Copo Nieve · Ráfaga · hoy: proj
+ hielo_1:               'medio', // Copo Nieve · Ráfaga · hoy: proj
  hielo_2:               'cerca', // Viento Hielo · Área · hoy: cono
  hielo_3:               'lejos', // Rayo Hielo · Preciso · hoy: rayo
  hielo_4:               'cerca', // Ventisca · Área · hoy: aoe
  hielo_5:               'cerca', // Criogénesis · Especial · hoy: aoe
  hielo_x:               'lejos', // Aliento Glacial · Exclusivo · EXCLUSIVO · hoy: proj
  x_nievepolvo:          'lejos', // Nieve Polvo · Ráfaga · hoy: proj
- x_alud:                'cerca', // Alud · Área · hoy: cono
+ x_alud:                'medio', // Alud · Área · hoy: cono
  x_rayoaurora:          'lejos', // Rayo Aurora · Área · hoy: cono
  x_punohielo:           'cerca', // Puño Hielo · Área · hoy: cono
  x_rayogelido:          'lejos', // Rayo Gélido · Especial · hoy: aoe
  /* ===== PSIQUICO ===== */
- psiquico_1:            'lejos', // Confusión · Ráfaga · hoy: proj
+ psiquico_1:            'medio', // Confusión · Ráfaga · hoy: proj (PRUEBA del alcance 'medio')
  psiquico_2:            'cerca', // Psicorrayo · Área · hoy: cono
  psiquico_3:            'lejos', // Psíquico · Preciso · hoy: rayo
  psiquico_4:            'cerca', // Onda Mental · Área · hoy: aoe
  psiquico_5:            'cerca', // Psicocarga · Especial · hoy: aoe
- psiquico_x:            'lejos', // Premonición · Exclusivo · EXCLUSIVO · hoy: proj
+ psiquico_x:            'medio', // Premonición · Exclusivo · EXCLUSIVO · hoy: proj
  x_psicocorte:          'cerca', // Psicocorte · Área · hoy: cono
  x_sincrorruido:        'lejos', // Sincrorruido · Área · hoy: aoe
  /* ===== DRAGON ===== */
  dragon_1:              'cerca', // Garra Dragón · Ráfaga · hoy: proj
- dragon_2:              'cerca', // Pulso Dragón · Área · hoy: cono
+ dragon_2:              'medio', // Pulso Dragón · Área · hoy: cono
  dragon_3:              'lejos', // Cometa Draco · Preciso · hoy: rayo
  dragon_4:              'cerca', // Enfado · Área · hoy: aoe
  dragon_5:              'cerca', // Ciclón Dragón · Especial · hoy: aoe
- dragon_x:              'lejos', // Cólera Dragón · Exclusivo · EXCLUSIVO · hoy: proj
+ dragon_x:              'medio', // Cólera Dragón · Exclusivo · EXCLUSIVO · hoy: proj
  x_ciclon:              'lejos', // Ciclón · Ráfaga · hoy: proj
  x_dragoaliento:        'cerca', // Dragoaliento · Área · hoy: cono
  x_nucleocastigo:       'lejos', // Núcleo Castigo · Preciso · hoy: rayo
@@ -872,27 +874,29 @@ const ALCANCE={
  siniestro_1:           'cerca', // Mordisco · Ráfaga · hoy: proj
  siniestro_2:           'cerca', // Triturar · Área · hoy: cono
  siniestro_3:           'lejos', // Pulso Umbrío · Preciso · hoy: rayo
- siniestro_4:           'cerca', // Jugada Sucia · Área · hoy: aoe
+ siniestro_4:           'medio', // Jugada Sucia · Área · hoy: aoe
  siniestro_5:           'cerca', // Golpe Noche · Especial · hoy: aoe
  siniestro_x:           'lejos', // Última Noche · Exclusivo · EXCLUSIVO · hoy: proj
  x_persecucion:         'cerca', // Persecución · Ráfaga · hoy: proj
  x_golpebajo:           'cerca', // Golpe Bajo · Área · hoy: cono
- x_golpemordaza:        'lejos', // Golpe Mordaza · Preciso · hoy: proj
+ x_golpemordaza:        'medio', // Golpe Mordaza · Preciso · hoy: proj
  x_presamaxilar:        'cerca', // Presa Maxilar · Preciso · hoy: proj
  x_juegosucio:          'lejos', // Juego Sucio · Preciso · hoy: proj
  /* ===== HADA ===== */
  hada_1:                'cerca', // Beso Drenaje · Ráfaga · hoy: proj
- hada_2:                'lejos', // Brillo Mágico · Área · hoy: cono
+ hada_2:                'medio', // Brillo Mágico · Área · hoy: cono
  hada_3:                'lejos', // Fuerza Lunar · Preciso · hoy: rayo
  hada_4:                'cerca', // Voz Cautivadora · Área · hoy: aoe
  hada_5:                'cerca', // Choque Hada · Especial · hoy: aoe
  hada_x:                'lejos', // Fulgor Hada · Exclusivo · EXCLUSIVO · hoy: proj
- x_aromasobao:          'cerca', // Aroma Sobao · Área · hoy: cono
+ x_aromasobao:          'medio', // Aroma Sobao · Área · hoy: cono
  x_carantona:           'cerca', // Carantoña · Preciso · hoy: proj
  x_cautivapor:          'lejos', // Cautivapor · Preciso · hoy: rayo
  x_canonfloral:         'lejos', // Cañón Floral · Especial · hoy: aoe
 };
 /* Ajustes opcionales por id, se aplican DESPUÉS de convertir. Ej.: lucha_1:{dano:20,rango:44,cadencia:400}, */
+/* Factores del alcance 'medio': cad = multiplica el tiempo entre disparos (más = menos cadencia) · rango = multiplica el alcance · dano = multiplica el daño por disparo */
+const ALCANCE_MEDIO={cad:2.2,rango:.65,dano:1.3};
 const ALCANCE_AJUSTE={
 };
 function aplicarAlcance(m){
@@ -907,6 +911,10 @@ function aplicarAlcance(m){
   Object.assign(m,{modo:'proj',vel:260,pr:4,rango:Math.max(m.rango,160)});
   for(const k of['arco','vis','knock'])delete m[k];
   m.descripcion='Ataque lanzado a distancia.'}
+ else if(m.alcance==='medio'&&(o==='proj'||o==='rayo'||o==='cono')){
+  if(o==='cono'){Object.assign(m,{modo:'proj',vel:260,pr:4});for(const k of['arco','vis','knock'])delete m[k]}
+  m.cadencia=Math.round(m.cadencia*ALCANCE_MEDIO.cad);m.rango=Math.round(m.rango*ALCANCE_MEDIO.rango);m.dano=Math.round(m.dano*ALCANCE_MEDIO.dano*10)/10;
+  m.tipo='Disparo';m.descripcion='Disparo a media distancia: dispara despacio y llega menos lejos, pero pega más fuerte.'}
  if(ALCANCE_AJUSTE[m.id])Object.assign(m,ALCANCE_AJUSTE[m.id])}
 MOVIMIENTOS.forEach(m=>{
  if(m.modo==='cura'){m.alcance=null;return}
@@ -914,6 +922,7 @@ MOVIMIENTOS.forEach(m=>{
  aplicarAlcance(m)});
 const esCerca=m=>!!m&&m.alcance==='cerca';
 const esLejos=m=>!!m&&m.alcance==='lejos';
+const esMedio=m=>!!m&&m.alcance==='medio';
 /* Movimientos de mordida: llevan animación con dientes (m.mordida = 'mordisco' | 'triturar'). Añade más ids aquí para que usen la misma animación. */
 const MORDIDAS={siniestro_1:'mordisco',siniestro_2:'triturar',neutro_3:'hipercolmillo',x_presamaxilar:'presa',x_colmilloven:'venenoso'};
 MOVIMIENTOS.forEach(m=>{if(MORDIDAS[m.id])m.mordida=MORDIDAS[m.id]});
@@ -958,7 +967,7 @@ const ENEMIGOS=[
  {id:'gordo',nombre:'Zombi bruto',hp:95,vel:20,dano:22,r:9,desde:3,peso:4,z:{kind:'h',piel:'#7f8f70',camisa:'#5a4a38',pant:'#2f3a2f',pelo:'#222',gordo:1}},
  {id:'electrico',nombre:'Zombi electrificado',hp:40,vel:34,dano:10,r:6,desde:3,peso:5,explota:true,tipos:['electrico'],soloEnergia:true,z:{kind:'h',piel:'#7a9aa0',camisa:'#d2d6da',pant:'#46505a',pelo:'#333',elec:1,medico:1}},
  {id:'volador',nombre:'Zombi trepador',hp:24,vel:44,dano:9,r:5,desde:4,peso:4,vuela:true,tipos:['bicho','volador','planta','fantasma'],z:{kind:'c',piel:'#98a888',camisa:'#6a5a4a',pant:'#3a3a40',pelo:'#2a2a2a'}},
- {id:'perro',nombre:'Perro zombi',hp:46,vel:86,dano:14,r:5,desde:99,peso:0,soloJefe:true,ladra:true,tipos:['siniestro','fantasma'],z:{kind:'d',piel:'#5a4a40',camisa:'#3a2a24'}}
+ {id:'perro',nombre:'Perro zombi',hp:46,vel:72,dano:14,r:5,desde:99,peso:0,soloJefe:true,ladra:true,tipos:['siniestro','fantasma'],z:{kind:'d',piel:'#5a4a40',camisa:'#3a2a24'}}
 ];
 const ENE=Object.fromEntries(ENEMIGOS.map(e=>[e.id,e]));
 /* Perro de La Jauría (jefe): conserva los stats originales para no desequilibrar esa pelea */
@@ -1047,7 +1056,7 @@ const JEFES=[
 /* Rondas en las que SOLO salen perros zombi (añade más números para más rondas de perros) */
 const RONDAS_PERROS=[5,14,25];
 /* Máximo de perros zombi vivos a la vez (rondas de perros y jauría). Al morir uno, otro aparece al rato en un punto al azar. */
-const MAX_PERROS=6;
+const MAX_PERROS=5;
 
 /* ---------- E. BAYAS (máx. 4 equipadas) ---------- */
 const BAYAS=[
@@ -1134,14 +1143,15 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
-   1.37   
+   1.38  Reducción de perros y nuevo tipo de ataque medio
+   1.37   Arreglo de errores de red y de la máquina de MT, mejoras en el selector de mapas y en el Bestiario
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
    1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
    1.34 · Gráficos nuevos y más detallados para los jefes (Brutus, Doctor Putrefacto, Matriarca Infectada) y para los perros zombi
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.37';
+const VERSION='1.38';
 const NET={modo:'local'};let PBS_TEXT='';
 const DIFS={
  facil:{n:'Fácil',hp:.8,vel:.9,dano:.7,cant:.8,cand:.6,desc:'Zombis con menos vida, más lentos y menos numerosos. Sueltan menos caramelos (x0,6).'},
@@ -2973,7 +2983,7 @@ function updEnemies(dt){const N=G.players.length;G.bossRef=null;if(N>1)for(const
  for(const e of G.enemies){if(N>1)setActive(objetivo(e));const P=G.P;e.flash-=dt;e.cobro-=dt;e.cd-=dt;e.anim+=dt*(e.vel/20+3);
   if(e.quema>0){e.quema-=dt;e.hp-=6*dt}if(e.veneno>0){e.veneno-=dt;e.hp-=4*dt}if(e.lento>0)e.lento-=dt;if(e.stopT>0)e.stopT-=dt;if(e.marca>0)e.marca-=dt;
   if(e.hp<=0&&!e.muerto){killAs(e)}if(e.muerto)continue;if(e.boss)G.bossRef=e;
-  if(e.stun>0){e.stun-=dt;continue}if(e.rapi===undefined)e.rapi=!e.boss&&!e.def.ladra&&Math.random()<.04;const tope=G.speed*(e.def.ladra?1.15:e.rapi?1.1:1),sp=Math.min(e.vel,tope)*(e.lento>0?.5:1)*(e.stopT>0?1/STOP_DIV:1);
+  if(e.stun>0){e.stun-=dt;continue}if(e.rapi===undefined)e.rapi=!e.boss&&!e.def.ladra&&Math.random()<.04;const tope=G.speed*(e.def.ladra?1.05:e.rapi?1.1:1),sp=Math.min(e.vel,tope)*(e.lento>0?.5:1)*(e.stopT>0?1/STOP_DIV:1);
   if(e.state==='out'){const b=e.bar;e.ang=Math.atan2(b.iy-e.y,b.ix-e.x);
    if(b.hp>0){if(e.cd<=0){b.hp=Math.max(0,b.hp-18);e.cd=1;sfx('madera')}}
    else{const a=Math.atan2(b.iy-e.y,b.ix-e.x);e.x+=Math.cos(a)*sp*dt;e.y+=Math.sin(a)*sp*dt;if(dist(e.x,e.y,b.ix,b.iy)<4)e.state='in'}continue}
