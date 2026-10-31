@@ -250,7 +250,7 @@ body[data-tema=claro] #cards .card.lock .lk{color:#a33}
 
 /* ---------- v18.12: móvil ---------- */
 @supports (justify-content:safe center){.screen{justify-content:safe center}}
-#datos *,#ajustes *,#ayuda *,#pausa *,#records *{touch-action:pan-y}
+#datos *,#ajustes *,#ayuda *,#pausa *,#records *,#ranking *{touch-action:pan-y}
 #datos{justify-content:flex-start;padding:12px}
 #datosBox{margin:auto;width:min(520px,100%);display:flex;flex-direction:column;gap:10px;align-items:stretch}
 #datosBox h2{font-size:clamp(18px,5vw,26px)}
@@ -314,6 +314,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
    <button class="mB sec" id="mAyuda"><span>❓</span>Cómo se juega</button>
    <button class="mB sec" id="mAjustes"><span>⚙</span>Ajustes</button>
   </div>
+  <button class="mB sec" id="mRank"><span>🌍</span>Ranking global</button>
   <button class="mB sec" id="mTienda" style="display:none">Mejoras permanentes</button>
   <button class="mLink" id="mDatos" hidden style="display:none">Datos de criaturas</button><div id="mDatosSt" hidden style="display:none"></div>
  </div>
@@ -400,7 +401,11 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
 <div class="screen" id="sala"><h2 id="salaT">Sala online</h2><div id="salaCod"></div><div class="txt" id="salaTxt" style="max-width:420px"></div>
  <button class="mB main" id="salaGo" style="display:none"><span>▶</span>Empezar</button><button class="btn" id="salaCancel">Cancelar</button></div>
 <div class="screen" id="netMsg"><h2>Conexión</h2><div class="txt" id="netMsgT"></div><button class="btn" id="netMsgOk">Volver al menú</button></div>
-<div class="screen" id="fin"><h2>Has caído...</h2><div class="txt" id="finTxt"></div><button class="btn" id="fRe">Jugar de nuevo</button><button class="btn" id="fMenu">Menú</button></div>
+<div class="screen" id="ranking"><h2>🌍 Ranking global</h2>
+ <div class="opc"><select class="inp" id="rkMapa"></select><select class="inp" id="rkDif"></select><select class="inp" id="rkModo"></select></div>
+ <div class="txt" id="rkLista" style="max-width:640px;width:100%"></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn sm" id="rkRec">↻ Actualizar</button><button class="btn" id="rkBack">Volver</button></div></div>
+<div class="screen" id="fin"><h2>Has caído...</h2><div class="txt" id="finTxt"></div><div id="rkSt" style="font-size:13px;min-height:18px;opacity:.9"></div><button class="btn" id="rkVer">🌍 Ver ranking global</button><button class="btn" id="fRe">Jugar de nuevo</button><button class="btn" id="fMenu">Menú</button></div>
 <div class="screen" id="modal"><h2 id="modalT"></h2><div id="modalB" style="display:flex;flex-direction:column;gap:8px"></div></div>
 
 <script>/* PeerJS 1.5.5 (MIT) incrustada: WebRTC con servidor público solo para emparejar */
@@ -1143,6 +1148,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.39   Guardando ranking en Supabase
    1.38  Reducción de perros y nuevo tipo de ataque medio
    1.37   Arreglo de errores de red y de la máquina de MT, mejoras en el selector de mapas y en el Bestiario
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
@@ -1151,7 +1157,12 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.38';
+const VERSION='1.39';
+/* ---------- RANKING GLOBAL (Supabase) ----------
+   Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
+const SB_URL='https://oklqhmtpcrdmvorzsmke.supabase.co',SB_KEY='sb_publishable_w_wqwaMs1NgWBrPizN1fxA_xFYx9oOH';
+const RANK_PTS={ronda:1000,baja:10,jefe:500,dinero:.05};
+const RANK_DIF_MUL={facil:.7,normal:1,dificil:1.5};
 const NET={modo:'local'};let PBS_TEXT='';
 const DIFS={
  facil:{n:'Fácil',hp:.8,vel:.9,dano:.7,cant:.8,cand:.6,desc:'Zombis con menos vida, más lentos y menos numerosos. Sueltan menos caramelos (x0,6).'},
@@ -2489,7 +2500,7 @@ function newGame(cr){
  ensureChr(cr);mouse.down=false;for(const k in keys)keys[k]=false;dcx.clearRect(0,0,WW,WH);PUERTAS.forEach(d=>{d.abierta=!!d.libre});ZONAS.forEach(z=>{z.revelada=false;z.pis=false});recalcZonas();rebuildWalk();buildGrids();
  G={uid:newUid(),players:[],act:0,t:0,estado:'descanso',pausa:false,modal:false,round:0,power:false,D:DIFS[difKey()],mini:true,
   enemies:[],bullets:[],eb:[],parts:[],fx:[],texts:[],
-  shake:0,msgT:0,descT:3,porSpawn:0,spawnT:0,bossPend:false,bossT:0,fieldT:0,flick:0,cap:10,bossRef:null,gren:[],areas:[],teleCd:0,teleLock:0,papT:0,papW:false,premios:[],instaT:0,dobleT:0,rKills:0,dropDone:true,dropN:99};
+  shake:0,msgT:0,descT:3,porSpawn:0,spawnT:0,bossPend:false,bossT:0,fieldT:0,flick:0,cap:10,bossRef:null,gren:[],areas:[],teleCd:0,teleLock:0,papT:0,papW:false,premios:[],instaT:0,dobleT:0,rKills:0,dropDone:true,dropN:99,st:{ganado:0,gastado:0,dano:0,crit:0,gren:0,vidasP:0,rev:0,tab:0,jefes:0}};
  G.bars=[];ZONAS.forEach(z=>z.barricadas.forEach(b=>{const t=b[0],x=b[1],y=b[2];const o={z,lado:t,x,y,hp:100,pn:5,an:[0,0,0,0,0],rt:0,ox:x,oy:y,ix:x,iy:y};
   if(t==='T'){o.oy=y-22;o.iy=y+14}else if(t==='B'){o.oy=y+22;o.iy=y-14}else if(t==='L'){o.ox=x-22;o.ix=x+14}else{o.ox=x+22;o.ix=x-14}G.bars.push(o)}));
  G.items=[];PUERTAS.forEach(d=>{if(!d.libre&&!d.energia)G.items.push({tipo:'puerta',d,x:d.x+d.w/2,y:d.y+d.h/2,rad:42})});
@@ -2553,20 +2564,20 @@ function msg(t,s,rojo){if(G.act){if(NET.modo==='host')netTo(G.act,'msg',[t,s,roj
 function txtL(x,y,lift,s,c){if(G.texts.length>90)return;G.texts.push({x,y,s,c:c||'#fff',t:1.1,lift})}
 function txt(x,y,s,c){if(G.texts.length>90)return;G.texts.push({x,y,s,c:c||'#fff',t:1.1})}
 /* Dinero ganado con número flotante */
-function ganar(n){n*=G.dobleT>0?2:1;G.money+=n;return n}
+function ganar(n){n*=G.dobleT>0?2:1;G.money+=n;G.st.ganado+=n;return n}
 function earn(n,x,y,col,pre){n=ganar(n);if(x!==undefined)txt(x,y,(pre||'')+'+'+n,col||'#ffd24a')}
-function spend(c){G.money-=c;sfx('comprar');txtL(G.P.x,G.P.y,20,'-'+c+' ₽','#ff8a6a')}
+function spend(c){G.money-=c;G.st.gastado+=c;sfx('comprar');txtL(G.P.x,G.P.y,20,'-'+c+' ₽','#ff8a6a')}
 function partic(x,y,col,n,sp,life,sz){for(let i=0;i<n;i++){const a=rnd(0,6.283),v=rnd(.2,1)*sp;G.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:rnd(.5,1)*life,max:life,c:col,s:sz||2})}}
 function ring(x,y,r,col,life){G.fx.push({t:'ring',x,y,r,color:col,life:life||.35,max:life||.35})}
 
 /* ---------- Daño y muertes ---------- */
 function hit(e,d,m,ang,kn){if(e.muerto)return;e.lastP=G.act;let crit=false;
- if(!(m&&m.sinCrit)&&Math.random()<.08){d*=2;crit=true}
+ if(!(m&&m.sinCrit)&&Math.random()<.08){d*=2;crit=true;G.st.crit++}
  if(e.marca>0)d*=1.25;
  const ef=m&&m.elem?tipoMult(m.elem,e.tipo):1;d*=ef;
  if(ef!==1&&G.t-(e.efT===undefined?-9:e.efT)>1.2){e.efT=G.t;txtL(e.x,e.y,24,ef>1?'¡Eficaz!':ef<.3?'Casi inmune':'Poco eficaz',ef>1?'#ffb02e':'#9ab')}
  if(G.instaT>0&&!e.boss&&!e.jauria){if(esGrande(e))d*=INSTA_GRANDE;else d=Math.max(d,e.hp+1)}
- e.hp-=d;e.flash=.08;
+ G.st.dano+=Math.round(Math.min(d,Math.max(0,e.hp)));e.hp-=d;e.flash=.08;
  if(kn&&!e.boss&&e.state!=='out'){const k=kn/Math.max(10,e.def.hp>80?3:1);moveE(e,Math.cos(ang)*k*.12,Math.sin(ang)*k*.12,e.def.vuela)}
  if(e.cobro<=0){earn(5,e.x+rnd(-5,5),e.y-6,'#d9c25a');e.cobro=.7}
  if(crit){earn(60,e.x,e.y-14,'#ffb02e','¡CRÍTICO! ')}
@@ -2581,7 +2592,7 @@ function killAs(e){const o=e.lastP|0;if(o===G.act)kill(e);else withPlayer(o,()=>
 function hitAs(o,e,d,m,a,k){if((o|0)===G.act)hit(e,d,m,a,k);else withPlayer(o,()=>hit(e,d,m,a,k))}
 function kill(e){if(e.muerto)return;e.muerto=true;G.kills++;if(e.def.bestia)bestiaSfx(e,'muerte',true);if(G.perros&&e.def.ladra&&rondaOn())G.spawnT=Math.max(G.spawnT,rnd(.8,1.6));earn(e.boss?500:40,e.x,e.y-20,'#ffd24a');
  {G.candyAcc=(G.candyAcc||0)+Math.min(.95,((G.candyP||.3)+.01*mj('olfato'))*G.D.cand)*rnd(.2,1.8);if(G.candyAcc>=1){G.candyAcc-=1;addCandy(1)}}
- if(e.grupo){e.grupo.n--;if(e.grupo.n<=0){const n=Math.max(1,Math.round(10*G.D.cand));addCandy(n);msg('¡Jefe derrotado! +'+n+' caramelos',3)}}
+ if(e.grupo){e.grupo.n--;if(e.grupo.n<=0){G.st.jefes++;const n=Math.max(1,Math.round(10*G.D.cand));addCandy(n);msg('¡Jefe derrotado! +'+n+' caramelos',3)}}
  if(e.def.explota&&!e.sinExp){ring(e.x,e.y,44,'#7df',.4);sfx('explosion');for(let i=0;i<G.players.length;i++)if(dist(e.x,e.y,G.players[i].P.x,G.players[i].P.y)<46)withPlayer(i,()=>hurt(15))}
  {const dentro=e.state!=='out';
  const ultimoPerro=G.perros&&rondaOn()&&G.porSpawn<=0&&!G.bossPend&&!e.jauria&&G.enemies.every(o=>o===e||o.muerto);
@@ -2622,7 +2633,7 @@ function hurt(d){if(G.telep||G.inv>0||G.shield>0||debil()||G.estado==='fin')retu
 const DEBIL_REAPARECER=5;
 function faint(){const P=G.P;P.hp=0;
  if(G.perks.includes('pebre')){G.perks=G.perks.filter(p=>p!=='pebre');applyStats();P.hp=Math.min(50,G.maxHp);G.inv=2.5;msg('¡La bebida Una más te revive!',3);sfx('evo');ring(P.x,P.y,50,'#f66',.6);return}
- G.lives--;const p=G.players[G.act],N=G.players.length;
+ G.lives--;G.st.vidasP++;const p=G.players[G.act],N=G.players.length;
  /* al morir pierdes las bebidas compradas (incluida la Patada de Mula y el ataque del 5.º hueco) */
  let tenia=false;{tenia=G.perks.length>0||G.slot5;G.perks=[];if(G.slot5){G.slot5=false;const o=G.slots[4];if(o){G.own.delete(o);delete G.ms[o]}G.slots.length=4;if(G.cur>=4)setCur(EMERG)}
   applyStats();G.P.hp=0}
@@ -2644,7 +2655,7 @@ function cycleWeapon(d){if(!G||G.pausa||G.estado==='fin')return;const n=G.nSlots
 const GREN={fuego:{R:56,dano:90,col:'#f52'},agua:{R:62,dano:55,col:'#2a9cf0'},planta:{R:58,dano:70,col:'#4aa832'},electrico:{R:60,dano:80,col:'#f5e642'}};
 function GRENof(el){return GREN[el]||{R:58,dano:75,col:(ELCOL[el]||ELCOL.fuego)[0]}}
 function throwGrenade(){if(!G||G.pausa||G.estado==='fin'||debil()||G.evo||G.telep||G.gcd>0)return;if(G.granadas<=0){msg('No te quedan granadas',1.2);sfx('error');return}
- G.granadas--;G.gcd=.4;const P=G.P,a=G.aim;let d=touchOn?110:clamp((()=>{const mw=mouseW();return dist(P.x,P.y,mw[0],mw[1])})(),45,150);
+ G.granadas--;G.st.gren++;G.gcd=.4;const P=G.P,a=G.aim;let d=touchOn?110:clamp((()=>{const mw=mouseW();return dist(P.x,P.y,mw[0],mw[1])})(),45,150);
  let tx=P.x+Math.cos(a)*d,ty=P.y+Math.sin(a)*d;d=Math.min(d,rayFree(P.x,P.y,a,d,zoneP()));tx=P.x+Math.cos(a)*d;ty=P.y+Math.sin(a)*d;if(zoneP().alto&&!walk(tx,ty,3)){for(let k=1;k<=20;k++){const dd=d+(k%2?1:-1)*Math.ceil(k/2)*8;if(dd<12||dd>170)continue;const x2=P.x+Math.cos(a)*dd,y2=P.y+Math.sin(a)*dd;if(walk(x2,y2,3)){d=dd;tx=x2;ty=y2;break}}}while(d>12&&!walk(tx,ty,3)){d-=8;tx=P.x+Math.cos(a)*d;ty=P.y+Math.sin(a)*d}
  G.gren.push({sx:P.x,sy:P.y,tx,ty,x:P.x,y:P.y,t:0,T:.35+d/260,z:0,el:G.cr.stages[G.et].tipos[0],o:G.act});sfx('lanzar');P.lx=-Math.cos(a)*1.5;P.ly=-Math.sin(a)*1.5}
 function updGren(dt){const g=G;
@@ -3104,7 +3115,7 @@ function modal(t,ops,noCancel,onCancel){if(G.act){if(NET.modo==='host'&&G.player
  if(!noCancel){const c=document.createElement('button');c.className='btn sm';c.textContent=onCancel?'No, gracias':'Cancelar';c.onclick=()=>{close();if(onCancel)onCancel()};b.appendChild(c)}function close(){if(NET.modo==='local')G.pausa=false;G.modal=false;show(null)}show('modal')}
 function togglePause(){if(!G||G.estado==='fin'||G.modal)return;if(NET.modo!=='local'&&G.players.length>1){NET.ovl=!NET.ovl;if(NET.ovl){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(NET.ovl?'pausa':null);return}G.pausa=!G.pausa;if(G.pausa){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(G.pausa?'pausa':null)}
 function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(NET.modo==='host')netHostFin();save.record=Math.max(save.record,G.round);save.matados=(save.matados||0)+KT;
- save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();
+ save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();enviarRecord();
  $('finTxt').style.cssText='display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:left';
  $('finTxt').innerHTML='<div class="finSp"></div><div>Jugador: <b>'+netClean((G.players[0]&&G.players[0].nombre)||save.cfg.nick||'')+'</b><br>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
@@ -3174,7 +3185,7 @@ function cargarPartida(d){
  const cr=CRIATURAS.find(c=>c.id===d.cr);if(!cr){alert('La criatura de esta partida ('+d.cr+') no está en los datos cargados.');return}
  if(d.mapa&&MAPAS[d.mapa]&&MAPA_ID!==d.mapa){G=null;elegirMapa(d.mapa)}
  if(DIFS[d.dif]){save.cfg.dif=d.dif;persist()}
- audioInit();selId=cr.id;newGame(cr);if(d.uid){const u=String(d.uid).replace(/[^\w-]/g,'').slice(0,24);if(u)G.uid=u}
+ audioInit();selId=cr.id;newGame(cr);G.cargada=true;if(d.uid){const u=String(d.uid).replace(/[^\w-]/g,'').slice(0,24);if(u)G.uid=u}
  G.et=Math.max(0,Math.min(cr.stages.length-1,d.et|0));G.money=d.money|0;G.kills=d.kills|0;G.candy=d.candy|0;G.lives=d.lives|0||1;G.granadas=d.granadas|0;
  G.perks=(d.perks||[]).filter(p=>BAYA[p]&&!BAYA[p].slot);G.slot5=d.slot5!==undefined?!!d.slot5:((d.et|0)>=1||!!(d.slots&&d.slots[4]));G.smPend=d.smPend||null;G.teleRound=d.teleRound===null||d.teleRound===undefined?undefined:d.teleRound;
  G.own=new Set((d.own||[]).filter(id=>MOV[id]));G.slots=d.slots.map(id=>id&&G.own.has(id)?id:null);G.ms={};
@@ -3262,10 +3273,10 @@ function updJugador(dt,p){const g=G,P=g.P;if(p.remote)netProcEv(p,dt);
   if(g.t-g.lastHit>5&&P.hp<g.maxHp)P.hp=Math.min(g.maxHp,P.hp+8*dt*(1+.2*mj('regen')))}
  /* interacción */
  if(!p.deb&&!g.evo&&!g.telep){const al=aliadoCaido();
-  if(al&&(B?B.rev:(!netBloq()&&(keys.e||g.repLatch)))){al.revP+=dt;al.revSeen=g.t;g.ePress=false;if(al.revP>=REVIVIR_TIEMPO)withPlayer(al.idx,()=>reviveAt(al,al.P.x,al.P.y,REVIVIR_VIDA))}
+  if(al&&(B?B.rev:(!netBloq()&&(keys.e||g.repLatch)))){al.revP+=dt;al.revSeen=g.t;g.ePress=false;if(al.revP>=REVIVIR_TIEMPO){G.st.rev++;withPlayer(al.idx,()=>reviveAt(al,al.P.x,al.P.y,REVIVIR_VIDA))}}
   else if(!p.bot){const it=nearItem(),nb=nearBar();if(g.repLatch&&(!nb||it))g.repLatch=false;const rep=p.remote?!!(B&&B.e):(!netBloq()&&(keys.e||g.repLatch));
   if(g.ePress&&it){interact(it)}
-  else if(rep&&nb&&!it){nb.rt-=dt;if(nb.rt<=0&&nb.hp<100){const antes=Math.ceil(nb.hp/20);nb.hp=Math.min(100,nb.hp%20===0?nb.hp+20:antes*20);nb.rt=.5;if(Math.ceil(nb.hp/20)>antes){const n=ganar(5);txtL(nb.ix,nb.iy,10,'+'+n+' ₽','#ffd24a')}}}
+  else if(rep&&nb&&!it){nb.rt-=dt;if(nb.rt<=0&&nb.hp<100){const antes=Math.ceil(nb.hp/20);nb.hp=Math.min(100,nb.hp%20===0?nb.hp+20:antes*20);nb.rt=.5;if(Math.ceil(nb.hp/20)>antes){G.st.tab++;const n=ganar(5);txtL(nb.ix,nb.iy,10,'+'+n+' ₽','#ffd24a')}}}
   g.ePress=false}else g.ePress=false}else g.ePress=false}
 function update(dt){const g=G;g.t+=dt;
  if(g.shake>0)g.shake-=dt;if(g.flick>0)g.flick-=dt;if(g.tflash>0)g.tflash-=dt;
@@ -3648,6 +3659,58 @@ function titleGo(){if(T.out)return;T.out=true;try{audioInit()}catch(e){}const el
  setTimeout(()=>{const d=T.datosPend;T.datosPend=false;show(d?'datos':'menu');el.classList.remove('out');T.out=false},350)}
 $('inicio').addEventListener('click',titleGo);
 addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||/^F\d+$/.test(e.key))return;if($('inicio').classList.contains('on'))titleGo()});
+/* =====================================================================
+   RANKING GLOBAL (Supabase): envío del récord al morir y pantalla de ranking
+   ===================================================================== */
+const RK={from:'menu',pend:'pkz_rank_pend'};
+const rkH={apikey:SB_KEY};
+const rkEsc=s=>String(s==null?'':s).replace(/[<>&"]/g,'');
+const rkOk=c=>(c>=200&&c<300)||c===409;                 /* 409 = esa partida ya estaba enviada */
+const rkDrop=c=>c>=400&&c<500&&c!==429&&c!==408&&c!==409; /* el servidor la rechaza: no tiene sentido reintentar */
+function calcPuntos(o){return Math.round((o.ronda*RANK_PTS.ronda+o.zombies_matados*RANK_PTS.baja+o.jefes_derrotados*RANK_PTS.jefe+o.dinero_ganado*RANK_PTS.dinero)*(RANK_DIF_MUL[o.dificultad]||1))}
+function rkFila(){const g=G,p0=g.act===0?{cr:g.cr,et:g.et}:g.players[0].s,dk=difKey(),j2=g.players[1],coop=NET.modo==='host'&&!!j2&&!!j2.remote;
+ const o={partida_uid:g.uid,nick:netClean((g.players[0]&&g.players[0].nombre)||save.cfg.nick)||'Anonimo',ronda:g.round|0,zombies_matados:sumPl('kills')|0,jefes_derrotados:g.st.jefes,
+  duracion_seg:Math.round(g.t),dinero_ganado:Math.round(g.st.ganado),dinero_gastado:Math.round(g.st.gastado),dinero_final:Math.max(0,Math.round(sumPl('money'))),caramelos:sumPl('candy')|0,
+  dano_total:g.st.dano,golpes_criticos:g.st.crit,granadas_usadas:g.st.gren,vidas_perdidas:g.st.vidasP,revives:g.st.rev,tablones:g.st.tab,
+  criatura:p0.cr.stages[p0.et].nombre,criatura_base:p0.cr.id,evolucion:p0.et,dificultad:dk,mapa:MAPA_ID,modo:coop?'coop':'solo',companero:coop?(netClean(j2.nombre)||null):null,version_juego:VERSION};
+ o.puntuacion=calcPuntos(o);return o}
+function rkPend(){try{return JSON.parse(localStorage.getItem(RK.pend))||[]}catch(e){return[]}}
+function rkGuardaPend(a){try{localStorage.setItem(RK.pend,JSON.stringify(a.slice(-20)))}catch(e){}}
+async function rkPost(o){const r=await fetch(SB_URL+'/rest/v1/ranking',{method:'POST',headers:Object.assign({'Content-Type':'application/json',Prefer:'return=minimal'},rkH),body:JSON.stringify(o)});return r.status}
+async function rkReintenta(){const a=rkPend();if(!a.length)return;const rest=[];for(const o of a){try{const c=await rkPost(o);if(!rkOk(c)&&!rkDrop(c))rest.push(o)}catch(e){rest.push(o)}}rkGuardaPend(rest)}
+async function enviarRecord(){const st=$('rkSt');if(!st)return;st.textContent='';
+ if(NET.modo==='guest'||G.round<1)return;
+ if(G.cargada){st.textContent='Las partidas cargadas desde archivo no puntúan en el ranking global';return}
+ let o;try{o=rkFila()}catch(e){return}
+ st.textContent='Enviando récord… ('+o.puntuacion.toLocaleString('es-ES')+' puntos)';
+ try{const c=await rkPost(o);
+  if(rkOk(c)){st.textContent='✔ Récord enviado al ranking global: '+o.puntuacion.toLocaleString('es-ES')+' puntos';rkReintenta()}
+  else if(rkDrop(c))st.textContent='✖ El ranking ha rechazado el récord (código '+c+')';
+  else throw 0}
+ catch(e){const a=rkPend();a.push(o);rkGuardaPend(a);st.textContent='⚠ No se pudo enviar el récord: se reintentará más tarde'}}
+function rkAbre(from){RK.from=from;show('ranking');
+ const sm=$('rkMapa');
+ if(!sm._ok){sm._ok=1;
+  const add=(sel,v,t)=>{const op=document.createElement('option');op.value=v;op.textContent=t;sel.appendChild(op)};
+  add(sm,'','Todos los mapas');for(const id of Object.keys(MAPAS))add(sm,id,rkEsc(MAPAS[id].nombre));
+  add($('rkDif'),'','Todas las dificultades');for(const k in DIFS)add($('rkDif'),k,DIFS[k].n);
+  add($('rkModo'),'','Solo y cooperativo');add($('rkModo'),'solo','Solo');add($('rkModo'),'coop','Cooperativo')}
+ rkCarga()}
+async function rkCarga(){const L=$('rkLista');L.textContent='Cargando…';
+ let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,created_at&order=puntuacion.desc,ronda.desc&limit=30';
+ for(const[k,id]of[['mapa','rkMapa'],['dificultad','rkDif'],['modo','rkModo']]){const v=$(id).value;if(v)q+='&'+k+'=eq.'+encodeURIComponent(v)}
+ try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;const d=await r.json();
+  if(!d.length){L.textContent='Aún no hay récords con estos filtros.';return}
+  const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},B='border-top:1px solid rgba(128,128,128,.3);padding:3px 4px';
+  L.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="opacity:.6;text-align:left"><th>#</th><th>Jugador</th><th>Puntos</th><th>Ronda</th><th>Bajas</th><th>Tiempo</th><th>Criatura</th></tr>'
+   +d.map((x,i)=>'<tr><td style="'+B+'">'+(i+1)+'</td><td style="'+B+'"><b>'+rkEsc(x.nick)+'</b>'+(x.modo==='coop'?' 👥':'')+'</td><td style="'+B+'">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td style="'+B+'">'+(+x.ronda)+'</td><td style="'+B+'">'+(+x.zombies_matados)+'</td><td style="'+B+'">'+T(x.duracion_seg)+'</td><td style="'+B+'">'+rkEsc(x.criatura)+'</td></tr>').join('')+'</table>'}
+ catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
+$('mRank').onclick=()=>{audioInit();rkAbre('menu')};
+$('rkVer').onclick=()=>rkAbre('fin');
+$('rkBack').onclick=()=>show(RK.from);
+$('rkRec').onclick=rkCarga;
+['rkMapa','rkDif','rkModo'].forEach(id=>$(id).addEventListener('change',rkCarga));
+rkReintenta();
 /*@EDITOR_START*/
 const O={};
 (function(){for(const s in O){let c;try{c=eval(s)}catch(e){continue}for(const k in O[s]){const t=Array.isArray(c)?c.find((x,i)=>(x.id!==undefined?x.id:'#'+i)===k):c[k];if(!t)continue;for(const p in O[s][k]){const a=p.split(".");let o=t;while(a.length>1&&o)o=o[a.shift()];if(o)o[a[0]]=O[s][k][p]}}}})();
