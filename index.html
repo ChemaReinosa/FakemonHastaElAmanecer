@@ -596,8 +596,7 @@ const MOVIMIENTOS=[
  /* ===== NORMALES (todas las criaturas) ===== */
  {id:'placaje',nombre:'Placaje',tipo:'Básico',modo:'cono',elem:'normal',dano:12,cadencia:330,rango:24,arco:1.7,knock:60,coste:0,color:'#ddd',rareza:'común',pp:0,recarga:0,descripcion:'Golpe cuerpo a cuerpo. Siempre disponible.'},
  {id:'recuperacion',nombre:'Recuperación',tipo:'Soporte',modo:'cura',elem:'normal',dano:0,cadencia:24000,rango:0,curar:35,coste:900,color:'#4e8',rareza:'común',pp:0,recarga:0,descripcion:'Te cura 35 PV (enfriamiento muy largo: 24 s).'},
- {id:'bola_sombra',nombre:'Bola Sombra',tipo:'Preciso',modo:'proj',elem:'normal',efx:'sombra',dano:70,cadencia:900,rango:230,vel:190,pr:5,coste:2000,color:'#a6f',rareza:'rara',pp:10,recarga:2000,descripcion:'Esfera lenta y muy dañina.'},
- {id:'terremoto',nombre:'Terremoto',tipo:'Área',modo:'aoe',elem:'normal',efx:'roca',dano:50,cadencia:1300,rango:85,knock:140,coste:2500,color:'#a85',rareza:'épica',pp:8,recarga:2200,energia:true,descripcion:'Sacude a todos a tu alrededor. Requiere energía.'},
+ {id:'terremoto',nombre:'Terremoto',tipo:'Área',modo:'aoe',elem:'tierra',efx:'roca',dano:50,cadencia:1300,rango:85,knock:140,coste:2500,color:'#a85',rareza:'épica',pp:8,recarga:2200,energia:true,descripcion:'Sacude a todos a tu alrededor. Requiere energía.'},
  {id:'hiperrayo',nombre:'Hiperrayo',tipo:'Especial',modo:'rayo',elem:'normal',dano:260,cadencia:9000,rango:320,ancho:20,perfora:true,knock:80,coste:0,color:'#fff',rareza:'legendaria',pp:0,recarga:0,descripcion:'Rayo que atraviesa a todos. Solo en la Caja.'},
  /* ===== FUEGO ===== */
  {id:'ascuas',nombre:'Ascuas',tipo:'Ráfaga',modo:'proj',elem:'fuego',dano:9,cadencia:130,rango:190,vel:270,pr:3,coste:500,color:'#fa4',rareza:'común',pp:34,recarga:1500,descripcion:'Ráfaga de brasas.'},
@@ -694,8 +693,7 @@ const MOV=Object.fromEntries(MOVIMIENTOS.map(m=>[m.id,m]));
 const ALCANCE={
  /* ===== NORMAL ===== */
  placaje:               'cerca', // Placaje · Básico · hoy: cono
- bola_sombra:           'lejos', // Bola Sombra · Preciso · hoy: proj
- terremoto:             'cerca', // Terremoto · Área · hoy: aoe
+  terremoto:             'cerca', // Terremoto · Área · hoy: aoe
  hiperrayo:             'lejos', // Hiperrayo · Especial · hoy: rayo
  /* ===== FUEGO ===== */
  ascuas:                'lejos', // Ascuas · Ráfaga · hoy: proj
@@ -1061,7 +1059,7 @@ const JEFES=[
 /* Rondas en las que SOLO salen perros zombi (añade más números para más rondas de perros) */
 const RONDAS_PERROS=[5,14,25];
 /* Máximo de perros zombi vivos a la vez (rondas de perros y jauría). Al morir uno, otro aparece al rato en un punto al azar. */
-const MAX_PERROS=5;
+const MAX_PERROS=6;
 
 /* ---------- E. BAYAS (máx. 4 equipadas) ---------- */
 const BAYAS=[
@@ -1100,7 +1098,9 @@ const sinLimite=m=>m.id==='placaje';
 const muniRes=m=>sinLimite(m)?0:m.pp>0?m.pp*MUNI_MULT:(MUNI_USOS[m.id]||MUNI_USOS_DEF);
 const muniMax=m=>m.pp>0?m.pp+muniRes(m):muniRes(m);
 /* ---------- PREMIOS (1 por ronda, los suelta un zombi) ---------- */
-const PREMIO_PROB=1, PREMIO_VIDA=30, INSTA_T=12, DOBLE_T=12, INSTA_GRANDE=1.5; /* INSTA_GRANDE = multiplicador de daño a zombis grandes durante Muerte instantánea */
+/* PREMIO_VIDA = segundos totales en el suelo. Los últimos PREMIO_PARP segundos parpadea cada vez más rápido (de PARP_LENTO a PARP_RAPIDO parpadeos/s) hasta desaparecer. */
+function premioVisible(o){if(o.t>=PREMIO_PARP)return true;const s=PREMIO_PARP-o.t,ph=PARP_LENTO*s+(PARP_RAPIDO-PARP_LENTO)*s*s/(2*PREMIO_PARP);return ph%1<.6}
+const PREMIO_PROB=1, PREMIO_VIDA=30, PREMIO_PARP=10, PARP_LENTO=2, PARP_RAPIDO=14, INSTA_T=12, DOBLE_T=12, INSTA_GRANDE=1.5; /* INSTA_GRANDE = multiplicador de daño a zombis grandes durante Muerte instantánea */
 const PREMIOS=[
  {id:'muni',nombre:'Munición máxima',letra:'M',col:'#4aa8ff',peso:22},
  {id:'carp',nombre:'Carpintero',letra:'C',col:'#d9a24a',peso:22},
@@ -1148,8 +1148,9 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.40   Pequeños arreglos en premios y ataques
    1.39   Guardando ranking en Supabase
-   1.38  Reducción de perros y nuevo tipo de ataque medio
+   1.38   Reducción de perros y nuevo tipo de ataque medio
    1.37   Arreglo de errores de red y de la máquina de MT, mejoras en el selector de mapas y en el Bestiario
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
    1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
@@ -1157,7 +1158,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.39';
+const VERSION='1.40';
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
 const SB_URL='https://oklqhmtpcrdmvorzsmke.supabase.co',SB_KEY='sb_publishable_w_wqwaMs1NgWBrPizN1fxA_xFYx9oOH';
@@ -2283,7 +2284,7 @@ function playerDraw(c){const P=G.P;if(G.players[G.act].ausente)return;if(G.inv>0
  if(G.shield>0){c.strokeStyle='rgba(140,200,255,'+(.5+.3*Math.sin(G.t*20))+')';c.beginPath();c.arc(P.x,P.y,13,0,6.283);c.stroke()}c.globalAlpha=1;noT(c);
  if(G.act){const[X,Y]=w2s(P.x,P.y,34);c.font='bold 7px monospace';c.textAlign='center';c.fillStyle='#000';c.fillText('J'+numJ(G.act),X+1,Y+1);c.fillStyle=esBot()?'#8cf':'#fd4';c.fillText('J'+numJ(G.act),X,Y)}
  {const nm=G.players[G.act].nombre;if(nm&&NET.modo!=='local'&&save.cfg.verNombres!==false){const[X,Y]=w2s(P.x,P.y,34),yy=Y-(G.act?8:0);c.font='bold 7px monospace';c.textAlign='center';c.fillStyle='#000';c.fillText(nm,X+1,yy+1);c.fillStyle=G.act?'#8cf':'#fff';c.fillText(nm,X,yy)}}}
-function premioDraw(c,o){const p=o.p,b=Math.sin(G.t*5+o.x)*1.5;if(o.t<6&&Math.floor(G.t*8)%2)return;
+function premioDraw(c,o){const p=o.p,b=Math.sin(G.t*5+o.x)*1.5;if(!premioVisible(o))return;
  const[X,Y]=w2s(o.x,o.y,0);c.setTransform(1,0,0,1,Math.round(X),Math.round(Y));
  c.fillStyle='rgba(0,0,0,.35)';c.beginPath();c.ellipse(0,0,7,3.5,0,0,6.283);c.fill();
  const y=-13+b;c.globalCompositeOperation='lighter';c.globalAlpha=.35+.2*Math.sin(G.t*6);c.fillStyle=p.col;c.beginPath();c.arc(0,y,13,0,6.283);c.fill();c.globalAlpha=1;c.globalCompositeOperation='source-over';
@@ -2369,6 +2370,12 @@ function drawFxIso(c){
  for(const b of G.eb){const[X,Y]=w2s(b.x,b.y,8);drawEOrb(c,X,Y,b,true)}
  for(const p of G.parts){c.globalAlpha=Math.max(0,p.life/p.max);c.fillStyle=p.c;const[X,Y]=w2s(p.x,p.y,5);c.fillRect(Math.round(X),Math.round(Y),p.s,p.s)}c.globalAlpha=1;
  c.font='bold 7px monospace';c.textAlign='center';for(const t of G.texts){const[X,Y]=w2s(t.x,t.y,(t.lift==null?24:t.lift)+6);c.globalAlpha=Math.min(1,t.t*2);c.fillStyle='#000';c.fillText(t.s,Math.round(X)+1,Math.round(Y)+1);c.fillStyle=t.c;c.fillText(t.s,Math.round(X),Math.round(Y))}c.globalAlpha=1}
+/* Temporizadores pequeños de Muerte instantánea y Puntos dobles: barra que se vacía y parpadeo (más rápido en el último segundo y medio) en los últimos 3 s */
+function drawEfectosHud(c){const L=[];if(G.instaT>0)L.push(['☠ MUERTE INSTANTÁNEA',G.instaT,INSTA_T,'#ff5a5a']);if(G.dobleT>0)L.push(['2x PUNTOS DOBLES',G.dobleT,DOBLE_T,'#ffd24a']);
+ let y=40;c.font='bold 9px monospace';c.textAlign='center';
+ for(const[n,t,max,col]of L){const off=t<3&&Math.floor(G.t*(t<1.5?12:6))%2,tx=n+' '+Math.ceil(t)+'s',w=70,f=clamp(t/max,0,1),cc=off?'#fff':col;
+  c.fillStyle='#000';c.fillText(tx,W/2+1,y+1);c.fillStyle=cc;c.fillText(tx,W/2,y);
+  c.fillStyle='rgba(0,0,0,.65)';c.fillRect(W/2-w/2-1,y+3,w+2,4);c.fillStyle=cc;c.fillRect(W/2-w/2,y+4,w*f,2);y+=15}}
 function drawHudWorld(c){
  for(const e of G.enemies){const[X,Y]=w2s(e.x,e.y,0),yb=Math.round(Y-15-e.r);
   if(e.hp<e.maxhp&&!e.boss){c.fillStyle='#300';c.fillRect(Math.round(X)-6,yb,12,2);c.fillStyle='#e33';c.fillRect(Math.round(X)-6,yb,Math.max(0,12*e.hp/e.maxhp),2)}
@@ -2422,8 +2429,7 @@ function renderMain(){noT(ctx);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#0
  const vg=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.9);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
  if(P.hp/G.maxHp<.35&&!debil()){ctx.fillStyle='rgba(160,0,0,'+(.12+.1*Math.sin(G.t*6))+')';ctx.fillRect(0,0,W,H)}
  if(G.tflash>0){ctx.fillStyle='rgba(255,255,255,'+Math.min(1,G.tflash/.3)+')';ctx.fillRect(0,0,W,H)}
- if(G.dobleT>0){ctx.font='bold 9px monospace';ctx.textAlign='center';const tx='2x PUNTOS DOBLES '+Math.ceil(G.dobleT)+'s',yy=G.instaT>0?52:40;ctx.fillStyle='#000';ctx.fillText(tx,W/2+1,yy+1);ctx.fillStyle=G.dobleT<3&&Math.floor(G.t*6)%2?'#fff':'#ffd24a';ctx.fillText(tx,W/2,yy)}
- if(G.instaT>0){ctx.fillStyle='rgba(255,40,40,'+(.05+.04*Math.sin(G.t*10))+')';ctx.fillRect(0,0,W,H);ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText('☠ MUERTE INSTANTÁNEA '+Math.ceil(G.instaT)+'s',W/2+1,41);ctx.fillStyle=G.instaT<3&&Math.floor(G.t*6)%2?'#fff':'#ff5a5a';ctx.fillText('☠ MUERTE INSTANTÁNEA '+Math.ceil(G.instaT)+'s',W/2,40)}
+ if(G.instaT>0){ctx.fillStyle='rgba(255,40,40,'+(.05+.04*Math.sin(G.t*10))+')';ctx.fillRect(0,0,W,H)}drawEfectosHud(ctx);
  if(G.evo){const k=Math.max(0,1-Math.abs(G.evo.t-1.8)/.6);if(k>0){ctx.fillStyle='rgba(255,255,255,'+(k*.85)+')';ctx.fillRect(0,0,W,H)}}
  evoSprite();drawMini()}
 
@@ -2618,7 +2624,7 @@ function updPremios(dt){const g=G;if(g.instaT>0)g.instaT-=dt;if(g.dobleT>0)g.dob
  for(const o of g.premios){o.t-=dt;for(let i=0;i<g.players.length;i++){const p=g.players[i];if(p.deb)continue;if(dist(o.x,o.y,p.P.x,p.P.y)<13){o.t=-1;withPlayer(i,()=>cogerPremio(o));break}}}
  g.premios=g.premios.filter(o=>o.t>0)}
 function drawPremios(c){for(const o of G.premios){if(!iv(o))continue;const p=o.p,b=Math.sin(G.t*5+o.x)*1.5,x=Math.round(o.x),y=Math.round(o.y-8+b);
-  if(o.t<6&&Math.floor(G.t*8)%2)continue;
+  if(!premioVisible(o))continue;
   c.globalCompositeOperation='lighter';c.globalAlpha=.35+.2*Math.sin(G.t*6);c.fillStyle=p.col;c.beginPath();c.arc(x,y,13,0,6.283);c.fill();c.globalAlpha=1;c.globalCompositeOperation='source-over';
   c.fillStyle='#10131a';c.beginPath();c.arc(x,y,7,0,6.283);c.fill();c.strokeStyle=p.col;c.lineWidth=2;c.beginPath();c.arc(x,y,7,0,6.283);c.stroke();c.lineWidth=1;
   c.font='bold 8px monospace';c.textAlign='center';c.fillStyle='#fff';c.fillText(p.letra,x,y+3);
@@ -3497,8 +3503,7 @@ function render_old(){ctx.imageSmoothingEnabled=false;ctx.fillStyle='#000';ctx.f
  const vg=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.9);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
  if(P.hp/G.maxHp<.35&&!debil()){ctx.fillStyle='rgba(160,0,0,'+(.12+.1*Math.sin(G.t*6))+')';ctx.fillRect(0,0,W,H)}
  if(G.tflash>0){ctx.fillStyle='rgba(255,255,255,'+Math.min(1,G.tflash/.3)+')';ctx.fillRect(0,0,W,H)}
- if(G.dobleT>0){ctx.font='bold 9px monospace';ctx.textAlign='center';const tx='2x PUNTOS DOBLES '+Math.ceil(G.dobleT)+'s',yy=G.instaT>0?52:40;ctx.fillStyle='#000';ctx.fillText(tx,W/2+1,yy+1);ctx.fillStyle=G.dobleT<3&&Math.floor(G.t*6)%2?'#fff':'#ffd24a';ctx.fillText(tx,W/2,yy)}
- if(G.instaT>0){ctx.fillStyle='rgba(255,40,40,'+(.05+.04*Math.sin(G.t*10))+')';ctx.fillRect(0,0,W,H);ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillStyle='#000';ctx.fillText('☠ MUERTE INSTANTÁNEA '+Math.ceil(G.instaT)+'s',W/2+1,41);ctx.fillStyle=G.instaT<3&&Math.floor(G.t*6)%2?'#fff':'#ff5a5a';ctx.fillText('☠ MUERTE INSTANTÁNEA '+Math.ceil(G.instaT)+'s',W/2,40)}
+ if(G.instaT>0){ctx.fillStyle='rgba(255,40,40,'+(.05+.04*Math.sin(G.t*10))+')';ctx.fillRect(0,0,W,H)}drawEfectosHud(ctx);
  if(G.evo){const k=Math.max(0,1-Math.abs(G.evo.t-1.8)/.6);if(k>0){ctx.fillStyle='rgba(255,255,255,'+(k*.85)+')';ctx.fillRect(0,0,W,H)}}
  drawMini()}
 /* Minimapa (tecla M): zonas, puertas (amarillo = de pago, rojo = de energía, verde = abierta), Caja, Máquina de MT, teleportador e interruptor de energía */
@@ -3711,10 +3716,7 @@ $('rkBack').onclick=()=>show(RK.from);
 $('rkRec').onclick=rkCarga;
 ['rkMapa','rkDif','rkModo'].forEach(id=>$(id).addEventListener('change',rkCarga));
 rkReintenta();
-/*@EDITOR_START*/
-const O={};
-(function(){for(const s in O){let c;try{c=eval(s)}catch(e){continue}for(const k in O[s]){const t=Array.isArray(c)?c.find((x,i)=>(x.id!==undefined?x.id:'#'+i)===k):c[k];if(!t)continue;for(const p in O[s][k]){const a=p.split(".");let o=t;while(a.length>1&&o)o=o[a.shift()];if(o)o[a[0]]=O[s][k][p]}}}})();
-/*@EDITOR_END*/
+
 loadTypeSheet();startTitle();
 /* =====================================================================
    FASE 3 · RED (cooperativo online de 2 jugadores)
