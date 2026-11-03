@@ -32,6 +32,9 @@ canvas#c{image-rendering:pixelated;display:block;width:100%;height:100%;backgrou
 #slots{position:absolute;bottom:1.5%;left:50%;transform:translateX(-50%);display:flex;gap:.3em;pointer-events:auto}
 .sl{--tc:#444;position:relative;min-width:7.5em;max-width:9em;padding:.2em .35em;background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 55%,rgba(0,0,0,.72)) 0%,rgba(0,0,0,.72) 78%);border:2px solid var(--tc);border-radius:4px;overflow:hidden;line-height:1.15;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 6px color-mix(in srgb,var(--tc) 40%,transparent);color:#fff}
 .sl.on{border-color:#ffd24a;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 1px var(--tc),0 0 12px color-mix(in srgb,var(--tc) 80%,transparent);transform:translateY(-2px)}.sl b{color:rgba(255,255,255,.7);margin-right:.3em}.sl u{text-decoration:none;text-shadow:0 1px 0 #000}
+.sl i.ef{position:absolute;right:.3em;top:.05em;font-style:normal;font-weight:bold;font-size:.9em;text-shadow:0 1px 0 #000}
+.sl.sup{border-color:#6dff7a;animation:supP .7s ease-in-out infinite alternate}.sl.sup i.ef{color:#6dff7a}.sl.poc i.ef{color:#ffb02e}.sl.inm i.ef{color:#ff6b6b}
+@keyframes supP{from{box-shadow:0 0 0 1px #6dff7a,0 0 5px #6dff7a}to{box-shadow:0 0 0 1px #6dff7a,0 0 14px #6dff7a}}
 .sl s{position:absolute;left:0;bottom:0;height:.25em;background:color-mix(in srgb,var(--tc) 60%,#fff)}.sl.cd s{background:#f84}
 #pauseBtn{position:fixed;top:6px;right:6px;z-index:9;width:36px;height:36px;border-radius:6px;border:2px solid rgba(255,255,255,.4);background:rgba(20,20,30,.6);color:#fff;font:bold 14px monospace;display:none}
 body.jugando #pauseBtn{display:block}
@@ -381,9 +384,9 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <b>PC:</b> WASD/flechas mover · ratón apuntar · clic atacar · 1-5, rueda del ratón o X/Z cambiar movimiento · G lanzar granada · R recargar · E interactuar (mantén E para reparar barricadas) · Q habilidad especial · P/Esc pausa.<br>
 <b>Móvil:</b> joystick izquierdo = mover; joystick derecho = apuntar y atacar. Botones E, R, Q, G (granada) y ARMA (cambiar de movimiento); también puedes <b>tocar directamente el movimiento</b> que quieras en la barra de movimientos. En Ajustes (o en la pausa) puedes <b>colocar cada botón donde quieras</b> y activar la <b>pantalla completa</b>.<br><br>
 Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada tiene 5 tablones y cada uno te da +5 ₽). Gana ₽ golpeando (+5), matando (+40) y con golpes críticos (+60). Abre puertas, compra movimientos en los paneles de pared, bebidas (máx. 4) en las máquinas, prueba la Caja Misteriosa y activa la energía en la Azotea para usar la Máquina mejoras. Para usar el teleportador debes activar antes su <b>base de vuelta</b> (la plataforma azul del minimapa, donde regresas); se gasta en cada viaje. Al volver, el teleportador y la base necesitan un tiempo de recarga (lo verás al acercarte), y no puedes ir a la sala de mejoras mientras un <b>jefe</b> siga vivo.<br>
-<b>Tipos de zombi:</b> cada zombi tiene un tipo (lo ves por el borde de color y el símbolo sobre su cabeza). Tus ataques hacen el doble de daño si son súper eficaces contra él, la mitad si son poco eficaces y casi nada si es inmune, con la misma tabla que en Pokémon (agua apaga a fuego, eléctrico no afecta a tierra...). Los movimientos normales son neutros, salvo contra roca y acero (poco eficaces) y fantasma (poco eficaces). A medida que avanzan las rondas aparecen más tipos.<br><br>Cada criatura puede usar movimientos de los tipos de su línea evolutiva (un planta que evoluciona a volador ya aprende movimientos de volador de pequeño), los normales y unos pocos de tipos afines (lucha, bicho, veneno...): las paredes y la Caja solo te ofrecen los compatibles, así que puedes variar tu repertorio. Cada ronda recibes 2 granadas (máx. 4) del elemento de tu criatura. Tienes 3 vidas. Los enemigos sueltan Caramelos Raros (5%; los jefes 10): con 50 y 100 (o los que fije cada criatura en criaturas.txt) tu criatura evoluciona durante esa partida, <b>al terminar la ronda</b>. Cada partida empieza de cero: solo se guardan los récords y el bestiario.<br><br><b>Movimientos:</b> tienes 4 huecos; la bebida Patada de Mula (en las máquinas de bebidas, no ocupa hueco de bebida) desbloquea un 5.º. La tecla <b>2</b> es siempre el Placaje de emergencia; si compras un ataque con todos los huecos ocupados, eliges cuál sustituir. En móvil, toca E para reparar sin mantener el dedo. <b>M</b> muestra/oculta el minimapa (solo se ven las salas que ya has abierto). <span id="ayMapa"></span> En el menú, el <b>Bestiario</b> recoge las criaturas que has jugado y sus evoluciones, y al elegir criatura puedes escoger la dificultad.</div>
+<b>Tipos de zombi:</b> cada zombi tiene un tipo (lo ves por el borde de color y el símbolo sobre su cabeza). Tus ataques hacen el doble de daño si son súper eficaces contra él, la mitad si son poco eficaces y casi nada si es inmune, con la tabla de elementos (agua apaga a fuego, eléctrico no afecta a tierra...). Los movimientos normales son neutros, salvo contra roca y acero (poco eficaces) y fantasma (poco eficaces). A medida que avanzan las rondas aparecen más tipos.<br><br>Cada criatura puede usar movimientos de los tipos de su línea evolutiva (un planta que evoluciona a volador ya aprende movimientos de volador de pequeño), los normales y unos pocos de tipos afines (lucha, bicho, veneno...): las paredes y la Caja solo te ofrecen los compatibles, así que puedes variar tu repertorio. Cada ronda recibes 2 granadas (máx. 4) del elemento de tu criatura. Tienes 3 vidas. Los enemigos sueltan Caramelos Raros (5%; los jefes 10): con 50 y 100 (o los que fije cada criatura en criaturas.txt) tu criatura evoluciona durante esa partida, <b>al terminar la ronda</b>. Cada partida empieza de cero: solo se guardan los récords y el bestiario.<br><br><b>Movimientos:</b> tienes 4 huecos; la bebida Patada de Mula (en las máquinas de bebidas, no ocupa hueco de bebida) desbloquea un 5.º. La tecla <b>2</b> es siempre el Placaje de emergencia; si compras un ataque con todos los huecos ocupados, eliges cuál sustituir. En móvil, toca E para reparar sin mantener el dedo. <b>M</b> muestra/oculta el minimapa (requiere la bebida Radar; solo se ven las salas que ya has abierto). <span id="ayMapa"></span> En el menú, el <b>Bestiario</b> recoge las criaturas que has jugado y sus evoluciones, y al elegir criatura puedes escoger la dificultad.</div>
 <button class="btn" id="aBack">Volver</button></div>
-<div class="screen" id="pausa"><h2>Pausa</h2><button class="btn" id="pCont">Continuar</button><button class="btn" id="pAjBtn">⚙ Ajustes</button><button class="btn sm" id="pVerCtrl">Ver controles</button><button class="btn sm" id="pGuardar">💾 Guardar partida (JSON)</button><div id="pCtrl" style="display:none"><b>Controles</b><br>WASD / flechas: mover · Ratón: apuntar · Clic o Espacio: atacar<br>1-5, rueda del ratón o Z/X: cambiar de movimiento · R: recargar · G: granada<br>E: interactuar (mantén E para reparar barricadas) · Q: habilidad especial<br>M: minimapa · P / Esc: pausa<br>Minimapa: amarillo = puerta de pago · rojo = puerta de energía / interruptor · verde = abierta · rosa = Caja · turquesa = Máquina de MT · azul claro = teleportador · azul = base de vuelta (verde si está activada)</div><button class="btn" id="pMenu">Abandonar partida</button></div>
+<div class="screen" id="pausa"><h2>Pausa</h2><button class="btn" id="pCont">Continuar</button><button class="btn" id="pAjBtn">⚙ Ajustes</button><button class="btn sm" id="pVerCtrl">Ver controles</button><button class="btn sm" id="pGuardar">💾 Guardar partida (JSON)</button><div id="pCtrl" style="display:none"><b>Controles</b><br>WASD / flechas: mover · Ratón: apuntar · Clic o Espacio: atacar<br>1-5, rueda del ratón o Z/X: cambiar de movimiento · R: recargar · G: granada<br>E: interactuar (mantén E para reparar barricadas) · Q: habilidad especial<br>M: minimapa (con bebida Radar) · P / Esc: pausa<br>Minimapa: amarillo = puerta de pago · rojo = puerta de energía / interruptor · verde = abierta · rosa = Caja · turquesa = Máquina de MT · azul claro = teleportador · azul = base de vuelta (verde si está activada)</div><button class="btn" id="pMenu">Abandonar partida</button></div>
 <div class="screen" id="pAjustes"><h2>⚙ Ajustes</h2>
  <div class="setCard"><h3>Sonido</h3>
   <div class="opc">Volumen música <input type="range" id="pVm" min="0" max="100" step="5" style="width:150px"> <b id="pVmv"></b></div>
@@ -959,17 +962,36 @@ function learnset(c){let L=LS_C[c.id];if(L)return L;
   MOVIMIENTOS.filter(m=>m.elem===k&&!m.exclusivo&&m.tier&&m.tier<=4).map(m=>[hashS(c.id+m.id),m.id]).sort((a,b)=>a[0]-b[0]).slice(0,AFIN_N).forEach(x=>ids.add(x[1]))});
  return LS_C[c.id]={own,ids,prop}}
 
+/* ---------- CURVA DE VIDA DE LOS ZOMBIS ----------
+   La vida (zombis y jefes) se multiplica por HP_CRECE en cada ronda. A partir de la ronda HP_SUAVIZA_RONDA el crecimiento pasa a ser
+   HP_CRECE_TRAS (más suave). Para volver a la curva original pon HP_SUAVIZA_RONDA=0.
+   Ejemplo con los valores actuales (1,10 hasta la 20, 1,05 después): ronda 20 = x6,1 · ronda 28 = x9 · ronda 40 = x16 (antes x13 y x41). */
+const HP_CRECE=1.10, HP_SUAVIZA_RONDA=20, HP_CRECE_TRAS=1.05;
+const hpRonda=r=>HP_SUAVIZA_RONDA>0&&r>HP_SUAVIZA_RONDA?Math.pow(HP_CRECE,HP_SUAVIZA_RONDA-1)*Math.pow(HP_CRECE_TRAS,r-HP_SUAVIZA_RONDA):Math.pow(HP_CRECE,r-1);
+/* Aviso de «súper eficaz» en la barra de ataques: marca cada ataque (▲ súper eficaz · ▼ poco eficaz · ✖ casi inmune) contra el zombi más cercano (con preferencia al que apuntas) que esté a menos de AVISO_DIST px. AVISO_EFICAZ=false lo desactiva. */
+const AVISO_EFICAZ=true, AVISO_DIST=240;
+
 /* ---------- C. ENEMIGOS (zombis humanos) ----------
    hp/vel/dano base (escalan por ronda) · r = radio · desde = ronda en la que aparece · peso = frecuencia
    vuela = trepa por encima de obstáculos · explota = electrocuta al morir · soloEnergia = solo tras activar la energía
    z = aspecto: kind 'h' humano | 'c' trepador (a rastras) | 'd' perro; piel, camisa, pant (pantalón), pelo;
-       flaco / gordo = complexión; elec = chispas; medico = bata */
+       flaco / gordo = complexión; elec = chispas; medico = bata
+   CUÁNDO APARECE CADA ZOMBI (edítalo aquí, en cada línea): desde = primera ronda · hasta = última ronda (opcional) · peso = frecuencia relativa (más alto = sale más) · soloEnergia = solo tras activar la energía.
+   COMPORTAMIENTOS ESPECIALES (opcionales):
+     escupe:{dist,vel,cd}     = se queda a 'dist' px y escupe una bola cada 'cd' s (velocidad 'vel'); hace su daño al impactar
+     kamikaze:true            = corre hacia ti y explota al tocarte (daño x2 en área); si lo matas de cerca también te alcanza (implica explota:true)
+     blindaje:f               = recibe solo la fracción f del daño, salvo con ataques súper eficaces contra su tipo (que le hacen el daño completo)
+     cura:{radio,cd,pct}      = cada 'cd' s cura a los zombis heridos en 'radio' px un pct de su vida máxima; se queda a distancia */
 const ENEMIGOS=[
  {id:'comun',nombre:'Zombi',hp:30,vel:30,dano:10,r:6,desde:1,peso:10,z:{kind:'h',piel:'#8a9a78',camisa:'#4f6372',pant:'#35333f',pelo:'#2a2018'}},
  {id:'rapido',nombre:'Zombi corredor',hp:20,vel:62,dano:8,r:5,desde:2,peso:6,z:{kind:'h',piel:'#a3a68a',camisa:'#8b4a3a',pant:'#4a4a52',pelo:'#5a4a30',flaco:1}},
  {id:'gordo',nombre:'Zombi bruto',hp:95,vel:20,dano:22,r:9,desde:3,peso:4,z:{kind:'h',piel:'#7f8f70',camisa:'#5a4a38',pant:'#2f3a2f',pelo:'#222',gordo:1}},
  {id:'electrico',nombre:'Zombi electrificado',hp:40,vel:34,dano:10,r:6,desde:3,peso:5,explota:true,tipos:['electrico'],soloEnergia:true,z:{kind:'h',piel:'#7a9aa0',camisa:'#d2d6da',pant:'#46505a',pelo:'#333',elec:1,medico:1}},
  {id:'volador',nombre:'Zombi trepador',hp:24,vel:44,dano:9,r:5,desde:4,peso:4,vuela:true,tipos:['bicho','volador','planta','fantasma'],z:{kind:'c',piel:'#98a888',camisa:'#6a5a4a',pant:'#3a3a40',pelo:'#2a2a2a'}},
+ {id:'escupidor',nombre:'Zombi escupidor',hp:28,vel:26,dano:9,r:6,desde:6,peso:3,escupe:{dist:120,vel:105,cd:2.4},tipos:['veneno','bicho'],z:{kind:'h',piel:'#8fb060',camisa:'#3d5a2e',pant:'#2f3a2f',pelo:'#222',flaco:1}},
+ {id:'kamikaze',nombre:'Zombi bomba',hp:22,vel:48,dano:12,r:6,desde:8,peso:3,kamikaze:true,explota:true,tipos:['fuego'],z:{kind:'h',piel:'#b09070',camisa:'#b8321e',pant:'#3a2a22',pelo:'#111'}},
+ {id:'blindado',nombre:'Zombi blindado',hp:80,vel:22,dano:20,r:8,desde:10,peso:2,blindaje:.45,tipos:['acero','roca'],z:{kind:'h',piel:'#7f8f70',camisa:'#6b7480',pant:'#3a3f48',pelo:'#222',gordo:1}},
+ {id:'curandero',nombre:'Zombi curandero',hp:34,vel:26,dano:8,r:6,desde:12,peso:2,cura:{radio:80,cd:3.5,pct:.12},tipos:['hada','planta'],z:{kind:'h',piel:'#b8c8a0',camisa:'#d8ecd8',pant:'#4a5a50',pelo:'#ddd',medico:1}},
  {id:'perro',nombre:'Perro zombi',hp:46,vel:72,dano:14,r:5,desde:99,peso:0,soloJefe:true,ladra:true,tipos:['siniestro','fantasma'],z:{kind:'d',piel:'#5a4a40',camisa:'#3a2a24'}}
 ];
 const ENE=Object.fromEntries(ENEMIGOS.map(e=>[e.id,e]));
@@ -1069,7 +1091,7 @@ const BAYAS=[
  {id:'pebre',nombre:'Una más',coste:4000,color:'#f471e3',desc:'Revives solo 1 vez'},
  {id:'hibis',nombre:'Daño+',coste:4000,color:'#f6911e',desc:'+20% daño'},
  {id:'meloc',nombre:'Robavidas',coste:2500,color:'#841fff',desc:'Curas 5 PV al matar (cada 5 s)'},
- {id:'radar',nombre:'Radar',coste:2000,color:'#30c3c5',desc:'Ves cuántos zombis quedan en cada ronda'},
+ {id:'radar',nombre:'Radar',coste:2000,color:'#30c3c5',desc:'Ves cuántos zombis quedan en cada ronda y activas el minimapa (tecla M)'},
  /* slot:true = no ocupa uno de los 4 huecos de bayas: se compra una vez y desbloquea el 5.º hueco de ataque */
  {id:'lepa',nombre:'Patada de Mula',coste:5000,color:'#36d416',desc:'Desbloquea un 5.º hueco de ataque',slot:true}
 ];
@@ -1148,6 +1170,8 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.42   Correción en sombras, en muros, columna mapa en ranking, minimapa con baya radar
+   1.41   Curva de vida suavizada tras la ronda 20, 4 zombis nuevos (escupidor, bomba, blindado y curandero) y aviso de súper eficaz en la barra de ataques
    1.40   Pequeños arreglos en premios y ataques
    1.39   Guardando ranking en Supabase
    1.38   Reducción de perros y nuevo tipo de ataque medio
@@ -1158,7 +1182,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.40';
+const VERSION='1.42';
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
 const SB_URL='https://oklqhmtpcrdmvorzsmke.supabase.co',SB_KEY='sb_publishable_w_wqwaMs1NgWBrPizN1fxA_xFYx9oOH';
@@ -1328,13 +1352,17 @@ function chrReducido(ch,si,fw2,fh2){const key=fw2+'x'+fh2;if(ch.sc&&ch.sc.key===
   while(w/2>fw2*1.01||h/2>fh2*1.01){const nw=Math.max(fw2,Math.round(w/2)),nh=Math.max(fh2,Math.round(h/2)),t=document.createElement('canvas');t.width=nw;t.height=nh;const tx=t.getContext('2d');tx.imageSmoothingEnabled=true;tx.imageSmoothingQuality='high';tx.drawImage(src,sx,sy,w,h,0,0,nw,nh);src=t;sx=0;sy=0;w=nw;h=nh}
   x.drawImage(src,sx,sy,w,h,k*fw2,r*fh2,fw2,fh2)}
  return ch.sc={key,cv,fw2,fh2}}
+/* ---------- Sombras proyectadas: silueta del propio sprite, aplastada e inclinada sobre el suelo ---------- */
+function silueta(src,sx,sy,sw,sh,dw,dh){const k=document.createElement('canvas');k.width=Math.max(1,dw);k.height=Math.max(1,dh);const q=k.getContext('2d');q.imageSmoothingEnabled=false;q.drawImage(src,sx,sy,sw,sh,0,0,k.width,k.height);q.globalCompositeOperation='source-in';q.fillStyle='#000';q.fillRect(0,0,k.width,k.height);return k}
+function pintaSombra(c,sil,cx,pie,sesgo,alfa){c.save();c.translate(cx,pie);c.globalAlpha=alfa;c.transform(1,0,sesgo,-.34,0,0);c.drawImage(sil,-Math.round(sil.width/2),-sil.height);c.restore()}
 function drawCreature(c,x,y,cr,et,aim,moving,animT,o){o=o||{};const st=cr.stages[et],ch=st.chr;
  if(ch&&ch.ok){const si=sheetInfo(ch),ca=Math.cos(aim),sa=Math.sin(aim);let row=0,flip=false;
   if(si.dirs)row=Math.abs(ca)>Math.abs(sa)?(ca>0?FRAME_DIRS.right:FRAME_DIRS.left):(sa>0?FRAME_DIRS.down:FRAME_DIRS.up);else flip=ca<0;
   const col=moving?Math.floor(animT/1.4)%si.cols:0,th=clamp(14+st.height*9,16,36),dw=th*si.fw/si.fh;
-  c.save();c.translate(Math.round(x),Math.round(y));if(o.rot)c.rotate(o.rot);c.fillStyle='rgba(0,0,0,.4)';c.fillRect(-Math.round(dw/3),4,Math.round(dw*.66),3);if(flip)c.scale(-1,1);
-  if(SPRITE_SUAVIZADO){const fw2=Math.max(1,Math.round(dw)),fh2=Math.max(1,Math.round(th)),sc=chrReducido(ch,si,fw2,fh2);c.drawImage(sc.cv,col*fw2,(si.dirs?row:0)*fh2,fw2,fh2,-Math.round(fw2/2),6-fh2,fw2,fh2)}
-  else c.drawImage(ch.el,col*si.fw,row*si.fh,si.fw,si.fh,-Math.round(dw/2),Math.round(6-th),Math.round(dw),Math.round(th));c.restore();return}
+  c.save();c.translate(Math.round(x),Math.round(y));if(o.rot)c.rotate(o.rot);if(flip)c.scale(-1,1);const _sg=flip?.55:-.55;
+  if(SPRITE_SUAVIZADO){const fw2=Math.max(1,Math.round(dw)),fh2=Math.max(1,Math.round(th)),sc=chrReducido(ch,si,fw2,fh2);{const kk=col+'_'+(si.dirs?row:0)+'_'+fw2+'x'+fh2;ch._sh=ch._sh||{};const sl=ch._sh[kk]||(ch._sh[kk]=silueta(sc.cv,col*fw2,(si.dirs?row:0)*fh2,fw2,fh2,fw2,fh2));if(o.rot){c.fillStyle='rgba(0,0,0,.35)';c.fillRect(-Math.round(fw2/3),4,Math.round(fw2*.66),3)}else{c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(0,6,Math.max(2,fw2*.22),1.4,0,0,6.283);c.fill();pintaSombra(c,sl,0,6,_sg,.34)}}c.drawImage(sc.cv,col*fw2,(si.dirs?row:0)*fh2,fw2,fh2,-Math.round(fw2/2),6-fh2,fw2,fh2)}
+  else{const dw2=Math.max(1,Math.round(dw)),th2=Math.max(1,Math.round(th)),kk=col+'_'+(si.dirs?row:0)+'_n'+dw2+'x'+th2;ch._sh=ch._sh||{};const sl=ch._sh[kk]||(ch._sh[kk]=silueta(ch.el,col*si.fw,row*si.fh,si.fw,si.fh,dw2,th2));if(o.rot){c.fillStyle='rgba(0,0,0,.35)';c.fillRect(-Math.round(dw2/3),4,Math.round(dw2*.66),3)}else{c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(0,6,Math.max(2,dw2*.22),1.4,0,0,6.283);c.fill();pintaSombra(c,sl,0,6,_sg,.34)}
+  c.drawImage(ch.el,col*si.fw,row*si.fh,si.fw,si.fh,-Math.round(dw/2),Math.round(6-th),Math.round(dw),Math.round(th))}c.restore();return}
  drawCrit(c,x,y,Math.cos(aim)<0,moving?Math.floor(animT)%2:0,st.pal,1.15+et*.2,st.forma,{et,rot:o.rot})}
 function battlerEl(st){const urls=imgUrls('btl',st.id);let i=0;const im=new Image();im.loading='lazy';im.alt=st.nombre;
  im.onerror=()=>{i++;if(i<urls.length)im.src=urls[i];else{const k=document.createElement('canvas');k.width=k.height=56;drawCrit(k.getContext('2d'),28,34,false,0,st.pal,2.3,st.forma,{et:0});im.replaceWith(k)}};im.src=urls[0];return im}
@@ -1542,7 +1570,7 @@ function musicLoop(){setTimeout(musicLoop,30);if(!AC)return;if(!save.cfg.musica|
 function drawCrit(c,x,y,flip,fr,pal,sc,forma,o){
  o=o||{};const f=o.flash;c.save();c.translate(Math.round(x),Math.round(y));if(o.rot)c.rotate(o.rot);c.scale(flip?-sc:sc,sc);
  const R=(col,a,b,w,h)=>{c.fillStyle=f?'#fff':col;c.fillRect(a,b,w,h)};const off=fr?1:0;
- c.fillStyle='rgba(0,0,0,.4)';c.fillRect(-5,4,10,3);
+ c.fillStyle='rgba(0,0,0,.4)';c.fillRect(-4,5,8,2);
  if(o.vuela){R(pal.acento,-5,-9+off*2,4,3);R(pal.acento,-5,2-off*2,4,3)}
  R(pal.oscuro,-4,3,2,2+off);R(pal.oscuro,2,3,2,3-off);
  R(pal.cuerpo,-5,-3,10,7);R(pal.claro,-3,0,6,3);R(pal.cuerpo,1,-7,7,6);R(pal.claro,6,-4,3,3);
@@ -1740,7 +1768,7 @@ function zombieSprite(z,v,fr,flash,tipo){const cache=z._sp||(z._sp={}),key=v+'|'
  sp=cache[key]={cv,ox:OX,oy:OY,top:parts.reduce((m,p)=>Math.min(m,p[2]),0)-2};return sp}
 function drawZombie(c,x,y,flip,fr,z,sc,o){o=o||{};const sp=zombieSprite(z,o.v||0,fr&3,!!o.flash,o.tipo),rx=Math.round(x),ry=Math.round(y);
  const _zd=zdis(z),_sw=_zd?ZD_SOMBRA[_zd]||8:7*sc,_ag=_zd?ZD_AURA[_zd]||[10,-3]:[10*sc,-3*sc];
- c.fillStyle='rgba(0,0,0,.38)';c.beginPath();c.ellipse(rx,ry+6*sc,_sw,2.4*sc,0,0,6.283);c.fill();
+ {const pie=ry+Math.round((sp.cv.height-sp.oy)*sc);c.fillStyle='rgba(0,0,0,.28)';c.beginPath();c.ellipse(rx,pie,_sw*.55,1.6*sc,0,0,6.283);c.fill();if(!sp.sh)sp.sh=silueta(sp.cv,0,0,sp.cv.width,sp.cv.height,sp.cv.width,sp.cv.height);c.save();c.translate(rx,pie);c.scale(flip?-sc:sc,sc);c.globalAlpha=.36;c.transform(1,0,-.55,-.34,0,0);c.drawImage(sp.sh,-sp.ox,-sp.cv.height);c.restore()}
  if(z.elec){c.globalCompositeOperation='lighter';c.fillStyle='rgba(90,200,255,'+(.10+.06*Math.sin((o.t||0)*12))+')';c.beginPath();c.arc(rx,ry-3*sc,11*sc,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
  if(o.tipo&&o.tipo!=='neutro'){c.globalCompositeOperation='lighter';c.globalAlpha=.13+.05*Math.sin((o.t||0)*4+rx);c.fillStyle=tzCol(o.tipo);c.beginPath();c.arc(rx,ry+_ag[1],_ag[0],0,6.283);c.fill();c.globalAlpha=1;c.globalCompositeOperation='source-over'}
  c.save();c.translate(rx,ry);c.scale(flip?-sc:sc,sc);c.drawImage(sp.cv,-sp.ox,-sp.oy);c.restore();if(o.tipo)tzBadge(c,rx,ry+Math.round(sp.top*sc)-6-Math.round(Math.max(0,sc-1)*4),o.tipo);
@@ -1996,7 +2024,14 @@ P3.tanque={h:24,paint(c,x,y,w,d,col){const r=w/2,cx=x+w/2,cy=y+d/2;
 P3.planta={h:34,paint(c,x,y,w,d,col){const cx=x+w/2,cy=y+d/2;boxF(c,cx-5,cy-5,0,10,10,9,'#8a5a3c');boxF(c,cx-6,cy-6,9,12,12,2,'#a06c48');
  const[X,Y]=pj(cx,cy,11);const L=[[0,-6,8,'#2f6a30'],[-7,-12,7,'#3a7a38'],[7,-13,7,'#36743a'],[0,-19,8,'#4a9a44'],[-4,-25,5,'#5cae52'],[5,-22,5,'#4a9a44']];
  for(const[a,b,r,co]of L)blobC(c,X+a,Y+b,r,co);c.fillStyle='#9acf70';c.fillRect(X+2,Y-28,2,2)}};
-P3.muro={h:HW,paint(c,x,y,w,d,col,p,ck){const pal=['#40383c','#37302f'],ch=ck||{x0:x,x1:x+w,y0:y,y1:y+d};
+P3.muro={h:HW,paint(c,x,y,w,d,col,p,ck){const z=p&&p.z;
+ /* el muro es parte de la pared: mismo color, textura y estilo que las paredes de su zona */
+ if(z){const WP=wallPal(z),tN=wallTex(z,'N'),tW=wallTex(z,'W'),uN=x-(z.x-8),uW=y-z.y;
+  boxF(c,x,y,0,w,d,HW,WP.base,{cs:WP.b2,ce:adj(WP.base,-.35),ct:adj(WP.hi,-.25),hi:false});
+  faceS(c,x,y+d,0,w,HW,(m,ww,hh)=>{m.drawImage(tN,uN,0,ww,hh,0,0,ww,hh);m.fillStyle='rgba(0,0,0,.05)';m.fillRect(0,0,ww,hh)});
+  faceE(c,x+w,y,0,d,HW,(m,ww,hh)=>{m.drawImage(tW,uW,0,ww,hh,0,0,ww,hh);m.fillStyle='rgba(0,0,0,.34)';m.fillRect(0,0,ww,hh)});
+  faceT(c,x,y,HW,w,d,m=>{Rr_(m)(adj(WP.hi,-.15),x,y,w,d);Rr_(m)('rgba(255,255,255,.18)',x,y,w,1);Rr_(m)('rgba(0,0,0,.22)',x,y+d-1,w,1)});return}
+ const pal=['#40383c','#37302f'],ch=ck||{x0:x,x1:x+w,y0:y,y1:y+d};
  boxF(c,x,y,0,w,d,HW,'#211d21');
  faceS(c,x,y+d,0,w,HW,(m,ww,hh)=>{const R=Rr_(m);R('#211d21',0,0,ww,hh);brick(R,x,ww,hh,pal,x);R('rgba(255,255,255,.1)',0,0,ww,1);R('rgba(0,0,0,.5)',0,hh-3,ww,3);R('rgba(0,0,0,.18)',0,0,ww,hh)});
  faceE(c,x+w,y,0,d,HW,(m,ww,hh)=>{const R=Rr_(m);R('#211d21',0,0,ww,hh);brick(R,y,ww,hh,['#342c30','#2b2527'],y);R('rgba(0,0,0,.42)',0,0,ww,hh)});
@@ -2379,7 +2414,7 @@ function drawEfectosHud(c){const L=[];if(G.instaT>0)L.push(['☠ MUERTE INSTANT�
 function drawHudWorld(c){
  for(const e of G.enemies){const[X,Y]=w2s(e.x,e.y,0),yb=Math.round(Y-15-e.r);
   if(e.hp<e.maxhp&&!e.boss){c.fillStyle='#300';c.fillRect(Math.round(X)-6,yb,12,2);c.fillStyle='#e33';c.fillRect(Math.round(X)-6,yb,Math.max(0,12*e.hp/e.maxhp),2)}
-  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.stopT,'#9ef'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(X)-6+k*3,yb-3,2,2);k++}}
+  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.stopT,'#9ef'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f'],[e.def.blindaje,'#bcc']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(X)-6+k*3,yb-3,2,2);k++}}
  // marcas de interacción
  for(const it of G.items){if(!iv(it)||(it.tipo==='puerta'&&(it.d.abierta||!(it.d.za.visto||it.d.zb.visto))))continue;const a=.4+.4*Math.sin(G.t*4+it.x),[X,Y]=w2s(it.x,it.y,it.tipo==='puerta'?HW+6:32);
   c.fillStyle=it.tipo==='puerta'?'rgba(255,200,60,'+a+')':it.tipo==='interruptor'&&!G.power?'rgba(255,60,60,'+a+')':'rgba(120,255,200,'+a*.7+')';c.fillRect(Math.round(X)-1,Math.round(Y),2,2)}
@@ -2580,8 +2615,8 @@ function ring(x,y,r,col,life){G.fx.push({t:'ring',x,y,r,color:col,life:life||.35
 function hit(e,d,m,ang,kn){if(e.muerto)return;e.lastP=G.act;let crit=false;
  if(!(m&&m.sinCrit)&&Math.random()<.08){d*=2;crit=true;G.st.crit++}
  if(e.marca>0)d*=1.25;
- const ef=m&&m.elem?tipoMult(m.elem,e.tipo):1;d*=ef;
- if(ef!==1&&G.t-(e.efT===undefined?-9:e.efT)>1.2){e.efT=G.t;txtL(e.x,e.y,24,ef>1?'¡Eficaz!':ef<.3?'Casi inmune':'Poco eficaz',ef>1?'#ffb02e':'#9ab')}
+ const ef=m&&m.elem?tipoMult(m.elem,e.tipo):1;d*=ef;if(e.def.blindaje&&ef<=1){d*=e.def.blindaje;if(G.t-(e.blT===undefined?-9:e.blT)>1.5){e.blT=G.t;txtL(e.x,e.y,34,'Blindaje','#aab')}}
+ if(ef!==1&&G.t-(e.efT===undefined?-9:e.efT)>1.2){e.efT=G.t;txtL(e.x,e.y,24,ef>1?'¡SÚPER EFICAZ!':ef<.3?'Casi inmune':'Poco eficaz',ef>1?'#6dff7a':'#9ab')}
  if(G.instaT>0&&!e.boss&&!e.jauria){if(esGrande(e))d*=INSTA_GRANDE;else d=Math.max(d,e.hp+1)}
  G.st.dano+=Math.round(Math.min(d,Math.max(0,e.hp)));e.hp-=d;e.flash=.08;
  if(kn&&!e.boss&&e.state!=='out'){const k=kn/Math.max(10,e.def.hp>80?3:1);moveE(e,Math.cos(ang)*k*.12,Math.sin(ang)*k*.12,e.def.vuela)}
@@ -2596,10 +2631,10 @@ function applyEfx(e,f,k){k=k||1;if(f==='quema')e.quema=3*k;else if(f==='lento')e
 function efecto(e,el){applyEfx(e,EFX[el]||'stun',1)}
 function killAs(e){const o=e.lastP|0;if(o===G.act)kill(e);else withPlayer(o,()=>kill(e))}
 function hitAs(o,e,d,m,a,k){if((o|0)===G.act)hit(e,d,m,a,k);else withPlayer(o,()=>hit(e,d,m,a,k))}
-function kill(e){if(e.muerto)return;e.muerto=true;G.kills++;if(e.def.bestia)bestiaSfx(e,'muerte',true);if(G.perros&&e.def.ladra&&rondaOn())G.spawnT=Math.max(G.spawnT,rnd(.8,1.6));earn(e.boss?500:40,e.x,e.y-20,'#ffd24a');
+function kill(e){if(e.muerto)return;e.muerto=true;G.kills++;if(e.def.bestia)bestiaSfx(e,'muerte',true);if(G.perros&&e.def.ladra&&rondaOn())G.spawnT=Math.max(G.spawnT,rnd(.8,1.6));if(!e.suicida)earn(e.boss?500:40,e.x,e.y-20,'#ffd24a');
  {G.candyAcc=(G.candyAcc||0)+Math.min(.95,((G.candyP||.3)+.01*mj('olfato'))*G.D.cand)*rnd(.2,1.8);if(G.candyAcc>=1){G.candyAcc-=1;addCandy(1)}}
  if(e.grupo){e.grupo.n--;if(e.grupo.n<=0){G.st.jefes++;const n=Math.max(1,Math.round(10*G.D.cand));addCandy(n);msg('¡Jefe derrotado! +'+n+' caramelos',3)}}
- if(e.def.explota&&!e.sinExp){ring(e.x,e.y,44,'#7df',.4);sfx('explosion');for(let i=0;i<G.players.length;i++)if(dist(e.x,e.y,G.players[i].P.x,G.players[i].P.y)<46)withPlayer(i,()=>hurt(15))}
+ if(e.def.explota&&!e.sinExp){const kz=e.def.kamikaze;ring(e.x,e.y,kz?52:44,kz?'#fa4':'#7df',.4);if(kz)partic(e.x,e.y,'#f84',16,90,.5,2);sfx('explosion');for(let i=0;i<G.players.length;i++)if(dist(e.x,e.y,G.players[i].P.x,G.players[i].P.y)<(kz?54:46))withPlayer(i,()=>hurt(kz?Math.round(e.dano*2):15))}
  {const dentro=e.state!=='out';
  const ultimoPerro=G.perros&&rondaOn()&&G.porSpawn<=0&&!G.bossPend&&!e.jauria&&G.enemies.every(o=>o===e||o.muerto);
  if(ultimoPerro){G.dropDone=true;soltarPremio(e,'muni')}
@@ -2889,7 +2924,7 @@ function useHab(){if(G.evo||G.telep||G.habCd>0||debil()||G.estado!=='ronda'&&G.e
 function moveVec(){let mx=0,my=0;if(keys.w||keys.arrowup)my--;if(keys.s||keys.arrowdown)my++;if(keys.a||keys.arrowleft)mx--;if(keys.d||keys.arrowright)mx++;return[mx,my]}
 
 /* ---------- Enemigos ---------- */
-function mk(def,x,y,state,bar,extra){const hm=Math.pow(1.1,G.round-1),vm=Math.min(2.2,Math.pow(1.05,G.round-1));
+function mk(def,x,y,state,bar,extra){const hm=hpRonda(G.round),vm=Math.min(2.2,Math.pow(1.05,G.round-1));
  const e=Object.assign({def,x,y,r:def.r,hp:def.hp*hm*G.D.hp,vel:def.vel*vm*G.D.vel,dano:def.dano*(1+.03*(G.round-1))*G.D.dano,state,bar,flash:0,cobro:0,cd:rnd(0,.5),anim:rnd(0,5),ang:0,quema:0,veneno:0,lento:0,stun:0,marca:0,vr:Math.random()*4|0},extra||{});if(!e.tipo)e.tipo=pickTipo(def);e.maxhp=e.hp;G.enemies.push(e);return e}
 /* Con el mapa grande, los zombis salen de las ventanas más cercanas al jugador (el 60% más próximo y a más de 150 px) */
 function pickBar(){const P=G.P;let ok=G.bars.filter(b=>b.z.abierta);if(ok.length<=3)return ok[Math.random()*ok.length|0];
@@ -2907,13 +2942,13 @@ function spawnPerroRayo(){const P=G.P;let best=null;
  dcx.fillStyle='rgba(10,10,14,.5)';dcx.beginPath();dcx.arc(x,y,7,0,6.283);dcx.fill();
  G.tflash=Math.max(G.tflash||0,.14);G.shake=Math.max(G.shake,.18);sfx('trueno');
  const e=mk(ENE.perro,x,y,'in',null);e.cd=.7;e.bk=rnd(.6,1.6);setTimeout(()=>{if(G&&!e.muerto)dogSfx(e,'ladra')},350)}
-function spawnEnemy(){if(G.perros){spawnPerroRayo();return}const el=ENEMIGOS.filter(d=>!d.soloJefe&&G.round>=d.desde&&(!d.soloEnergia||G.power));let tot=0;el.forEach(d=>tot+=d.peso);let r=Math.random()*tot,def=el[0];for(const d of el){r-=d.peso;if(r<=0){def=d;break}}
+function spawnEnemy(){if(G.perros){spawnPerroRayo();return}const el=ENEMIGOS.filter(d=>!d.soloJefe&&G.round>=d.desde&&(!d.hasta||G.round<=d.hasta)&&(!d.soloEnergia||G.power));let tot=0;el.forEach(d=>tot+=d.peso);let r=Math.random()*tot,def=el[0];for(const d of el){r-=d.peso;if(r<=0){def=d;break}}
  const b=pickBar();if(def.vuela)mk(def,b.ix,b.iy,'in',b);else mk(def,b.ox,b.oy,'out',b)}
 /* Rondas de jefe: las del campo ronda de JEFES; pasada la última, uno al azar cada 5 rondas */
 function esRondaJefe(r){if(JEFES.some(j=>j.ronda===r))return true;const u=Math.max(...JEFES.map(j=>j.ronda));return r>u&&(r-u)%5===0}
 function spawnBoss(){const j=JEFES.find(x=>x.ronda===G.round)||JEFES[Math.random()*JEFES.length|0];const b=pickBar();msg('¡JEFE: '+j.nombre+'!',3.5);sfx('jefe');
  if(j.ia==='jauria'){const n=Math.min(MAX_PERROS,3+Math.floor(G.round/10)),grupo={n};for(let i=0;i<n;i++){const bb=pickBar();mk(ENE.perroJ,bb.ix,bb.iy,'in',bb,{grupo,jauria:true})}return}
- const hm=Math.pow(1.1,G.round-1);const def={id:'jefe',nombre:j.nombre,hp:j.hp,vel:j.vel,dano:j.dano,r:j.r,z:j.z,bestia:j.bestia};
+ const hm=hpRonda(G.round);const def={id:'jefe',nombre:j.nombre,hp:j.hp,vel:j.vel,dano:j.dano,r:j.r,z:j.z,bestia:j.bestia};
  const e=mk(def,b.ix,b.iy,'in',b,{boss:true,tipo:j.tipo,grupo:{n:1},ia:j.ia,bt:3,bt2:1.5,bs:'chase',cdb:3});e.hp=e.maxhp=j.hp*hm*G.D.hp;e.vel=j.vel*G.D.vel;e.dano=j.dano*(1+.03*(G.round-1))*G.D.dano;if(j.bestia){setTimeout(()=>{if(G&&!e.muerto)bestiaSfx(e,'rugido',true)},450)}}
 function startRound(){G.round++;forPl(()=>{if(G.round===2&&G.smPend){const id=G.smPend;G.smPend=null;if(!G.own.has(id)){msg('¡Tu criatura ha aprendido '+MOV[id].nombre+'!',3.5);sfx('evo');learn(id,0,null,true)}}{const n=Math.min(GRAN_MAX,G.granadas+2)-G.granadas;if(n>0){G.granadas+=n;txtL(G.P.x,G.P.y,22,'+'+n+' granadas','#ffb070')}}});const fxN=1+ZOMBIS_EXTRA_POR_JUGADOR*(G.players.filter(p=>!p.ausente).length-1);G.porSpawn=Math.max(3,Math.round((6+2*(G.round-1))*G.D.cant*fxN));G.spawnT=2;G.estado='ronda';G.cap=Math.min(Math.round(30*fxN),Math.round((10+G.round*2)*fxN));
  G.candyP=Math.min(.9,(G.round<=10?CANDY_R1:CANDY_R2)/Math.max(1,G.porSpawn));G.perros=RONDAS_PERROS.includes(G.round);G.rKills=0;G.dropDone=Math.random()>=PREMIO_PROB;G.dropN=Math.max(2,Math.round(G.porSpawn*rnd(.25,.85)));if(esRondaJefe(G.round)){G.bossPend=true;G.bossT=3}if(G.perros){G.spawnT=3.5}banner(roman(G.round));sfx('ronda');
@@ -2985,6 +3020,15 @@ function drawEOrb(c,X,Y,b,sombra){const t=G.t*9+b.x*.07,R=5.8*(1+.16*Math.sin(t)
  c.globalCompositeOperation='source-over';c.fillStyle='#2a0a40';c.beginPath();c.arc(X,Y,R+1.6,0,6.283);c.fill();
  c.fillStyle='#e02cff';c.beginPath();c.arc(X,Y,R,0,6.283);c.fill();c.fillStyle='#ff9bff';c.beginPath();c.arc(X-R*.12,Y-R*.12,R*.62,0,6.283);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(X-R*.2,Y-R*.22,R*.32,0,6.283);c.fill();c.restore()}
 function ebullet(x,y,a,v,d){G.eb.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,dano:d,life:4,r:3})}
+/* Zombi escupidor: se queda a def.escupe.dist px y lanza una bola cada def.escupe.cd s si te ve */
+function escupidorAI(e,dt,sp){const P=G.P,D=e.def.escupe,d=dist(e.x,e.y,P.x,P.y);chase(e,sp,dt,D.dist);
+ e.bt=(e.bt===undefined?rnd(.6,D.cd):e.bt)-dt;
+ if(e.bt<=0&&d<D.dist*1.8&&los(e.x,e.y,P.x,P.y,null)){ebullet(e.x,e.y,Math.atan2(P.y-e.y,P.x-e.x),D.vel,e.dano);e.bt=D.cd;partic(e.x,e.y,'#9d4',5,50,.3,1)}}
+/* Zombi curandero: se queda a distancia y cura a los zombis heridos que tenga cerca */
+function curanderoAI(e,dt,sp){const D=e.def.cura;chase(e,sp,dt,90);
+ e.bt=(e.bt===undefined?rnd(1,D.cd):e.bt)-dt;
+ if(e.bt<=0){let n=0;for(const o of G.enemies){if(o===e||o.muerto||o.boss||o.jauria||o.state==='out'||o.hp>=o.maxhp)continue;if(dist(o.x,o.y,e.x,e.y)>D.radio)continue;o.hp=Math.min(o.maxhp,o.hp+o.maxhp*D.pct);n++;partic(o.x,o.y,'#7f7',4,40,.4,1)}
+  if(n){ring(e.x,e.y,D.radio*.5,'#7f7',.5);sfx('reparar')}e.bt=n?D.cd:.6}}
 function bossAI(e,dt,sp){const P=G.P,d=dist(e.x,e.y,P.x,P.y);
  if(e.ia==='embiste'){e.cdb-=dt;
   if(e.bs==='dash'){e.bt-=dt;const mv=moveE(e,e.dvx*dt,e.dvy*dt,false);if(!e.dh&&d<e.r+P.r+2){hurt(e.dano);e.dh=true}if(e.bt<=0||!mv){e.bs='rec';e.bt=1;e.dh=false}}
@@ -3004,13 +3048,13 @@ function updEnemies(dt){const N=G.players.length;G.bossRef=null;if(N>1)for(const
   if(e.state==='out'){const b=e.bar;e.ang=Math.atan2(b.iy-e.y,b.ix-e.x);
    if(b.hp>0){if(e.cd<=0){b.hp=Math.max(0,b.hp-18);e.cd=1;sfx('madera')}}
    else{const a=Math.atan2(b.iy-e.y,b.ix-e.x);e.x+=Math.cos(a)*sp*dt;e.y+=Math.sin(a)*sp*dt;if(dist(e.x,e.y,b.ix,b.iy)<4)e.state='in'}continue}
-  if(e.boss)bossAI(e,dt,sp);else chase(e,sp,dt);
+  if(e.boss)bossAI(e,dt,sp);else if(e.def.escupe)escupidorAI(e,dt,sp);else if(e.def.cura)curanderoAI(e,dt,sp);else chase(e,sp,dt);
   vigilarAtasco(e,dt,sp);if(ESC.length)escEnemigo(e,dt);
   if(HAY_ALTO){const zz=zoneAt(e.x,e.y);if(zz&&zz.alto&&zz!==zoneP()){const b=pickBar();if(b){partic(e.x,e.y,'#555',6,40,.3,1);e.x=b.ix;e.y=b.iy;e.state='in'}}}
   if(e.def.bestia)bestiaTick(e,dt);
   if(e.def.ladra){e.bk=(e.bk===undefined?rnd(.6,1.6):e.bk)-dt;if(e.bk<=0){dogSfx(e,Math.random()<.3?'gru':'ladra');e.bk=rnd(1.4,3.4)}}
   {const dd=dist(e.x,e.y,P.x,P.y),minD=e.r+P.r;if(dd<minD&&!debil()){const a2=dd>.01?Math.atan2(e.y-P.y,e.x-P.x):rnd(0,6.283),nx=P.x+Math.cos(a2)*minD,ny=P.y+Math.sin(a2)*minD;if(okPos(nx,ny,e.r,e.def.vuela)){e.x=nx;e.y=ny}else moveE(P,-Math.cos(a2)*(minD-dd)*.6,-Math.sin(a2)*(minD-dd)*.6,false)}}
-  const d=dist(e.x,e.y,P.x,P.y);if(d<e.r+P.r+3&&e.cd<=0&&!debil()){hurt(e.dano);e.cd=.9;if(e.def.ladra)dogSfx(e,'gru')}}
+  const d=dist(e.x,e.y,P.x,P.y);if(d<e.r+P.r+3&&e.cd<=0&&!debil()){if(e.def.kamikaze){e.suicida=true;killAs(e);continue}hurt(e.dano);e.cd=.9;if(e.def.ladra)dogSfx(e,'gru')}}
  setActive(0);G.enemies=G.enemies.filter(e=>!e.muerto)}
 
 /* ---------- Interacción ---------- */
@@ -3241,9 +3285,10 @@ function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(m
  $('hpfill').style.width=(Math.max(0,P.hp)/g.maxHp*100)+'%';setT($('hptxt'),Math.ceil(Math.max(0,P.hp))+'/'+g.maxHp);setT($('lives'),'♥'.repeat(Math.max(0,g.lives))+(g.habCd>0?'  Q '+Math.ceil(g.habCd)+'s':'  Q listo ('+HABS[g.cr.hab].nombre+')'));
  const ps=g.perks.join(',');const pe=$('perks');if(pe._s!==ps){pe._s=ps;pe.innerHTML=g.perks.map(p=>'<b style="background:'+BAYA[p].color+'" title="'+BAYA[p].nombre+'">'+BAYA[p].nombre[0]+'</b>').join('')}
  const sl=$('slots'),now=g.t*1000;let sig='';const parts=[];
- for(let i=0;i<g.nSlots;i++){const id=g.slots[i];let h='<b>'+(i+1)+'</b>',w=0,cd=false;if(id){const m=MOV[id],s=g.ms[id],E=eff(id);h+='<u>'+m.nombre+(s.mt?' ★':'')+'</u>';if(s.rel>0){w=100-s.rel/(E.rec/1000)*100;cd=true;h+=' ↻'}else if(m.pp){w=s.pp/m.pp*100;h+=' '+s.pp+'/'+s.res}else{w=Math.min(100,(now-s.last)/E.cad*100);cd=w<100;if(!sinLimite(m))h+=' ×'+s.res}}else h+='<u style="opacity:.4">—</u>';
-  parts.push([h,Math.round(w/5)*5,cd,i===g.cur,id?tipoColor(MOV[id].elem):'#444'])}
- sig=JSON.stringify(parts);if(sl._sig!==sig){sl._sig=sig;[...sl.children].forEach((d,i)=>{const p=parts[i];d.className='sl'+(p[3]?' on':'')+(p[2]?' cd':'');d.style.setProperty('--tc',p[4]);d.innerHTML=p[0]+'<s style="width:'+p[1]+'%"></s>'})}
+ let tz=null;if(AVISO_EFICAZ){let bd=1e9;const aim=g.aim||0;for(const e of g.enemies){if(e.muerto)continue;const dx=e.x-P.x,dy=e.y-P.y,dd=Math.hypot(dx,dy);if(dd>AVISO_DIST)continue;let da=Math.abs(Math.atan2(dy,dx)-aim);if(da>Math.PI)da=6.283-da;const sc=dd*(1+.5*da/Math.PI);if(sc<bd){bd=sc;tz=e}}}
+ for(let i=0;i<g.nSlots;i++){const id=g.slots[i];let h='<b>'+(i+1)+'</b>',w=0,cd=false,mk='';if(id){const m=MOV[id],s=g.ms[id],E=eff(id);h+='<u>'+m.nombre+(s.mt?' ★':'')+'</u>';if(s.rel>0){w=100-s.rel/(E.rec/1000)*100;cd=true;h+=' ↻'}else if(m.pp){w=s.pp/m.pp*100;h+=' '+s.pp+'/'+s.res}else{w=Math.min(100,(now-s.last)/E.cad*100);cd=w<100;if(!sinLimite(m))h+=' ×'+s.res}if(tz&&m.elem&&m.modo!=='cura'){const ef=tipoMult(m.elem,tz.tipo);if(ef>1){mk='sup';h+='<i class="ef">▲</i>'}else if(ef<.3){mk='inm';h+='<i class="ef">✖</i>'}else if(ef<1){mk='poc';h+='<i class="ef">▼</i>'}}}else h+='<u style="opacity:.4">—</u>';
+  parts.push([h,Math.round(w/5)*5,cd,i===g.cur,id?tipoColor(MOV[id].elem):'#444',mk])}
+ sig=JSON.stringify(parts);if(sl._sig!==sig){sl._sig=sig;[...sl.children].forEach((d,i)=>{const p=parts[i];d.className='sl'+(p[3]?' on':'')+(p[2]?' cd':'')+(p[5]?' '+p[5]:'');d.style.setProperty('--tc',p[4]);d.innerHTML=p[0]+'<s style="width:'+p[1]+'%"></s>'})}
  const bo=g.bossRef,bd=$('boss');if(bo){bd.style.display='block';setT($('bossname'),bo.def.nombre);$('bossfill').style.width=Math.max(0,bo.hp/bo.maxhp*100)+'%'}else bd.style.display='none';
  if(g.msgT>0){g.msgT-=hudDt}else $('msg').style.display='none';
  let pt='';if(!debil()){const al=aliadoCaido(),it=nearItem();pt=al?(touchOn?'Mantén [E] para revivir…':'Mantén [E] para revivir a J'+numJ(al.idx)+' ('+Math.ceil(REVIVIR_TIEMPO-al.revP)+' s)'):it?itemPrompt(it):nearBar()?(g.repLatch?'Reparando… toca [E] para parar':touchOn?'Toca [E] para reparar':'Mantén [E] para poner tablones (+5 ₽ cada uno)'):''}else if(g.players.length>1&&!g.players[0].out){const p0=g.players[0];pt=p0.espera?'Caído: vuelves al empezar la siguiente ronda':'Caído: tu compañero puede revivirte ('+Math.ceil(p0.revT)+' s)'}const pr=$('prompt');if(pt){pr.style.display='block';setT(pr,pt)}else pr.style.display='none';hudJ2()}
@@ -3433,7 +3478,7 @@ function drawEntities_old(){const c=ctx,P=G.P;const list=G.enemies.map(e=>[e.y,e
   const sc=Math.max(.85,e.r/6),sh=e.bs==='wind'?rnd(-1.5,1.5):0;if(e.boss){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,40,40,'+(.12+.07*Math.sin(G.t*5))+')';c.beginPath();c.arc(e.x,e.y-3,e.r*2.1,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
   drawZombie(c,e.x+sh,e.y,Math.cos(e.ang)<0,Math.floor(e.anim)%4,e.def.z,sc,{flash:e.flash>0,t:G.t,v:e.vr,tipo:e.tipo});
   if(e.hp<e.maxhp&&!e.boss){c.fillStyle='#300';c.fillRect(Math.round(e.x)-6,Math.round(e.y-e.r-9),12,2);c.fillStyle='#e33';c.fillRect(Math.round(e.x)-6,Math.round(e.y-e.r-9),Math.max(0,12*e.hp/e.maxhp),2)}
-  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.stopT,'#9ef'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(e.x)-6+k*3,Math.round(e.y-e.r-12),2,2);k++}
+  let k=0;const st=[[e.quema,'#f82'],[e.lento,'#6cf'],[e.stopT,'#9ef'],[e.veneno,'#a4d'],[e.stun,'#ff4'],[e.marca,'#d8f'],[e.def.blindaje,'#bcc']];for(const[v,col]of st)if(v>0){c.fillStyle=col;c.fillRect(Math.round(e.x)-6+k*3,Math.round(e.y-e.r-12),2,2);k++}
   }}
 function drawPlayer_old(){const c=ctx,P=G.P;if(G.inv>0&&!debil()&&Math.floor(G.t*14)%2)return;const sc=1.15+G.et*.2;
  if(G.evo){const k=Math.min(1,G.evo.t/1.8);c.globalCompositeOperation='lighter';c.globalAlpha=.25+.35*k;c.fillStyle='#bdf';c.beginPath();c.arc(P.x,P.y,10+k*18+Math.sin(G.t*20)*2,0,6.283);c.fill();c.globalAlpha=1;c.globalCompositeOperation='source-over'}
@@ -3509,7 +3554,7 @@ function render_old(){ctx.imageSmoothingEnabled=false;ctx.fillStyle='#000';ctx.f
 /* Minimapa (tecla M): zonas, puertas (amarillo = de pago, rojo = de energía, verde = abierta), Caja, Máquina de MT, teleportador e interruptor de energía */
 /* salas visitadas: se marcan al pisarlas cualquier jugador (solo afecta al minimapa) */
 function markPis(){if(!G||!G.players)return;for(const p of G.players){if(p.out||!p.P)continue;const z=zoneAt(p.P.x,p.P.y);if(z)z.pis=true}if(G.P){const z=zoneAt(G.P.x,G.P.y);if(z)z.pis=true}}
-function drawMini(){if(!G.mini)return;const c=ctx,s=1/20,mw=Math.round(WW*s),mh=Math.round(WH*s),mx=W-mw-8,my=32;
+function drawMini(){if(!G.mini||!G.perks.includes('radar'))return;const c=ctx,s=1/20,mw=Math.round(WW*s),mh=Math.round(WH*s),mx=W-mw-8,my=32;
  /* todo en píxeles enteros para que el minimapa se vea nítido (sin bordes difuminados) */
  const R=(x,y,w,h,mn)=>{const x0=Math.round(mx+x*s),y0=Math.round(my+y*s),x1=Math.round(mx+(x+w)*s),y1=Math.round(my+(y+h)*s);c.fillRect(x0,y0,Math.max(mn||1,x1-x0),Math.max(mn||1,y1-y0))};
  const D=(x,y)=>c.fillRect(Math.round(mx+x*s)-1,Math.round(my+y*s)-1,3,3);
@@ -3707,8 +3752,8 @@ async function rkCarga(){const L=$('rkLista');L.textContent='Cargando…';
  try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;const d=await r.json();
   if(!d.length){L.textContent='Aún no hay récords con estos filtros.';return}
   const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},B='border-top:1px solid rgba(128,128,128,.3);padding:3px 4px';
-  L.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="opacity:.6;text-align:left"><th>#</th><th>Jugador</th><th>Puntos</th><th>Ronda</th><th>Bajas</th><th>Tiempo</th><th>Criatura</th></tr>'
-   +d.map((x,i)=>'<tr><td style="'+B+'">'+(i+1)+'</td><td style="'+B+'"><b>'+rkEsc(x.nick)+'</b>'+(x.modo==='coop'?' 👥':'')+'</td><td style="'+B+'">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td style="'+B+'">'+(+x.ronda)+'</td><td style="'+B+'">'+(+x.zombies_matados)+'</td><td style="'+B+'">'+T(x.duracion_seg)+'</td><td style="'+B+'">'+rkEsc(x.criatura)+'</td></tr>').join('')+'</table>'}
+  L.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="opacity:.6;text-align:left"><th>#</th><th>Jugador</th><th>Mapa</th><th>Puntos</th><th>Ronda</th><th>Bajas</th><th>Tiempo</th><th>Criatura</th></tr>'
+   +d.map((x,i)=>'<tr><td style="'+B+'">'+(i+1)+'</td><td style="'+B+'"><b>'+rkEsc(x.nick)+'</b>'+(x.modo==='coop'?' 👥':'')+'</td><td style="'+B+'">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td style="'+B+'">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td style="'+B+'">'+(+x.ronda)+'</td><td style="'+B+'">'+(+x.zombies_matados)+'</td><td style="'+B+'">'+T(x.duracion_seg)+'</td><td style="'+B+'">'+rkEsc(x.criatura)+'</td></tr>').join('')+'</table>'}
  catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
 $('mRank').onclick=()=>{audioInit();rkAbre('menu')};
 $('rkVer').onclick=()=>rkAbre('fin');
