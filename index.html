@@ -39,6 +39,7 @@ canvas#c{image-rendering:pixelated;display:block;width:100%;height:100%;backgrou
 #pauseBtn{position:fixed;top:6px;right:6px;z-index:9;width:36px;height:36px;border-radius:6px;border:2px solid rgba(255,255,255,.4);background:rgba(20,20,30,.6);color:#fff;font:bold 14px monospace;display:none}
 body.jugando #pauseBtn{display:block}
 #touch{position:fixed;inset:0;z-index:5;display:none}
+body.noBW #bW,body.noBW #ctrlEdit .cb[data-b=W]{display:none!important}
 body.touch.jugando #touch{display:block}
 .stk{position:fixed;width:112px;height:112px;margin:-56px 0 0 -56px;border:2px solid rgba(255,255,255,.6);border-radius:50%;display:none;pointer-events:none;z-index:7;opacity:var(--op,.7);background:radial-gradient(circle,rgba(255,255,255,.12),rgba(255,255,255,.03) 70%);box-shadow:inset 0 0 0 6px rgba(0,0,0,.18)}
 .ghost{position:fixed;width:112px;height:112px;border:2px dashed rgba(255,255,255,.4);border-radius:50%;z-index:4;display:none;pointer-events:none;opacity:calc(var(--op,.7)*.65);font:bold 10px "Courier New",monospace;color:#fff;align-items:center;justify-content:center;text-align:center;letter-spacing:.5px}
@@ -351,6 +352,9 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <div class="opc"><button class="btn sm" id="mPing"></button></div>
   <div class="opc soloTactil">Opacidad de los controles táctiles <input type="range" id="mOp" min="20" max="100" step="5" style="width:150px"> <b id="mOpv"></b></div>
   <div class="opc soloTactil"><button class="btn sm" id="mEditCtrl">🎛 Colocar botones</button> <button class="btn sm" id="mFull">⛶ Pantalla completa</button></div></div>
+ <div class="setCard"><h3>Combate</h3>
+  <div class="opc"><button class="btn sm" id="mAuto"></button></div>
+  <div class="opc soloTactil"><button class="btn sm" id="mBW"></button></div></div>
  <button class="btn" id="ajBack">Volver</button></div>
 <div class="screen" id="mapSel">
  <div class="stepper"><span class="on"><b>1</b>Mapa</span><i></i><span><b>2</b>Criatura</span></div>
@@ -405,6 +409,9 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
 <button class="btn" id="aBack">Volver</button></div>
 <div class="screen" id="pausa"><h2>Pausa</h2><button class="btn" id="pCont">Continuar</button><button class="btn" id="pAjBtn">⚙ Ajustes</button><button class="btn sm" id="pVerCtrl">Ver controles</button><button class="btn sm" id="pGuardar">💾 Guardar partida (JSON)</button><div id="pCtrl" style="display:none"><b>Controles</b><br>WASD / flechas: mover · Ratón: apuntar · Clic o Espacio: atacar<br>1-5, rueda del ratón o Z/X: cambiar de movimiento · R: recargar · G: granada<br>E: interactuar (mantén E para reparar barricadas) · Q: habilidad especial<br>M: minimapa (con bebida Radar) · P / Esc: pausa<br>Minimapa: amarillo = puerta de pago · rojo = puerta de energía / interruptor · verde = abierta · rosa = Caja · turquesa = Máquina de MT · azul claro = teleportador · azul = base de vuelta (verde si está activada)</div><button class="btn" id="pMenu">Abandonar partida</button></div>
 <div class="screen" id="pAjustes"><h2>⚙ Ajustes</h2>
+ <div class="setCard"><h3>Combate</h3>
+  <div class="opc"><button class="btn sm" id="pAuto"></button></div>
+  <div class="opc soloTactil"><button class="btn sm" id="pBW"></button></div></div>
  <div class="setCard"><h3>Sonido</h3>
   <div class="opc">Volumen música <input type="range" id="pVm" min="0" max="100" step="5" style="width:150px"> <b id="pVmv"></b></div>
   <div class="opc">Volumen efectos <input type="range" id="pVs" min="0" max="100" step="5" style="width:150px"> <b id="pVsv"></b></div></div>
@@ -1188,6 +1195,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.46   Autodisparo opcional (apunta y dispara al enemigo más cercano; en móvil quita el joystick derecho) y opción móvil para ocultar el botón de cambiar de arma
    1.45   Ranking con fecha/hora y vista 'Mis récords', envío del mapa más seguro, sin Récords/Cargar partida en el menú, ping de cada jugador en online (opcional en Ajustes)
    1.44   Ranking con columna de nº de jugadores y vista móvil compacta, subtítulo y 'Cómo se juega' generales (no dependen del mapa)
    1.43   Mapas sin avisos por .png/.txt, tipo Neutro -> Normal, diseños propios para cada zombi
@@ -1203,7 +1211,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.45';
+const VERSION='1.46';
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
 const SB_URL='https://oklqhmtpcrdmvorzsmke.supabase.co',SB_KEY='sb_publishable_w_wqwaMs1NgWBrPizN1fxA_xFYx9oOH';
@@ -2768,6 +2776,13 @@ function trail(b){const el=b.m.elem;if(Math.random()<.75){
  else if(el==='planta')pfx(b.x,b.y,rnd(-14,14),rnd(-14,14),'#8e4',.32,1,0);
  else if(el==='electrico')pfx(b.x+rnd(-3,3),b.y+rnd(-3,3),0,0,'#ff8',.12,1,0);
  else pfx(b.x,b.y,0,0,b.color,.22,1,0)}}
+/* Autodisparo (opcional): apunta al enemigo más cercano a la vista y dispara cuando está al alcance del arma actual */
+const AUTO_VISTA=360;
+function autoApunta(P){if(save.cfg.autoDisparo!==true||!G)return null;const g=G,id=g.slots[g.cur];if(!id||!MOV[id]||debil())return null;const m=MOV[id];
+ if(m.modo==='cura')return{t:false,fire:P.hp<g.maxHp*.9};
+ const E=eff(id),Z=zoneP();let best=null,bd=AUTO_VISTA;
+ for(const e of g.enemies){if(e.muerto||e.state==='out')continue;const d=dist(e.x,e.y,P.x,P.y);if(d<bd&&los(P.x,P.y,e.x,e.y,Z)){best=e;bd=d}}
+ if(!best)return null;return{t:true,aim:Math.atan2(best.y-P.y,best.x-P.x),fire:bd-best.r<=E.rango}}
 function fire(){const id=G.slots[G.cur];if(!id||debil()||G.evo||G.telep)return;const m=MOV[id],s=G.ms[id],E=eff(id),now=G.t*1000;
  if(s.rel>0||now-s.last<E.cad)return;
  if(m.pp){if(s.pp<=0){if(s.res>0)startReload(id);else{sinMuni(m);fallbackWeapon()}return}}else if(!sinLimite(m)&&s.res<=0){sinMuni(m);fallbackWeapon();return}
@@ -3221,7 +3236,7 @@ function buildSel(){const box=$('cards');box.innerHTML='';
   const bars=[['PV',S.hp,'#ee5555'],['Ataque',S.atk,'#ff9933'],['Defensa',S.def,'#ffcc44'],['Velocidad',S.spe,'#55ccff'],['At. Esp.',S.spa,'#aa77ff'],['Def. Esp.',S.spd,'#77dd99']].map(([l,v,col])=>'<span>'+l+'</span><span class="sb"><i style="width:'+Math.min(100,v/mx*100)+'%;background:'+col+'"></i></span><span class="sv">'+v+'</span>').join('');
   const det=$('selDet');det.innerHTML='';det.style.setProperty('--tc',tipoColor(c.tipos[0]));det.appendChild(battlerEl(st));
   det.insertAdjacentHTML('beforeend','<div class="dN">'+st.nombre+'</div>'+chipsHtml(c.tipos)+(c.stages.length>1?'<div class="dEv">'+c.stages.map((s,i)=>i===et?'<em>'+s.nombre+'</em>':s.nombre).join(' → ')+'</div>':'')+(st.dex?'<div class="dDex">'+st.dex+'</div>':'')+'<div class="stats">'+bars+'</div><div class="dEsp">✨ Especial (Q): <b>'+HABS[habFor(c,et)].nombre+'</b></div>')}}
-function refreshMenu(){const _vt=$('verTag');if(_vt)_vt.textContent='v.'+VERSION;$('mNom').textContent='Nombres sobre los jugadores: '+(save.cfg.verNombres!==false?'sí':'no');$('mPing').textContent='Ping de los jugadores (online): '+(save.cfg.verPing!==false?'sí':'no');$('mSfx').textContent='Efectos: '+(save.cfg.sfx?'sí':'no');$('mMus').textContent='Música: '+(save.cfg.musica?'sí':'no');$('mTema').textContent='Tema: '+save.cfg.tema;document.body.dataset.tema=save.cfg.tema;document.documentElement.style.setProperty('--op',save.cfg.opac/100);$('mVm').value=$('pVm').value=save.cfg.volMus;$('mVmv').textContent=$('pVmv').textContent=save.cfg.volMus+'%';$('mVs').value=$('pVs').value=save.cfg.volSfx;$('mVsv').textContent=$('pVsv').textContent=save.cfg.volSfx+'%';$('mOp').value=$('pOp').value=save.cfg.opac;$('mOpv').textContent=$('pOpv').textContent=save.cfg.opac+'%'}
+function refreshMenu(){const _vt=$('verTag');if(_vt)_vt.textContent='v.'+VERSION;$('mNom').textContent='Nombres sobre los jugadores: '+(save.cfg.verNombres!==false?'sí':'no');$('mAuto').textContent=$('pAuto').textContent='Autodisparo: '+(save.cfg.autoDisparo===true?'sí':'no');$('mBW').textContent=$('pBW').textContent='Botón de cambiar arma: '+(save.cfg.btnArma!==false?'sí':'no');document.body.classList.toggle('noBW',save.cfg.btnArma===false);document.body.classList.toggle('autoD',save.cfg.autoDisparo===true);$('mPing').textContent='Ping de los jugadores (online): '+(save.cfg.verPing!==false?'sí':'no');$('mSfx').textContent='Efectos: '+(save.cfg.sfx?'sí':'no');$('mMus').textContent='Música: '+(save.cfg.musica?'sí':'no');$('mTema').textContent='Tema: '+save.cfg.tema;document.body.dataset.tema=save.cfg.tema;document.documentElement.style.setProperty('--op',save.cfg.opac/100);$('mVm').value=$('pVm').value=save.cfg.volMus;$('mVmv').textContent=$('pVmv').textContent=save.cfg.volMus+'%';$('mVs').value=$('pVs').value=save.cfg.volSfx;$('mVsv').textContent=$('pVsv').textContent=save.cfg.volSfx+'%';$('mOp').value=$('pOp').value=save.cfg.opac;$('mOpv').textContent=$('pOpv').textContent=save.cfg.opac+'%'}
 function refreshDif(){const k=difKey();document.querySelectorAll('#difRow [data-d]').forEach(b=>b.classList.toggle('act',b.dataset.d===k));$('difDesc').textContent=DIFS[k].desc}
 document.querySelectorAll('#difRow [data-d]').forEach(b=>b.onclick=()=>{save.cfg.dif=b.dataset.d;persist();refreshDif()});
 function buildShop(){$('tiendaCand').innerHTML='Caramelos disponibles: <b>🍬 '+save.wallet+'</b>';const box=$('tiendaL');box.innerHTML='';
@@ -3249,7 +3264,7 @@ function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
 $('mAyuda').onclick=()=>show('ayuda');$('aBack').onclick=()=>show('menu');
 $('mAjustes').onclick=()=>show('ajustes');$('ajBack').onclick=()=>show('menu');$('mSfx').onclick=()=>{save.cfg.sfx=!save.cfg.sfx;persist();refreshMenu()};$('mMus').onclick=()=>{save.cfg.musica=!save.cfg.musica;persist();refreshMenu()};
 $('mTema').onclick=()=>{save.cfg.tema=save.cfg.tema==='oscuro'?'claro':'oscuro';persist();refreshMenu()};
-$('mNom').onclick=()=>{save.cfg.verNombres=(save.cfg.verNombres===false);persist();refreshMenu()};$('mPing').onclick=()=>{save.cfg.verPing=(save.cfg.verPing===false);persist();refreshMenu();netSt()};
+$('mNom').onclick=()=>{save.cfg.verNombres=(save.cfg.verNombres===false);persist();refreshMenu()};$('mAuto').onclick=$('pAuto').onclick=()=>{save.cfg.autoDisparo=(save.cfg.autoDisparo!==true);for(const k of['l','r']){const st=sticks[k];if(st.id!==null){st.id=null;st.x=st.y=0;$(k==='l'?'stkL':'stkR').style.display='none'}}persist();refreshMenu()};$('mBW').onclick=$('pBW').onclick=()=>{save.cfg.btnArma=(save.cfg.btnArma===false);persist();refreshMenu()};$('mPing').onclick=()=>{save.cfg.verPing=(save.cfg.verPing===false);persist();refreshMenu();netSt()};
 ['mVm','pVm'].forEach(id=>{$(id).addEventListener('input',e=>{audioInit();save.cfg.volMus=+e.target.value;persist();applyVol();refreshMenu()})});
 ['mVs','pVs'].forEach(id=>{$(id).addEventListener('input',e=>{audioInit();save.cfg.volSfx=+e.target.value;persist();applyVol();refreshMenu()});$(id).addEventListener('change',()=>sfx('comprar'))});
 ['mOp','pOp'].forEach(id=>{$(id).addEventListener('input',e=>{save.cfg.opac=+e.target.value;persist();refreshMenu()})});
@@ -3309,7 +3324,7 @@ window.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){cpos(e);if
 window.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button===0){cpos(e);if(G&&!G.pausa&&G.estado!=='fin')mouse.down=true}else if(e.pointerType==='touch'&&!touchOn){touchOn=true;document.body.classList.add('touch')}});
 window.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')mouse.down=false});
 const tz=$('touch');
-tz.addEventListener('pointerdown',e=>{if(!G||G.pausa)return;{const sl=$('slots').children;for(let i=0;i<sl.length;i++){const r=sl[i].getBoundingClientRect(),m=6;if(e.clientX>=r.left-m&&e.clientX<=r.right+m&&e.clientY>=r.top-m&&e.clientY<=r.bottom+m){const k=+sl[i].dataset.i;if(G.slots[k]&&k!==G.cur&&G.estado!=='fin'){sfx('cambio');setCur(k)}e.preventDefault();return}}}const side=e.clientX<innerWidth/2?'l':'r',s=sticks[side];if(s.id!==null)return;s.id=e.pointerId;s.ox=e.clientX;s.oy=e.clientY;s.x=s.y=0;tz.setPointerCapture(e.pointerId);const el=$(side==='l'?'stkL':'stkR');el.style.display='block';el.style.left=s.ox+'px';el.style.top=s.oy+'px';el.firstElementChild.style.transform='none'});
+tz.addEventListener('pointerdown',e=>{if(!G||G.pausa)return;{const sl=$('slots').children;for(let i=0;i<sl.length;i++){const r=sl[i].getBoundingClientRect(),m=6;if(e.clientX>=r.left-m&&e.clientX<=r.right+m&&e.clientY>=r.top-m&&e.clientY<=r.bottom+m){const k=+sl[i].dataset.i;if(G.slots[k]&&k!==G.cur&&G.estado!=='fin'){sfx('cambio');setCur(k)}e.preventDefault();return}}}const side=(save.cfg.autoDisparo===true||e.clientX<innerWidth/2)?'l':'r',s=sticks[side];if(s.id!==null)return;s.id=e.pointerId;s.ox=e.clientX;s.oy=e.clientY;s.x=s.y=0;tz.setPointerCapture(e.pointerId);const el=$(side==='l'?'stkL':'stkR');el.style.display='block';el.style.left=s.ox+'px';el.style.top=s.oy+'px';el.firstElementChild.style.transform='none'});
 tz.addEventListener('pointermove',e=>{for(const side of['l','r']){const s=sticks[side];if(s.id!==e.pointerId)continue;let dx=e.clientX-s.ox,dy=e.clientY-s.oy;const L=Math.hypot(dx,dy),M=50;if(L>M){dx*=M/L;dy*=M/L}s.x=dx/M;s.y=dy/M;$(side==='l'?'stkL':'stkR').firstElementChild.style.transform='translate('+dx+'px,'+dy+'px)'}});
 function stkUp(e){for(const side of['l','r']){const s=sticks[side];if(s.id===e.pointerId){s.id=null;s.x=s.y=0;$(side==='l'?'stkL':'stkR').style.display='none'}}}
 tz.addEventListener('pointerup',stkUp);tz.addEventListener('pointercancel',stkUp);
@@ -3358,8 +3373,9 @@ function updJugador(dt,p){const g=G,P=g.P;if(p.remote)netProcEv(p,dt);
   if(g.dash>0){g.dash-=dt;moveE(P,Math.cos(g.dashA)*300*dt,Math.sin(g.dashA)*300*dt,false);for(const e of g.enemies)if(!e.muerto&&dist(e.x,e.y,P.x,P.y)<e.r+10&&e.cobro<=0)hit(e,30*g.dmgMul,null,g.dashA,100)}
   else moveE(P,mx*g.speed*dt,my*g.speed*dt,false);
   P.moving=L>.1;if(P.moving)P.anim+=dt*9;if(P.lx){P.lx*=.78;P.ly*=.78}
-  if(B)g.aim=B.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)g.aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn){const mw=mouseW();g.aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
-  if(B?B.fire:(!netBloq()&&(mouse.down||keys[' ']||(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.35))))fire();
+  const AU=B?null:autoApunta(P);
+  if(B)g.aim=B.aim;else if(AU&&AU.t)g.aim=AU.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)g.aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn){const mw=mouseW();g.aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
+  if(B?B.fire:(!netBloq()&&((AU&&AU.fire)||mouse.down||keys[' ']||(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.35))))fire();
   if(g.t-g.lastHit>5&&P.hp<g.maxHp)P.hp=Math.min(g.maxHp,P.hp+8*dt*(1+.2*mj('regen')))}
  /* interacción */
  if(!p.deb&&!g.evo&&!g.telep){const al=aliadoCaido();
@@ -3622,7 +3638,7 @@ function applyCtrl(){for(const k in CB){const el=$(CB[k].id),p=save.cfg.btnPos&&
  else{el.style.left=el.style.top=el.style.right=el.style.bottom=''}}}
 const ce={from:'ajustes',pos:{}};
 function ceBuild(){const sc=$('ctrlEdit');sc.querySelectorAll('.cb').forEach(n=>n.remove());
- for(const k in CB){const c=CB[k],d=document.createElement('div');d.className='tb cb';d.dataset.b=k;d.innerHTML=c.l+(c.t?'<small>'+c.t+'</small>':'');d.style.width=d.style.height=c.s+'px';if(k==='P')d.style.fontSize='14px';
+ for(const k in CB){if(k==='W'&&save.cfg.btnArma===false)continue;const c=CB[k],d=document.createElement('div');d.className='tb cb';d.dataset.b=k;d.innerHTML=c.l+(c.t?'<small>'+c.t+'</small>':'');d.style.width=d.style.height=c.s+'px';if(k==='P')d.style.fontSize='14px';
   d.style.left=ce.pos[k][0]+'px';d.style.top=ce.pos[k][1]+'px';sc.appendChild(d);
   d.addEventListener('pointerdown',e=>{e.preventDefault();d.setPointerCapture(e.pointerId);d._o=[e.clientX-parseFloat(d.style.left),e.clientY-parseFloat(d.style.top)];d.classList.add('drag')});
   d.addEventListener('pointermove',e=>{if(!d._o)return;const x=clamp(e.clientX-d._o[0],0,Math.max(0,innerWidth-c.s)),y=clamp(e.clientY-d._o[1],0,Math.max(0,innerHeight-c.s));d.style.left=x+'px';d.style.top=y+'px';ce.pos[k]=[x,y]});
@@ -4121,13 +4137,13 @@ function netGuestFrame(dt){const g=G;
  if(g.estado==='fin')return;
  /* entrada (se lee cada frame; se envía a NET_INPUT_HZ) */
  const P=g.P;let mx=0,my=0;{const v=moveVec();mx=v[0];my=v[1]}if(sticks.l.id!==null){mx+=sticks.l.x;my+=sticks.l.y}
- {const w=inW(mx,my);mx=w[0];my=w[1]}let aim=g.aim;
- if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn){const mw=mouseW();aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
+ {const w=inW(mx,my);mx=w[0];my=w[1]}let aim=g.aim;const AU=autoApunta(P);
+ if(AU&&AU.t)aim=AU.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn){const mw=mouseW();aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
  g.aim=aim;const bl=netBloq();if(bl){mx=0;my=0}
  NET.iAcc+=dt;
  if(NET.conn&&NET.conn.open&&(NET.iAcc>=1/NET_INPUT_HZ-1e-6||NET.evOut.length)){
   if(g.ePress){g.ePress=false;NET.evOut.push('e')}
-  NET.iAcc=0;const f=!bl&&(mouse.down||keys[' ']||(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.35));
+  NET.iAcc=0;const f=!bl&&((AU&&AU.fire)||mouse.down||keys[' ']||(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.35));
   const s=++NET.iseq;NET.hist.push({s,x:P.x,y:P.y});if(NET.hist.length>90)NET.hist.shift();
   const o={t:'in',s,x:r2(mx),y:r2(my),aim:r2(aim),f:f?1:0,e:(!bl&&(keys.e||g.repLatch))?1:0};
   if(NET.evOut.length){o.ev=NET.evOut;NET.evOut=[]}NET.conn.send(o)}
