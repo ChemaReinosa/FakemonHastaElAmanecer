@@ -27,7 +27,12 @@ canvas#c{image-rendering:pixelated;display:block;width:100%;height:100%;backgrou
 #bl{position:absolute;bottom:1.5%;left:1.5%;width:34%}
 #hpbar{position:relative;height:1.3em;background:#300;border:1px solid #000}
 #hpfill{height:100%;background:#d33;width:100%}#hptxt{position:absolute;left:.4em;top:0;line-height:1.3em}
-#lives{color:#f66;margin-top:.1em}#perks{display:flex;gap:2px;margin-top:.1em}
+#lives{color:#f66;margin-top:.1em;display:flex;align-items:center;gap:.5em;flex-wrap:wrap}
+#lives .hab{display:inline-flex;align-items:center;gap:.3em}
+#lives .qst{display:inline-flex;align-items:center;justify-content:center;width:1.9em;height:1.9em;background:#ffd24a;color:#000;font-style:normal;font-weight:bold;font-size:.9em;line-height:1;padding-top:.15em;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+#lives .hab b{color:#ffe27a;letter-spacing:.03em;text-shadow:0 0 6px rgba(255,210,74,.7),1px 1px 0 #000}
+#lives .hab em{color:#fff;font-style:normal;font-weight:normal}
+#lives .hab.cd .qst{background:#6b6b6b}#lives .hab.cd b{color:#9a9a9a;text-shadow:1px 1px 0 #000}#perks{display:flex;gap:2px;margin-top:.1em}
 #perks b{display:inline-block;width:1.4em;height:1.4em;border:1px solid #000;text-align:center;line-height:1.4em;color:#000;font-size:.9em}
 #slots{position:absolute;bottom:1.5%;left:50%;transform:translateX(-50%);display:flex;gap:.3em;pointer-events:auto}
 .sl{--tc:#444;position:relative;min-width:7.5em;max-width:9em;padding:.2em .35em;background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 55%,rgba(0,0,0,.72)) 0%,rgba(0,0,0,.72) 78%);border:2px solid var(--tc);border-radius:4px;overflow:hidden;line-height:1.15;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 6px color-mix(in srgb,var(--tc) 40%,transparent);color:#fff}
@@ -75,7 +80,7 @@ body.touch .sl{min-width:7em;max-width:8.2em;padding:.45em .45em}
 /* Móvil: la vida/vidas/bebidas suben arriba a la izquierda (abajo chocaban con la barra de ataques y el joystick) */
 body.touch #bl{bottom:auto;top:2.7em;left:max(1.5%,env(safe-area-inset-left,0px));width:min(30%,26em)}
 body.touch #hP2{top:2.7em;left:calc(max(1.5%,env(safe-area-inset-left,0px)) + min(30%,26em) + 1.2%);width:22%}
-#hGren{color:#ffb070}#hZona{color:#9fe3ff}
+#hGren{color:#ffb070}#hKills{color:#ff8a8a}#hZona{color:#9fe3ff}
 .finSp img,.finSp canvas{width:96px;height:96px;object-fit:contain;image-rendering:pixelated}
 .btn.act{background:#5a7a3a;border-color:#ffd24a}body[data-tema=claro] .btn.act{background:#bfe0a0}
 .mj{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 10px;border:2px solid #555;border-radius:6px;background:#1a1a22;text-align:left;font-size:13px}
@@ -303,7 +308,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <div id="wrap"><div id="stage">
 <canvas id="c" width="480" height="270"></canvas>
 <div id="hud">
- <div id="top"><span id="hRonda"></span><span id="hEnem" style="display:none"></span><span id="hMoney"></span><span id="hCand"></span><span id="hGren"></span><span id="hZona"></span></div>
+ <div id="top"><span id="hRonda"></span><span id="hEnem" style="display:none"></span><span id="hMoney"></span><span id="hCand"></span><span id="hGren"></span><span id="hKills"></span><span id="hZona"></span></div>
  <div id="boss"><span id="bossname"></span><div id="bossbar"><div id="bossfill"></div></div></div>
  <div id="netSt"></div><div id="hP2"><div class="n"></div><div class="b"><i></i></div><div class="s"></div></div><div id="msg"></div><div id="banner"></div><div id="muerte"><div class="vg"></div><div class="bx"><div class="t">HAS MUERTO</div><div class="dr"></div><div class="c" id="muerteC"></div></div></div><div id="prompt"></div>
  <div id="bl"><div id="hpbar"><div id="hpfill"></div><span id="hptxt"></span></div><div id="lives"></div><div id="perks"></div></div>
@@ -927,7 +932,7 @@ const ALCANCE={
 };
 /* Ajustes opcionales por id, se aplican DESPUÉS de convertir. Ej.: lucha_1:{dano:20,rango:44,cadencia:400}, */
 /* Factores del alcance 'medio': cad = multiplica el tiempo entre disparos (más = menos cadencia) · rango = multiplica el alcance · dano = multiplica el daño por disparo */
-const ALCANCE_MEDIO={cad:2.2,rango:.65,dano:1.3};
+const ALCANCE_MEDIO={cad:1.6,rango:.65,dano:1.3};
 const ALCANCE_AJUSTE={
 };
 function aplicarAlcance(m){
@@ -1195,6 +1200,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.47   Más cadencia en los ataques de media distancia (Al Ataque...), 'Bebida' en vez de 'Baya' en la máquina, habilidad con estrella Q y nombre resaltado, contador de bajas junto a bombas y caramelos
    1.46   Autodisparo opcional (apunta y dispara al enemigo más cercano; en móvil quita el joystick derecho) y opción móvil para ocultar el botón de cambiar de arma
    1.45   Ranking con fecha/hora y vista 'Mis récords', envío del mapa más seguro, sin Récords/Cargar partida en el menú, ping de cada jugador en online (opcional en Ajustes)
    1.44   Ranking con columna de nº de jugadores y vista móvil compacta, subtítulo y 'Cómo se juega' generales (no dependen del mapa)
@@ -1211,7 +1217,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.46';
+const VERSION='1.47';
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
 const SB_URL='https://oklqhmtpcrdmvorzsmke.supabase.co',SB_KEY='sb_publishable_w_wqwaMs1NgWBrPizN1fxA_xFYx9oOH';
@@ -3119,7 +3125,7 @@ function nearBar(){const P=G.P;let best=null,bd=34+(G.players[G.act]&&G.players[
 function itemPrompt(it){switch(it.tipo){
  case'puerta':{const z=!it.d.za.abierta?it.d.za:!it.d.zb.abierta?it.d.zb:null;return'[E] Abrir puerta '+(z?'a '+z.nombre:'(atajo)')+' — '+it.d.coste+' ₽'}
  case'panel':{const m=MOV[panelMov(it)];if(G.own.has(m.id)){const f=muniFalta(m.id);return f<=0?m.nombre+' — munición al máximo':(m.energia&&!G.power)?m.nombre+' — requiere energía':'[E] Munición '+m.nombre+' — '+muniPrecio(m.id)+' ₽ ('+muniTot(m.id)+'/'+muniMax(m)+')'}if(m.energia&&!G.power)return m.nombre+' — requiere energía';return'[E] '+m.nombre+' — '+m.coste+' ₽ · '+m.descripcion+(freeSlot()<0?' ·':'')}
- case'baya':{const b=BAYA[it.baya];return bayaTiene(b)?(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya llevas la Bebida '+b.nombre):'[E] Baya '+b.nombre+' — '+b.coste+' ₽ · '+b.desc}
+ case'baya':{const b=BAYA[it.baya];return bayaTiene(b)?(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya llevas la Bebida '+b.nombre):'[E] Bebida '+b.nombre+' — '+b.coste+' ₽ · '+b.desc}
  case'caja':return it.est==='idle'?'[E] Caja Misteriosa — '+COSTE_CAJA+' ₽'+([...G.own].some(id=>muniFalta(id)>0&&!panelDe(id))?' · munición de tus movimientos especiales':''):it.est==='anim'?'Abriendo... '+Math.ceil(it.t)+'s':'[E] Coger: '+MOV[it.res].nombre+(G.own.has(it.res)?' (ya lo tienes: recarga)':freeSlot()<0?' (elegirás cuál sustituir)':'')+' · '+Math.ceil(it.t)+'s';
  case'mt':return G.power?'[E] Máquina de MT — mejorar un movimiento: '+COSTE_MT+' ₽':'Máquina de MT — sin energía';
  case'hab':{const h=habs2(G.cr,G.et);return !G.power?'Máquina de habilidad — sin energía':!h.length?'Máquina de habilidad — solo para formas finales con dos habilidades':'[E] Cambiar habilidad: '+HABS[G.cr.hab].nombre+' → '+HABS[G.cr.hab===h[0]?h[1]:h[0]].nombre+' — '+COSTE_HAB+' ₽'}
@@ -3132,10 +3138,10 @@ function interact(it){switch(it.tipo){
  case'puerta':if(pay(it.d.coste)){const n=abrirPuerta(it.d);msg(n.length?'Zona abierta: '+n.map(z=>z.nombre).join(' + '):'Puerta abierta (atajo)',2.5);sfx('energia')}break;
  case'panel':{const m=MOV[panelMov(it)];if(!permitido(m.id)){msg('Tu criatura no puede usar '+m.nombre);sfx('error');return}if(G.own.has(m.id)){if(m.energia&&!G.power){msg('Necesitas activar la energía');sfx('error');return}comprarMuni(m.id);return}if(m.energia&&!G.power){msg('Necesitas activar la energía');sfx('error');return}learn(m.id,m.coste)}break;
  case'baya':{const b=BAYA[it.baya];if(bayaTiene(b)){msg(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya la llevas');return}
-  if(b.slot){if(pay(b.coste)){G.slot5=true;applyStats();msg('Baya '+b.nombre+': ¡5.º hueco de ataque desbloqueado! (tecla 5)',4);sfx('evo')}return}
-  if(G.perks.length<4){if(pay(b.coste)){G.perks.push(b.id);applyStats();msg('Baya '+b.nombre+': '+b.desc)}}
+  if(b.slot){if(pay(b.coste)){G.slot5=true;applyStats();msg('Bebida '+b.nombre+': ¡5.º hueco de ataque desbloqueado! (tecla 5)',4);sfx('evo')}return}
+  if(G.perks.length<4){if(pay(b.coste)){G.perks.push(b.id);applyStats();msg('Bebida '+b.nombre+': '+b.desc)}}
   else{if(G.money<b.coste){msg('Te faltan '+(b.coste-G.money)+' ₽',2.2,true);sfx('error');return}
-   modal('Ya llevas 4 bayas. ¿Cuál descartas para '+b.nombre+'?',G.perks.map(p=>({t:'Descartar '+BAYA[p].nombre,f:()=>{spend(b.coste);G.perks=G.perks.filter(x=>x!==p);G.perks.push(b.id);applyStats()}})))}break}
+   modal('Ya llevas 4 bebidas. ¿Cuál descartas para '+b.nombre+'?',G.perks.map(p=>({t:'Descartar '+BAYA[p].nombre,f:()=>{spend(b.coste);G.perks=G.perks.filter(x=>x!==p);G.perks.push(b.id);applyStats()}})))}break}
  case'caja':if(it.est==='idle'){const abrir=()=>{if(pay(COSTE_CAJA)){it.est='anim';it.t=3;it.bl=0;sfx('caja')}},
    need=[...G.own].filter(id=>muniFalta(id)>0&&!panelDe(id));
   if(!need.length)abrir();else modal('Caja Misteriosa',[{t:'Abrir la caja — '+COSTE_CAJA+' ₽',f:abrir},...need.map(id=>({t:'Munición '+MOV[id].nombre+' — '+muniPrecio(id)+' ₽ ('+muniTot(id)+'/'+muniMax(MOV[id])+')',f:()=>comprarMuni(id)}))])}
@@ -3335,8 +3341,8 @@ $('slots').addEventListener('pointerdown',e=>{const s=e.target.closest('.sl');if
 /* ---------- HUD ---------- */
 function setT(el,t){if(el._t!==t){el.textContent=t;el._t=t}}
 function buildSlots(){G.hudBuilt=true;const b=$('slots');b.innerHTML='';for(let i=0;i<G.nSlots;i++){const d=document.createElement('div');d.className='sl';d.dataset.i=i;b.appendChild(d)}b._sig=''}
-function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(me&&me.deb&&!me.out&&g.estado!=='fin');if(on){if(mu.style.display!=='block')mu.style.display='block';setT($('muerteC'),me.espera?'Reaparecerás al empezar la siguiente ronda':g.players.length===1?'Reapareces en '+Math.max(1,Math.ceil(g.debilT)):'Tu compañero puede reanimarte · '+Math.max(0,Math.ceil(me.revT||0)))}else if(mu.style.display!=='none')mu.style.display='none'}setT($('hRonda'),'RONDA '+roman(g.round));setT($('bQs'),g.habCd>0?Math.ceil(g.habCd)+'s':'ESPECIAL');setT($('hGren'),'\u{1F4A3} '+g.granadas+'/'+GRAN_MAX);setT($('bGs'),'x'+g.granadas);{const he=$('hEnem'),rd=g.perks.includes('radar');if(he._v!==rd){he._v=rd;he.style.display=rd?'':'none'}if(rd)setT(he,'☠ '+(g.porSpawn+g.enemies.length+(g.bossPend?1:0)))}setT($('hMoney'),g.money+' ₽');setT($('hCand'),'🍬 '+g.candy+(g.et<g.cr.stages.length-1?'/'+(g.et?100:50):'')+(g.evoPend?' ✨':''));setT($('hZona'),'📍 '+(zoneP()||{nombre:''}).nombre+(g.papT>0&&(zoneP()||{}).alto?' · '+Math.ceil(g.papT)+' s':''));
- $('hpfill').style.width=(Math.max(0,P.hp)/g.maxHp*100)+'%';setT($('hptxt'),Math.ceil(Math.max(0,P.hp))+'/'+g.maxHp);setT($('lives'),'♥'.repeat(Math.max(0,g.lives))+(g.habCd>0?'  Q '+Math.ceil(g.habCd)+'s':'  Q listo ('+HABS[g.cr.hab].nombre+')'));
+function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(me&&me.deb&&!me.out&&g.estado!=='fin');if(on){if(mu.style.display!=='block')mu.style.display='block';setT($('muerteC'),me.espera?'Reaparecerás al empezar la siguiente ronda':g.players.length===1?'Reapareces en '+Math.max(1,Math.ceil(g.debilT)):'Tu compañero puede reanimarte · '+Math.max(0,Math.ceil(me.revT||0)))}else if(mu.style.display!=='none')mu.style.display='none'}setT($('hRonda'),'RONDA '+roman(g.round));setT($('bQs'),g.habCd>0?Math.ceil(g.habCd)+'s':'ESPECIAL');setT($('hKills'),'\u{1F480} '+g.kills+' bajas');setT($('hGren'),'\u{1F4A3} '+g.granadas+'/'+GRAN_MAX);setT($('bGs'),'x'+g.granadas);{const he=$('hEnem'),rd=g.perks.includes('radar');if(he._v!==rd){he._v=rd;he.style.display=rd?'':'none'}if(rd)setT(he,'☠ '+(g.porSpawn+g.enemies.length+(g.bossPend?1:0)))}setT($('hMoney'),g.money+' ₽');setT($('hCand'),'🍬 '+g.candy+(g.et<g.cr.stages.length-1?'/'+(g.et?100:50):'')+(g.evoPend?' ✨':''));setT($('hZona'),'📍 '+(zoneP()||{nombre:''}).nombre+(g.papT>0&&(zoneP()||{}).alto?' · '+Math.ceil(g.papT)+' s':''));
+ $('hpfill').style.width=(Math.max(0,P.hp)/g.maxHp*100)+'%';setT($('hptxt'),Math.ceil(Math.max(0,P.hp))+'/'+g.maxHp);{const hv='♥'.repeat(Math.max(0,g.lives)),hc=g.habCd>0?Math.ceil(g.habCd):0,hn=HABS[g.cr.hab].nombre,sg=hv+'|'+hc+'|'+hn,le=$('lives');if(le._s!==sg){le._s=sg;le.innerHTML=hv+'<span class="hab'+(hc?' cd':'')+'"><i class="qst">Q</i><b>'+hn+'</b>'+(hc?'<em>'+hc+'s</em>':'')+'</span>'}}
  const ps=g.perks.join(',');const pe=$('perks');if(pe._s!==ps){pe._s=ps;pe.innerHTML=g.perks.map(p=>'<b style="background:'+BAYA[p].color+'" title="'+BAYA[p].nombre+'">'+BAYA[p].nombre[0]+'</b>').join('')}
  const sl=$('slots'),now=g.t*1000;let sig='';const parts=[];
  let tz=null;if(AVISO_EFICAZ){let bd=1e9;const aim=g.aim||0;for(const e of g.enemies){if(e.muerto)continue;const dx=e.x-P.x,dy=e.y-P.y,dd=Math.hypot(dx,dy);if(dd>AVISO_DIST)continue;let da=Math.abs(Math.atan2(dy,dx)-aim);if(da>Math.PI)da=6.283-da;const sc=dd*(1+.5*da/Math.PI);if(sc<bd){bd=sc;tz=e}}}
