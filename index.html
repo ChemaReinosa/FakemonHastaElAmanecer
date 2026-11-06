@@ -95,7 +95,7 @@ body[data-tema=claro] .mj{background:#f4f4ea;border-color:#999}body[data-tema=cl
 body.netGuest #difBox{display:none}
 #oNick{font:bold 18px monospace;text-align:center;width:11em;max-width:80vw;padding:6px;border-radius:8px;border:2px solid #9f6;background:#10131a;color:#fff}
 #oNick,#oCod,#sNick{-webkit-user-select:text;user-select:text;touch-action:manipulation}
-#sNickBox{display:flex;flex-direction:column;gap:4px;align-items:center;margin:6px 0}#sNickBox label{font-size:12px;color:#aaa}
+#sNickBox{display:flex;flex-direction:column;gap:4px;align-items:center;margin:6px 0}#sNickBox label{font-size:16px;font-weight:bold;letter-spacing:.3em;text-transform:uppercase;color:#9f6;text-shadow:0 0 8px rgba(153,255,102,.55)}body[data-tema=claro] #sNickBox label{color:#264;text-shadow:none}
 #sNick{font:bold 18px monospace;text-align:center;width:11em;max-width:80vw;padding:6px;border-radius:8px;border:2px solid #9f6;background:#10131a;color:#fff}
 #verTag{position:fixed;right:12px;bottom:8px;font-size:11px;letter-spacing:1px;opacity:.55;pointer-events:none;z-index:2}
 #bestiario *{touch-action:pan-y}
@@ -376,6 +376,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <div id="selDet"></div>
   <div id="cards"></div>
  </div>
+ <div id="sNickBox"><label for="sNick">Nickname</label><input id="sNick" maxlength="12" placeholder="TU NOMBRE" autocomplete="off" spellcheck="false"><div id="sNickErr" style="color:#f88;font-size:12px;min-height:14px"></div></div>
  <div id="difBox">
   <div class="difLbl">Dificultad</div>
   <div id="difRow">
@@ -385,7 +386,6 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   </div>
   <div id="difDesc"></div>
  </div>
- <div id="sNickBox"><label for="sNick">Nickname</label><input id="sNick" maxlength="12" placeholder="TU NOMBRE" autocomplete="off" spellcheck="false"><div id="sNickErr" style="color:#f88;font-size:12px;min-height:14px"></div></div>
  <div id="selBtns"><button class="btn sm" id="sBack">‹ Mapa</button><button class="mB main" id="sGo"><span>▶</span>¡A sobrevivir!</button></div>
 </div>
 <div class="screen" id="datos"><div id="datosBox">
@@ -1255,7 +1255,7 @@ const W=480,H=270;
 const PISO_GAP=512;let ESC=[],ESCM=null;
 function aplanar(m){const zp={};let np=1;for(const z of m.zonas||[]){zp[z.id]=z.piso|0;if((z.piso|0)+1>np)np=(z.piso|0)+1}m.pisos=np;if(np<2)return m;
  const W0=m.ancho,off=p=>(p|0)*(W0+PISO_GAP);
- for(const z of m.zonas){const o=off(z.piso);if(!o)continue;z.x+=o;(z.props||[]).forEach(p=>p[0]+=o);(z.barricadas||[]).forEach(b=>b[1]+=o)}
+ for(const z of m.zonas){const o=off(z.piso);if(!o)continue;z.x+=o;(z.props||[]).forEach(p=>p[0]+=o);(z.barricadas||[]).forEach(b=>b[1]+=o);(z.hoyos||[]).forEach(h=>h[0]+=o)}
  for(const d of m.puertas||[])d.x+=off(zp[d.a]);
  for(const o of m.objetos||[])o.x+=off(zp[o.zona]);
  for(const d of m.decor||[]){const o=off(d.piso);d.x+=o;d.x2+=o}
@@ -1527,7 +1527,7 @@ const SFX={
  dano(){tone(100,.2,'sawtooth',.22,-60);noise(.1,.2,400)},jefe(){tone(70,.9,'sawtooth',.3,-20);tone(75,.9,'square',.18)},
  energia(){for(let i=0;i<7;i++)tone(220*Math.pow(2,i/3),.18,'square',.14,0,null,i*.09);noise(.5,.15,2500)},
  ronda(){tone(440,.14,'square',.14);tone(554,.14,'square',.14,0,null,.15);tone(660,.3,'square',.14,0,null,.3)},
- madera(){noise(.05,.12,900)},reparar(){tone(170,.06,'square',.18,-60);noise(.05,.18,1300);tone(540,.04,'triangle',.08,0,null,.06)},
+ madera(){noise(.05,.12,900)},tierra(){noise(.14,.16,380);tone(rnd(60,80),.1,'sine',.1,-20)},reparar(){tone(170,.06,'square',.18,-60);noise(.05,.18,1300);tone(540,.04,'triangle',.08,0,null,.06)},
  caja(){for(let i=0;i<8;i++)tone(300+i*40,.12,'triangle',.14,0,null,i*.35)},cajaok(){tone(880,.1,'square',.15);tone(1320,.3,'square',.15,0,null,.1)},
  evo(){for(let i=0;i<8;i++)tone(330*Math.pow(2,i/4),.2,'square',.14,0,null,i*.1)},curar(){tone(500,.25,'sine',.2,300)},
  explosion(){noise(.4,.25,300);tone(70,.3,'sawtooth',.2,-40)},recarga(){noise(.05,.22,2600);tone(150,.07,'square',.16,-70);tone(330,.05,'square',.09,0,null,.1)},
@@ -2349,7 +2349,14 @@ function drawItemIso(c,it){noT(c);const dy=it.lado==='B'?-4:-12,x=it.x-7,y=it.y+
   faceT(c,x0,y0,BH,W2,D2,m=>{m.fillStyle='rgba(60,34,12,.5)';for(let k=3;k<W2;k+=4)m.fillRect(x0+k,y0,1,D2);m.fillStyle='#4a2e14';m.fillRect(x0,y0,W2,1);m.fillRect(x0,y0+D2-1,W2,1);m.fillRect(x0,y0,1,D2);m.fillRect(x0+W2-1,y0,1,D2);m.fillStyle='rgba(255,230,170,.2)';m.fillRect(x0+1,y0+1,W2-2,1)});
   if(it.est==='listo'){const bob=Math.sin(t*4)*2;setB(c,cx,cy,BH+10+bob,0);c.globalCompositeOperation='lighter';c.fillStyle=hexA(MOV[it.res].color,.35);c.beginPath();c.arc(cx,cy,9,0,6.283);c.fill();c.globalCompositeOperation='source-over';c.fillStyle=MOV[it.res].color;c.fillRect(cx-3,cy-3,6,6);c.fillStyle='#fff';c.fillRect(cx-1,cy-1,2,2)}
   noT(c)}}
-function itemGround(c){for(const it of G.items)if(it.tipo==='base'&&iv(it))drawBaseGround(c,it); // lo que va pegado al suelo, bajo todo lo demás (se llama con setT)
+function hoyoGround(c){for(const b of G.bars){if(!b.hoyo||!b.z.abierta||!b.z.visto)continue;const n=Math.ceil(b.hp/20),R=13,r0=R*(1-n/5),x=b.x,y=b.y;
+ c.fillStyle='#2e2014';c.beginPath();c.arc(x,y,R+2.5,0,6.283);c.fill();
+ c.fillStyle='#6b4a2a';c.beginPath();c.arc(x,y,R,0,6.283);c.fill();
+ if(n<5){c.fillStyle='#07050a';c.beginPath();c.arc(x,y,Math.max(2,r0),0,6.283);c.fill();c.fillStyle='rgba(0,0,0,.35)';c.beginPath();c.arc(x,y,Math.max(2,r0)+2,0,6.283);c.arc(x,y,Math.max(2,r0),0,6.283,true);c.fill()}
+ c.fillStyle='#8a6338';for(let k=0;k<n;k++){const a=k*2.4+b.x,rr=R*.35+(k%3)*3;c.beginPath();c.arc(x+Math.cos(a)*rr,y+Math.sin(a)*rr,2.2,0,6.283);c.fill()}
+ if(n===5){c.fillStyle='rgba(255,255,255,.12)';c.beginPath();c.arc(x-3,y-3,R*.55,0,6.283);c.fill()}
+ else if(n===0){c.strokeStyle='rgba(180,60,60,'+(.3+.25*Math.sin(G.t*4+x))+')';c.lineWidth=1.4;c.beginPath();c.arc(x,y,R+4,0,6.283);c.stroke();c.lineWidth=1}}}
+function itemGround(c){hoyoGround(c);for(const it of G.items)if(it.tipo==='base'&&iv(it))drawBaseGround(c,it); // lo que va pegado al suelo, bajo todo lo demás (se llama con setT)
  for(const it of G.items){if(it.tipo==='puerta'||!iv(it))continue;
   if(it.tipo==='mt'&&G.power){const pl=.5+.5*Math.sin(G.t*3),g=c.createRadialGradient(it.x,it.y+2,2,it.x,it.y+2,36);g.addColorStop(0,'rgba(255,215,90,'+(.38+.2*pl)+')');g.addColorStop(1,'rgba(255,215,90,0)');c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(it.x,it.y+2,36,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
   if(it.tipo==='baya'){const b=BAYA[it.baya];if(!bayaTiene(b)){const pl=.5+.5*Math.sin(G.t*3+it.x),g=c.createRadialGradient(it.x,it.y+2,2,it.x,it.y+2,30);g.addColorStop(0,hexA(b.color,.32+.18*pl));g.addColorStop(1,hexA(b.color,0));c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(it.x,it.y+2,30,0,6.283);c.fill();c.globalCompositeOperation='source-over'}}
@@ -2397,7 +2404,7 @@ function drawWorld(c){const X0=-CX-70,X1=-CX+W+70,Y0=-CY-70,Y1=-CY+H+90,L=[];
  const vis=(l,t,w,h)=>!(l>X1||l+w<X0||t>Y1||t+h<Y0);
  for(const s of STATICS)if(vis(s.l,s.t,s.w,s.h))L.push(s);
  for(const d of PUERTAS)if(!d.abierta&&!d.libre&&(d.za.visto||d.zb.visto)&&vis(isoX(d.x,d.y+d.h)-4,isoY(d.x,d.y,HW)-4,isoX(d.x+d.w,d.y)-isoX(d.x,d.y+d.h)+8,HW+(d.w+d.h)*KY+8))L.push({k:d.x+d.w/2+d.y+d.h/2,f:cc=>drawDoorIso(cc,d)});
- for(const b of G.bars){if(!b.z.abierta||!b.z.visto)continue;const X=isoX(b.x,b.y),Y=isoY(b.x,b.y);if(X<X0-40||X>X1+40||Y<Y0-40||Y>Y1+40)continue;L.push({k:barKey(b),f:cc=>drawBarIso(cc,b)})}
+ for(const b of G.bars){if(b.hoyo||!b.z.abierta||!b.z.visto)continue;const X=isoX(b.x,b.y),Y=isoY(b.x,b.y);if(X<X0-40||X>X1+40||Y<Y0-40||Y>Y1+40)continue;L.push({k:barKey(b),f:cc=>drawBarIso(cc,b)})}
  for(const it of G.items){if(it.tipo==='puerta'||!iv(it))continue;const X=isoX(it.x,it.y);if(X<X0||X>X1||isoY(it.x,it.y)<Y0||isoY(it.x,it.y)>Y1)continue;L.push({k:it.x+it.y+.5,f:cc=>drawItemIso(cc,it)})}
  for(const o of G.premios){if(!iv(o))continue;L.push({k:o.x+o.y+.5,f:cc=>premioDraw(cc,o)})}
  for(const s of ESC)for(let k=0;k<2;k++){if(!(k?s.zb:s.za).visto)continue;const x=k?s.bx:s.ax,y=k?s.by:s.ay,X=isoX(x,y),Y=isoY(x,y);if(X<X0-30||X>X1+30||Y<Y0-40||Y>Y1+40)continue;L.push({k:x+y+.5,f:cc=>drawEscIso(cc,s,k)})}
@@ -2611,6 +2618,7 @@ function newGame(cr){
   shake:0,msgT:0,descT:3,porSpawn:0,spawnT:0,bossPend:false,bossT:0,fieldT:0,flick:0,cap:10,bossRef:null,gren:[],areas:[],teleCd:0,teleLock:0,papT:0,papW:false,premios:[],instaT:0,dobleT:0,rKills:0,dropDone:true,dropN:99,st:{ganado:0,gastado:0,dano:0,crit:0,gren:0,vidasP:0,rev:0,tab:0,jefes:0}};
  G.bars=[];ZONAS.forEach(z=>z.barricadas.forEach(b=>{const t=b[0],x=b[1],y=b[2];const o={z,lado:t,x,y,hp:100,pn:5,an:[0,0,0,0,0],rt:0,ox:x,oy:y,ix:x,iy:y};
   if(t==='T'){o.oy=y-22;o.iy=y+14}else if(t==='B'){o.oy=y+22;o.iy=y-14}else if(t==='L'){o.ox=x-22;o.ix=x+14}else{o.ox=x+22;o.ix=x-14}G.bars.push(o)}));
+ ZONAS.forEach(z=>(z.hoyos||[]).forEach(h=>{G.bars.push({z,lado:'H',x:h[0],y:h[1],hp:100,pn:5,an:[0,0,0,0,0],rt:0,ox:h[0],oy:h[1],ix:h[0],iy:h[1],hoyo:true})}));
  G.items=[];PUERTAS.forEach(d=>{if(!d.libre&&!d.energia)G.items.push({tipo:'puerta',d,x:d.x+d.w/2,y:d.y+d.h/2,rad:42})});
  OBJETOS.forEach(o=>G.items.push(Object.assign({rad:o.tipo==='panel'?20:24,est:'idle',t:0,z:ZONAS.find(z=>z.id===o.zona)},o)));
  /* Baya Radar: si el mapa no trae una máquina con ella, se añade una junto a la última máquina de bayas */
@@ -3119,7 +3127,7 @@ function updEnemies(dt){const N=G.players.length;G.bossRef=null;{const vv=G.enem
   if(e.hp<=0&&!e.muerto){killAs(e)}if(e.muerto)continue;if(e.boss)G.bossRef=e;
   if(e.stun>0){e.stun-=dt;continue}if(e.rapi===undefined)e.rapi=!e.boss&&!e.def.ladra&&Math.random()<.04;const tope=G.speed*(e.def.ladra?1.05:e.rapi?1.1:1),sp=Math.min(e.vel,tope)*(e.lento>0?.5:1)*(e.stopT>0?1/STOP_DIV:1)*(e.ultimo?2:1);
   if(e.state==='out'){const b=e.bar;e.ang=Math.atan2(b.iy-e.y,b.ix-e.x);
-   if(b.hp>0){if(e.cd<=0){b.hp=Math.max(0,b.hp-18);e.cd=1;sfx('madera')}}
+   if(b.hp>0){if(e.cd<=0){b.hp=Math.max(0,b.hp-18);e.cd=1;sfx(b.hoyo?'tierra':'madera');if(b.hoyo)chips(b,Math.ceil(b.hp/20),false)}}
    else{const a=Math.atan2(b.iy-e.y,b.ix-e.x);e.x+=Math.cos(a)*sp*dt;e.y+=Math.sin(a)*sp*dt;if(dist(e.x,e.y,b.ix,b.iy)<4)e.state='in'}continue}
   if(e.boss)bossAI(e,dt,sp);else if(e.def.escupe)escupidorAI(e,dt,sp);else if(e.def.cura)curanderoAI(e,dt,sp);else chase(e,sp,dt);
   vigilarAtasco(e,dt,sp);if(ESC.length)escEnemigo(e,dt);
@@ -3364,7 +3372,7 @@ function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(m
  sig=JSON.stringify(parts);if(sl._sig!==sig){sl._sig=sig;[...sl.children].forEach((d,i)=>{const p=parts[i];d.className='sl'+(p[3]?' on':'')+(p[2]?' cd':'')+(p[5]?' '+p[5]:'');d.style.setProperty('--tc',p[4]);d.innerHTML=p[0]+'<s style="width:'+p[1]+'%"></s>'})}
  const bo=g.bossRef,bd=$('boss');if(bo){bd.style.display='block';setT($('bossname'),bo.def.nombre);$('bossfill').style.width=Math.max(0,bo.hp/bo.maxhp*100)+'%'}else bd.style.display='none';
  if(g.msgT>0){g.msgT-=hudDt}else $('msg').style.display='none';
- let pt='';if(!debil()){const al=aliadoCaido(),it=nearItem();pt=al?(touchOn?'Mantén [E] para revivir…':'Mantén [E] para revivir a J'+numJ(al.idx)+' ('+Math.ceil(REVIVIR_TIEMPO-al.revP)+' s)'):it?itemPrompt(it):nearBar()?(g.repLatch?'Reparando… toca [E] para parar':touchOn?'Toca [E] para reparar':'Mantén [E] para poner tablones (+5 ₽ cada uno)'):''}else if(g.players.length>1&&!g.players[0].out){const p0=g.players[0];pt=p0.espera?'Caído: vuelves al empezar la siguiente ronda':'Caído: tu compañero puede revivirte ('+Math.ceil(p0.revT)+' s)'}const pr=$('prompt');if(pt){pr.style.display='block';setT(pr,pt)}else pr.style.display='none';hudJ2()}
+ let pt='';if(!debil()){const al=aliadoCaido(),it=nearItem();pt=al?(touchOn?'Mantén [E] para revivir…':'Mantén [E] para revivir a J'+numJ(al.idx)+' ('+Math.ceil(REVIVIR_TIEMPO-al.revP)+' s)'):it?itemPrompt(it):nearBar()?(g.repLatch?'Reparando… toca [E] para parar':touchOn?'Toca [E] para reparar':(nearBar().hoyo?'Mantén [E] para echar tierra al hoyo (+5 ₽ cada capa)':'Mantén [E] para poner tablones (+5 ₽ cada uno)')):''}else if(g.players.length>1&&!g.players[0].out){const p0=g.players[0];pt=p0.espera?'Caído: vuelves al empezar la siguiente ronda':'Caído: tu compañero puede revivirte ('+Math.ceil(p0.revT)+' s)'}const pr=$('prompt');if(pt){pr.style.display='block';setT(pr,pt)}else pr.style.display='none';hudJ2()}
 const numJ=i=>NET.modo==='guest'?(i?1:2):i+1;
 function hudJ2(){const el=$('hP2');if(G.players.length<2){el.style.display='none';return}const p=G.players[1],q=p.s;el.style.display='block';
  setT(el.children[0],'J'+numJ(1)+(p.bot?' (bot)':'')+' · '+q.cr.stages[q.et].nombre);
@@ -3527,7 +3535,7 @@ function drawItems_old(){const c=ctx;for(const d of PUERTAS)if(!d.abierta&&!d.li
   c.fillStyle=it.est==='anim'&&Math.floor(t*12)%2?'#fff':'#d33';c.fillRect(cx-5,cy-5,10,5);c.fillStyle='#eee';c.fillRect(cx-5,cy,10,5);c.fillStyle='#111';c.fillRect(cx-5,cy-1,10,1);c.fillStyle='#fff';c.fillRect(cx-1,cy-2,2,3);
   if(it.est==='listo'){c.fillStyle=MOV[it.res].color;c.fillRect(cx-3,cy-17+Math.sin(t*4)*2,6,6);c.fillStyle='#fff';c.fillRect(cx-1,cy-15+Math.sin(t*4)*2,2,2)}}}}
 function plankPos(b,k){const h=b.lado;if(h==='T')return[b.x,b.y-12+(k*2.5|0)+1];if(h==='B')return[b.x,b.y+(k*1.5|0)+1];if(h==='L')return[b.x-8+(k*1.5|0)+1,b.y];return[b.x+(k*1.5|0)+1,b.y]}
-function chips(b,k,nuevo){const p=plankPos(b,k),h=b.lado,vx=h==='L'?-1:h==='R'?1:0,vy=h==='T'?-1:h==='B'?1:0;
+function chips(b,k,nuevo){if(b.lado==='H'){const n=nuevo?10:7;for(let i=0;i<n;i++){const a=rnd(0,6.283),v=rnd(15,nuevo?45:70);G.parts.push({x:b.x+rnd(-8,8),y:b.y+rnd(-6,6),vx:Math.cos(a)*v,vy:Math.sin(a)*v-(nuevo?0:25),ay:60,life:rnd(.3,.6),max:.6,c:i%3?'#7a5632':'#3a2815',s:i%2?2:1})}return}const p=plankPos(b,k),h=b.lado,vx=h==='L'?-1:h==='R'?1:0,vy=h==='T'?-1:h==='B'?1:0;
  for(let i=0;i<(nuevo?7:9);i++){const a=rnd(0,6.283),v=rnd(15,nuevo?50:80);G.parts.push({x:p[0]+rnd(-10,10)*(vy?1:0)+rnd(-3,3),y:p[1]+rnd(-10,10)*(vx?1:0)+rnd(-2,2),vx:Math.cos(a)*v+(nuevo?-vx:vx)*20,vy:Math.sin(a)*v+(nuevo?-vy:vy)*20,ay:60,life:rnd(.3,.6),max:.6,c:i%3?'#a9783f':'#5e3a16',s:i%2?2:1})}
  if(nuevo)for(let i=0;i<3;i++)G.parts.push({x:p[0]+rnd(-12,12)*(vy?1:0),y:p[1]+rnd(-12,12)*(vx?1:0),vx:rnd(-10,10),vy:rnd(-10,10),ay:0,life:.18,max:.18,c:'#fff',s:1})}
 function drawBars_old(c){for(const b of G.bars){if(!b.z.abierta)continue;const n=Math.ceil(b.hp/20),h=b.lado,part=b.hp%20!==0;
