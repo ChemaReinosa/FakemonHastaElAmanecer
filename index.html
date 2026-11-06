@@ -98,6 +98,8 @@ body.netGuest #difBox{display:none}
 #sNickBox{display:flex;flex-direction:column;gap:4px;align-items:center;margin:6px 0}#sNickBox label{font-size:16px;font-weight:bold;letter-spacing:.3em;text-transform:uppercase;color:#9f6;text-shadow:0 0 8px rgba(153,255,102,.55)}body[data-tema=claro] #sNickBox label{color:#264;text-shadow:none}
 #sNick{font:bold 18px monospace;text-align:center;width:11em;max-width:80vw;padding:6px;border-radius:8px;border:2px solid #9f6;background:#10131a;color:#fff}
 #verTag{position:fixed;right:12px;bottom:8px;font-size:11px;letter-spacing:1px;opacity:.55;pointer-events:none;z-index:2}
+#verTagI{position:absolute;right:12px;bottom:8px;font:11px "Courier New",monospace;letter-spacing:1px;color:#fff;opacity:.55;text-shadow:0 1px 0 #000;pointer-events:none;z-index:3}
+.wmark{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:11px "Courier New",monospace;letter-spacing:2px;color:#fff;opacity:.55;text-shadow:0 1px 0 #000;pointer-events:none;z-index:3}
 #bestiario *{touch-action:pan-y}
 #bestCards{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
 #oCod{font:bold 26px monospace;letter-spacing:6px;text-transform:uppercase;text-align:center;width:9em;padding:6px;border-radius:8px;border:2px solid #ffd24a;background:#10131a;color:#fff}
@@ -322,6 +324,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <div class="screen on" id="inicio">
  <canvas id="ic" width="480" height="270"></canvas>
  <button id="iFull" type="button">⛶ Pantalla completa</button>
+ <div id="verTagI"></div><div class="wmark">by ChemaJuve</div>
  <div id="iTit">
   <h1 id="iT"><span class="pk">Fakem<span class="ball"></span>n</span><span class="zb">Hasta el Amanecer<i></i><i></i><i></i><i></i><i></i></span></h1>
   <div id="iSub"><b></b><span>Supervivencia por oleadas</span><b></b></div>
@@ -329,7 +332,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
  </div>
 </div>
 <div class="screen" id="menu">
- <div id="verTag"></div>
+ <div id="verTag"></div><div class="wmark">by ChemaJuve</div>
  <div id="mTop"><h1 id="mT"><span class="pk">Fakem<span class="ball"></span>n</span><span class="zb">Hasta el Amanecer<i></i><i></i><i></i><i></i><i></i></span></h1>
  <div id="mSub">Supervivencia por oleadas</div></div>
  <div id="mCol">
@@ -1222,6 +1225,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
 const VERSION='1.48';
+try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
 const SB_URL='https://oklqhmtpcrdmvorzsmke.supabase.co',SB_KEY='sb_publishable_w_wqwaMs1NgWBrPizN1fxA_xFYx9oOH';
@@ -3082,14 +3086,14 @@ function vigilarAtasco(e,dt,sp){const P=G.P;if(e.px===undefined){e.px=e.x;e.py=e
   /* sin camino a propósito: zona cerrada, o el jugador está en la sala de proyección */
   inalc=fv0<0&&ze!==zoneP()&&(!ze.abierta||zoneP().alto),
   /* jefes que se detienen a cierta distancia del jugador (Doctor 110, Matriarca 100) */
-  keep=e.boss&&(e.ia==='teleport'||e.ia==='invoca')&&los(e.x,e.y,P.x,P.y,null)?(e.ia==='teleport'?110:100):0;
+  keep=e.boss&&(e.ia==='teleport'||e.ia==='invoca')&&los(e.x,e.y,P.x,P.y,null)?(e.ia==='teleport'?110:100):(e.def.escupe&&los(e.x,e.y,P.x,P.y,null)?e.def.escupe.dist:0);
  const debe=!inalc&&sp>2&&dP>e.r+P.r+10+keep&&e.stun<=0&&!debil()&&!G.evo&&(!e.boss||e.bs===undefined||e.bs==='chase');
  /* metido en un hueco sin camino (entre un sofá y la pared...) más de 1,5 s: se recoloca aunque se mueva */
- if(debe&&fv0<0){e.pkT+=e.skT;if(e.pkT>=1.5&&recolocar(e)){e.pkT=0;e.skN=0}}else e.pkT=0;
+ if(debe&&fv0<0){e.pkT+=e.skT;if(e.pkT>=1.5&&!e.def.escupe&&recolocar(e)){e.pkT=0;e.skN=0}}else e.pkT=0;
  if(debe&&moved<exp){e.skN++;
   if(e.skN>=1){e.unT=.8;e.unA=(Math.random()<.5?-1:1)*rnd(1.0,1.9)}
   if(e.skN>=2)desencajar(e);
-  if(e.skN>=4){if(recolocar(e))e.skN=0;else e.skN=2}}
+  if(e.skN>=4){if(!e.def.escupe&&recolocar(e))e.skN=0;else e.skN=2}}
  else if(moved>exp*1.5)e.skN=Math.max(0,e.skN-1);
  e.px=e.x;e.py=e.y;e.skT=0}
 /* Bolas de los jefes: orbe pulsante con halo, borde oscuro, núcleo blanco y estela para que se vean bien */
@@ -3262,7 +3266,7 @@ function buildSel(){const box=$('cards');box.innerHTML='';
   const bars=[['PV',S.hp,'#ee5555'],['Ataque',S.atk,'#ff9933'],['Defensa',S.def,'#ffcc44'],['Velocidad',S.spe,'#55ccff'],['At. Esp.',S.spa,'#aa77ff'],['Def. Esp.',S.spd,'#77dd99']].map(([l,v,col])=>'<span>'+l+'</span><span class="sb"><i style="width:'+Math.min(100,v/mx*100)+'%;background:'+col+'"></i></span><span class="sv">'+v+'</span>').join('');
   const det=$('selDet');det.innerHTML='';det.style.setProperty('--tc',tipoColor(c.tipos[0]));det.appendChild(battlerEl(st));
   det.insertAdjacentHTML('beforeend','<div class="dN">'+st.nombre+'</div>'+chipsHtml(c.tipos)+(c.stages.length>1?'<div class="dEv">'+c.stages.map((s,i)=>i===et?'<em>'+s.nombre+'</em>':s.nombre).join(' → ')+'</div>':'')+(st.dex?'<div class="dDex">'+st.dex+'</div>':'')+'<div class="stats">'+bars+'</div><div class="dEsp">✨ Especial (Q): <b>'+HABS[habFor(c,et)].nombre+'</b></div>')}}
-function refreshMenu(){{const br=save.cfg.brillo??100;$('mBr').value=$('pBr').value=br;$('mBrv').textContent=$('pBrv').textContent=br+'%';document.documentElement.style.filter=br===100?'':'brightness('+br/100+')'}const _vt=$('verTag');if(_vt)_vt.textContent='v.'+VERSION;$('mNom').textContent='Nombres sobre los jugadores: '+(save.cfg.verNombres!==false?'sí':'no');$('mAuto').textContent=$('pAuto').textContent='Autodisparo: '+(save.cfg.autoDisparo===true?'sí':'no');$('mBW').textContent=$('pBW').textContent='Botón de cambiar arma: '+(save.cfg.btnArma!==false?'sí':'no');document.body.classList.toggle('noBW',save.cfg.btnArma===false);document.body.classList.toggle('autoD',save.cfg.autoDisparo===true);$('mPing').textContent='Ping de los jugadores (online): '+(save.cfg.verPing!==false?'sí':'no');$('mSfx').textContent='Efectos: '+(save.cfg.sfx?'sí':'no');$('mMus').textContent='Música: '+(save.cfg.musica?'sí':'no');$('mTema').textContent='Tema: '+save.cfg.tema;document.body.dataset.tema=save.cfg.tema;document.documentElement.style.setProperty('--op',save.cfg.opac/100);$('mVm').value=$('pVm').value=save.cfg.volMus;$('mVmv').textContent=$('pVmv').textContent=save.cfg.volMus+'%';$('mVs').value=$('pVs').value=save.cfg.volSfx;$('mVsv').textContent=$('pVsv').textContent=save.cfg.volSfx+'%';$('mOp').value=$('pOp').value=save.cfg.opac;$('mOpv').textContent=$('pOpv').textContent=save.cfg.opac+'%'}
+function refreshMenu(){{const br=save.cfg.brillo??100;$('mBr').value=$('pBr').value=br;$('mBrv').textContent=$('pBrv').textContent=br+'%';document.documentElement.style.filter=br===100?'':'brightness('+br/100+')'}const _vt=$('verTag');if(_vt)_vt.textContent='v.'+VERSION;const _vi=$('verTagI');if(_vi)_vi.textContent='v.'+VERSION;$('mNom').textContent='Nombres sobre los jugadores: '+(save.cfg.verNombres!==false?'sí':'no');$('mAuto').textContent=$('pAuto').textContent='Autodisparo: '+(save.cfg.autoDisparo===true?'sí':'no');$('mBW').textContent=$('pBW').textContent='Botón de cambiar arma: '+(save.cfg.btnArma!==false?'sí':'no');document.body.classList.toggle('noBW',save.cfg.btnArma===false);document.body.classList.toggle('autoD',save.cfg.autoDisparo===true);$('mPing').textContent='Ping de los jugadores (online): '+(save.cfg.verPing!==false?'sí':'no');$('mSfx').textContent='Efectos: '+(save.cfg.sfx?'sí':'no');$('mMus').textContent='Música: '+(save.cfg.musica?'sí':'no');$('mTema').textContent='Tema: '+save.cfg.tema;document.body.dataset.tema=save.cfg.tema;document.documentElement.style.setProperty('--op',save.cfg.opac/100);$('mVm').value=$('pVm').value=save.cfg.volMus;$('mVmv').textContent=$('pVmv').textContent=save.cfg.volMus+'%';$('mVs').value=$('pVs').value=save.cfg.volSfx;$('mVsv').textContent=$('pVsv').textContent=save.cfg.volSfx+'%';$('mOp').value=$('pOp').value=save.cfg.opac;$('mOpv').textContent=$('pOpv').textContent=save.cfg.opac+'%'}
 function refreshDif(){const k=difKey();document.querySelectorAll('#difRow [data-d]').forEach(b=>b.classList.toggle('act',b.dataset.d===k));$('difDesc').textContent=DIFS[k].desc}
 document.querySelectorAll('#difRow [data-d]').forEach(b=>b.onclick=()=>{save.cfg.dif=b.dataset.d;persist();refreshDif()});
 function buildShop(){$('tiendaCand').innerHTML='Caramelos disponibles: <b>🍬 '+save.wallet+'</b>';const box=$('tiendaL');box.innerHTML='';
