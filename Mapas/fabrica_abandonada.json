@@ -28,7 +28,7 @@
  ],
  "puertas":[
   {"id":"d_almacen_pasillo","a":"almacen","b":"pasillo","x":936,"y":754,"w":40,"h":40,"coste":1000},
-  {"id":"d_almacen_vestuarios","a":"almacen","b":"vestuarios","x":760,"y":410,"w":40,"h":30,"coste":1000},
+  {"id":"d_almacen_vestuarios","a":"pasillo","b":"vestuarios","x":760,"y":410,"w":40,"h":30,"coste":1000},
   {"id":"d_pasillo_calderas","a":"pasillo","b":"calderas","x":604,"y":560,"w":40,"h":40,"coste":1250},
   {"id":"d_vestuarios_oficinas","a":"vestuarios","b":"oficinas","x":1012,"y":262,"w":32,"h":40,"coste":1250},
   {"id":"d_vestuarios_aseos","a":"vestuarios","b":"aseos","x":650,"y":194,"w":32,"h":40,"coste":750},
@@ -36,7 +36,7 @@
   {"id":"d_carga_taller","a":"carga","b":"taller","x":1400,"y":740,"w":40,"h":40,"coste":1500},
   {"id":"d_carga_muelles","a":"carga","b":"muelles","x":1552,"y":802,"w":40,"h":40,"coste":1000},
   {"id":"d_entrada_x","a":"entrada","b":"almacen","x":892,"y":1040,"w":76,"h":24,"coste":750},
-  {"id":"d_entrada_almacen","a":"entrada","b":"carga","x":1172,"y":1042,"w":76,"h":24,"coste":750},
+  {"id":"d_entrada_almacen","a":"entrada","b":"carga","x":1172,"y":1040,"w":76,"h":24,"coste":750},
   {"id":"d_taller_pasarela","a":"taller","b":"pasarela","x":1648,"y":566,"w":22,"h":42,"coste":1250},
   {"id":"d_oficinas_taller_2","a":"control","b":"taller","x":1614,"y":400,"w":40,"h":40,"coste":1500},
   {"id":"d_vestuarios_oficinas_2","a":"mejoras","b":"oficinas","x":1318,"y":134,"w":40,"h":28,"energia":true},
