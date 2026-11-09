@@ -1221,10 +1221,11 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
    1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
    1.34 · Gráficos nuevos y más detallados para los jefes (Brutus, Doctor Putrefacto, Matriarca Infectada) y para los perros zombi
+   1.49 · Sombrillas sin recortes · máquinas de bebidas requieren luz · los zombis salen poco a poco de los hoyos ·
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.48';
+const VERSION='1.49';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -2258,7 +2259,7 @@ P3.monton={h:12,paint(c,x,y,w,d){const cx=x+w/2,cy=y+d/2,[X,Y]=pj(cx,cy,0),n=Mat
 P3.farola={h:50,paint(c,x,y,w,d){const cx=x+w/2,cy=y+d/2;boxF(c,cx-3,cy-3,0,6,6,4,'#2a2e34');boxF(c,cx-1,cy-1,4,2,2,36,'#3a4048',{hi:false});
  boxF(c,cx-4,cy-4,38,8,8,3,'#2a2e34');const[X,Y]=pj(cx,cy,34);c.fillStyle='#ffe9a8';c.fillRect(X-2,Y-4,4,4);
  c.save();c.globalAlpha=.25;c.fillStyle='#ffe9a8';c.beginPath();c.arc(X,Y-2,9,0,6.283);c.fill();c.restore();c.fillStyle='#f4faff';c.fillRect(X-5,Y-9,10,2)}};
-P3.sombrilla={h:46,paint(c,x,y,w,d,col){col=col||'#d8403c';const cx=x+w/2,cy=y+d/2,[X,Y]=pj(cx,cy,0);
+P3.sombrilla={h:46,ex:26,solo:true,paint(c,x,y,w,d,col){col=col||'#d8403c';const cx=x+w/2,cy=y+d/2,[X,Y]=pj(cx,cy,0);
  boxF(c,cx-1,cy-1,0,2,2,36,'#8a8a90',{hi:false});
  const n=6,r=22,top=[X,Y-46],z0=Y-34;for(let i=0;i<n;i++){const a0=Math.PI+Math.PI*i/n,a1=Math.PI+Math.PI*(i+1)/n;c.fillStyle=i%2?'#f4f0e6':col;c.beginPath();c.moveTo(top[0],top[1]);c.lineTo(X+Math.cos(a0)*r,z0+Math.sin(a0)*-4+4);c.lineTo(X+Math.cos(a1)*r,z0+Math.sin(a1)*-4+4);c.closePath();c.fill()}
  c.fillStyle='#f4faff';c.fillRect(X-8,top[1]+2,16,2);c.fillRect(X-3,top[1]-1,6,2)}};
@@ -2345,11 +2346,11 @@ function hull(pts){pts.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]
  up.pop();lo.pop();return lo.concat(up)}
 const _pcache=new Map();
 function propSprites(p){const key=p[0]+','+p[1]+','+p[2]+','+p[3]+','+p[4]+','+p[5]+','+(p[6]|0)+','+(p.z&&p.z.asiento||'');if(_pcache.has(key))return _pcache.get(key);
- const[x,y,w,d,col]=p,t=propKey(p),def=P3[t],hh=def.h,out=[],lg=Math.max(w,d),step=lg>34?(lg/Math.ceil(lg/18)):lg,nn=Math.max(1,Math.round(lg/step));
+ const[x,y,w,d,col]=p,t=propKey(p),def=P3[t],hh=def.h,out=[],lg=Math.max(w,d),step=lg>34?(lg/Math.ceil(lg/18)):lg,nn=def.solo?1:Math.max(1,Math.round(lg/step));
  for(let i=0;i<nn;i++){let xa=x,xb=x+w,ya=y,yb=y+d;if(w>=d){xa=x+i*step;xb=x+(i+1)*step}else{ya=y+i*step;yb=y+(i+1)*step}
   const sp=isoSprite(xa,ya,xb,yb,hh,c=>{if(nn>1){const pts=[];for(const[px,py]of[[xa,ya],[xb,ya],[xb,yb],[xa,yb]])for(const zz of[0,hh+2])pts.push(pj(px,py,zz));
      for(const[px,py]of[[xa+10,ya+10],[xb+12,yb+12]])pts.push(pj(px,py,0));const hl=hull(pts);c.beginPath();c.moveTo(hl[0][0],hl[0][1]);for(let j=1;j<hl.length;j++)c.lineTo(hl[j][0],hl[j][1]);c.closePath();c.clip()}
-   def.paint(c,x,y,w,d,col,p)},2);
+   def.paint(c,x,y,w,d,col,p)},def.ex||2);
   sp.k=(xa+xb)/2+(ya+yb)/2;out.push(sp)}
  _pcache.set(key,out);return out}
 let _seat=null;
@@ -2431,7 +2432,7 @@ function drawItemIso(c,it){noT(c);const dy=it.lado==='B'?-4:-12,x=it.x-7,y=it.y+
  if(it.tipo==='panel')wallItem(c,it,it.x-11,it.x+11,it.y-6,it.y-2,1,27,'#20252c',it.x-11,it.y-2,it.x-11,it.y-17,drawPanel);
  else if(it.tipo==='baya'){const b=BAYA[it.baya],has=bayaTiene(b),bc=hex6(b.color);
   wallItem(c,it,it.x-10,it.x+10,it.y-6,it.y+4,0,30,has?'#2c333c':shade(bc,-.55),it.x-10,it.y+4,it.x-10,it.y-22,(cc,i)=>{
-   const R2=(co,a2,b2,w2,h2)=>{cc.fillStyle=co;cc.fillRect(a2,b2,w2,h2)};drawBayaVend(R2,Math.round(i.x)-10,Math.round(i.y)-22,20,30,{t:G.t,on:!has,seed:hsh(i.x|0,i.y|0),col:bc})})}
+   const R2=(co,a2,b2,w2,h2)=>{cc.fillStyle=co;cc.fillRect(a2,b2,w2,h2)};drawBayaVend(R2,Math.round(i.x)-10,Math.round(i.y)-22,20,30,{t:G.t,on:!has&&G.power,seed:hsh(i.x|0,i.y|0),col:bc})})}
  else if(it.tipo==='interruptor')wallItem(c,it,it.x-7,it.x+7,it.y-8,it.y-4,6,22,'#2a2e36',it.x-7,it.y-4,x,y,(cc,i)=>{cc.fillStyle='#2a2e36';cc.fillRect(x,y,14,16);cc.fillStyle=G.power?'#3d4':'#c33';cc.fillRect(x+4,y+(G.power?3:9),6,4);cc.fillStyle='#111';cc.fillRect(x+6,y+2,2,12);if(!G.power){cc.globalAlpha=.3+.3*Math.sin(G.t*6);cc.fillStyle='#f33';cc.fillRect(x+3,y+8,8,6);cc.globalAlpha=1}});
  else if(it.tipo==='mt')wallItem(c,it,it.x-10,it.x+10,it.y-8,it.y-2,5,21,G.power?'#b8922e':'#4a4430',it.x-10,it.y-2,x-3,y,(cc)=>{const t=G.t,on=G.power,R=(co,a,b,w,h)=>{cc.fillStyle=co;cc.fillRect(a,b,w,h)};
    R(on?'#c9a43a':'#4a4430',x-3,y,20,16);R(on?'#fff3b0':'#6a6444',x-3,y,20,1);R(on?'#e8c860':'#5a5438',x-3,y,1,16);R(on?'#7a5a10':'#2a2618',x+16,y,1,16);R(on?'#7a5a10':'#2a2618',x-3,y+15,20,1);
@@ -2477,7 +2478,7 @@ function hoyoGround(c){for(const b of G.bars){if(!b.hoyo||!b.z.abierta||!b.z.vis
 function itemGround(c){hoyoGround(c);for(const it of G.items)if(it.tipo==='base'&&iv(it))drawBaseGround(c,it); // lo que va pegado al suelo, bajo todo lo demás (se llama con setT)
  for(const it of G.items){if(it.tipo==='puerta'||!iv(it))continue;
   if(it.tipo==='mt'&&G.power){const pl=.5+.5*Math.sin(G.t*3),g=c.createRadialGradient(it.x,it.y+2,2,it.x,it.y+2,36);g.addColorStop(0,'rgba(255,215,90,'+(.38+.2*pl)+')');g.addColorStop(1,'rgba(255,215,90,0)');c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(it.x,it.y+2,36,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
-  if(it.tipo==='baya'){const b=BAYA[it.baya];if(!bayaTiene(b)){const pl=.5+.5*Math.sin(G.t*3+it.x),g=c.createRadialGradient(it.x,it.y+2,2,it.x,it.y+2,30);g.addColorStop(0,hexA(b.color,.32+.18*pl));g.addColorStop(1,hexA(b.color,0));c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(it.x,it.y+2,30,0,6.283);c.fill();c.globalCompositeOperation='source-over'}}
+  if(it.tipo==='baya'){const b=BAYA[it.baya];if(!bayaTiene(b)&&G.power){const pl=.5+.5*Math.sin(G.t*3+it.x),g=c.createRadialGradient(it.x,it.y+2,2,it.x,it.y+2,30);g.addColorStop(0,hexA(b.color,.32+.18*pl));g.addColorStop(1,hexA(b.color,0));c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(it.x,it.y+2,30,0,6.283);c.fill();c.globalCompositeOperation='source-over'}}
   if(it.tipo==='tele'){const on=G.power,pl=.5+.5*Math.sin(G.t*4);c.fillStyle='#14181e';c.beginPath();c.arc(it.x,it.y,11,0,6.283);c.fill();c.strokeStyle=on?'rgba(110,220,255,'+(.5+.4*pl)+')':'#444';c.lineWidth=1.6;c.beginPath();c.arc(it.x,it.y,9,0,6.283);c.stroke();c.beginPath();c.arc(it.x,it.y,5,0,6.283);c.stroke();c.lineWidth=1;
    if(on){c.globalCompositeOperation='lighter';const g=c.createRadialGradient(it.x,it.y,1,it.x,it.y,14);g.addColorStop(0,'rgba(110,220,255,'+(.3+.2*pl)+')');g.addColorStop(1,'rgba(110,220,255,0)');c.fillStyle=g;c.beginPath();c.arc(it.x,it.y,14,0,6.283);c.fill();c.globalCompositeOperation='source-over'}}
   else if(it.tipo==='caja'){const glow=.5+.5*Math.sin(G.t*5),g=c.createRadialGradient(it.x,it.y,2,it.x,it.y,18);g.addColorStop(0,'rgba(255,220,120,'+(.25+.25*glow)+')');g.addColorStop(1,'rgba(255,220,120,0)');c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(it.x,it.y,18,0,6.283);c.fill();c.globalCompositeOperation='source-over'}}}
@@ -2502,7 +2503,8 @@ function drawGround(c){const pts=[s2w(0,0),s2w(W,0),s2w(0,H),s2w(W,H)];let x0=1e
  c.imageSmoothingEnabled=true;c.drawImage(mapC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.drawImage(decC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.imageSmoothingEnabled=false}
 function entDraw(c,e){const sc=zdis(e.def.z)?1:Math.max(.85,e.r/6),sh=e.bs==='wind'?rnd(-1.5,1.5):0;setB(c,e.x+sh,e.y,0,6);
  if(e.boss){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,40,40,'+(.12+.07*Math.sin(G.t*5))+')';c.beginPath();c.arc(e.x,e.y-3,e.r*2.1,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
- drawZombie(c,e.x+sh,e.y,Math.cos(e.ang)-Math.sin(e.ang)<0,Math.floor(e.anim)%4,e.def.z,sc,{flash:e.flash>0,t:G.t,v:e.vr,tipo:e.tipo});noT(c)}
+ const em=e.em!==undefined&&e.em<1?e.em:1;if(em<1){c.save();c.beginPath();c.rect(e.x-60,e.y-120,120,120+3);c.clip();c.translate(0,(1-em)*34*sc)}
+ drawZombie(c,e.x+sh,e.y,Math.cos(e.ang)-Math.sin(e.ang)<0,Math.floor(e.anim)%4,e.def.z,sc,{flash:e.flash>0,t:G.t,v:e.vr,tipo:e.tipo});if(em<1)c.restore();noT(c)}
 function playerDraw(c){const P=G.P;if(G.players[G.act].ausente)return;if(G.inv>0&&!G.telep&&!debil()&&Math.floor(G.t*14)%2)return;
  if(G.telep){const T=G.telep;if(!T.done){if(T.t>T.T1*.55&&Math.floor(G.t*34)%2)return;c.globalAlpha=1-.45*(T.t/T.T1)}else{if(T.t-T.T1<.15)return;c.globalAlpha=Math.min(1,.4+(T.t-T.T1)*3)}}
  setB(c,P.x,P.y,0,6);
@@ -3125,7 +3127,7 @@ function moveVec(){let mx=0,my=0;if(keys.w||keys.arrowup)my--;if(keys.s||keys.ar
 
 /* ---------- Enemigos ---------- */
 function mk(def,x,y,state,bar,extra){const hm=hpRonda(G.round),vm=Math.min(2.2,Math.pow(1.05,G.round-1));
- const e=Object.assign({def,x,y,r:def.r,hp:def.hp*hm*G.D.hp,vel:def.vel*vm*G.D.vel,dano:def.dano*(1+.03*(G.round-1))*G.D.dano,state,bar,flash:0,cobro:0,cd:rnd(0,.5),anim:rnd(0,5),ang:0,quema:0,veneno:0,lento:0,stun:0,marca:0,vr:Math.random()*4|0},extra||{});if(!e.tipo)e.tipo=pickTipo(def);e.maxhp=e.hp;G.enemies.push(e);return e}
+ const e=Object.assign({def,x,y,r:def.r,hp:def.hp*hm*G.D.hp,vel:def.vel*vm*G.D.vel,dano:def.dano*(1+.03*(G.round-1))*G.D.dano,state,bar,flash:0,cobro:0,cd:rnd(0,.5),anim:rnd(0,5),ang:0,quema:0,veneno:0,lento:0,stun:0,marca:0,vr:Math.random()*4|0},extra||{});if(!e.tipo)e.tipo=pickTipo(def);if(bar&&bar.hoyo)e.em=state==='in'?.3:.08;e.maxhp=e.hp;G.enemies.push(e);return e}
 /* Con el mapa grande, los zombis salen de las ventanas más cercanas al jugador (el 60% más próximo y a más de 150 px) */
 function pickBar(){const P=G.P;let ok=G.bars.filter(b=>b.z.abierta);if(ok.length<=3)return ok[Math.random()*ok.length|0];
  const pr=ok.map(b=>[distJ(b.ix,b.iy),b]).sort((p,q)=>p[0]-q[0]),far=pr.filter(p=>p[0]>150),pool=(far.length>=3?far:pr).slice(0,Math.max(3,Math.ceil(pr.length*.6)));return pool[Math.random()*pool.length|0][1]}
@@ -3247,7 +3249,9 @@ function updEnemies(dt){const N=G.players.length;G.bossRef=null;{const vv=G.enem
   if(e.stun>0){e.stun-=dt;continue}if(e.rapi===undefined)e.rapi=!e.boss&&!e.def.ladra&&Math.random()<.04;const tope=G.speed*(e.def.ladra?1.05:e.rapi?1.1:1),sp=Math.min(e.vel,tope)*(e.lento>0?.5:1)*(e.stopT>0?1/STOP_DIV:1)*(e.ultimo?2:1);
   if(e.state==='out'){const b=e.bar;e.ang=Math.atan2(b.iy-e.y,b.ix-e.x);
    if(b.hp>0){if(e.cd<=0){b.hp=Math.max(0,b.hp-18);e.cd=1;sfx(b.hoyo?'tierra':'madera');if(b.hoyo)chips(b,Math.ceil(b.hp/20),false)}}
-   else{const a=Math.atan2(b.iy-e.y,b.ix-e.x);e.x+=Math.cos(a)*sp*dt;e.y+=Math.sin(a)*sp*dt;if(dist(e.x,e.y,b.ix,b.iy)<4)e.state='in'}continue}
+   else if(b.hoyo){e.state='in'}else{const a=Math.atan2(b.iy-e.y,b.ix-e.x);e.x+=Math.cos(a)*sp*dt;e.y+=Math.sin(a)*sp*dt;if(dist(e.x,e.y,b.ix,b.iy)<4)e.state='in'}
+   if(b.hoyo&&b.hp>0)e.em=Math.max(e.em||0,.1+.5*(1-b.hp/100));continue}
+  if(e.em!==undefined&&e.em<1){e.em=Math.min(1,e.em+dt*.8);if(Math.random()<dt*6)partic(e.x,e.y,'#6b4a2a',2,20,.4,2);continue}
   if(e.boss)bossAI(e,dt,sp);else if(e.def.escupe)escupidorAI(e,dt,sp);else if(e.def.cura)curanderoAI(e,dt,sp);else chase(e,sp,dt);
   vigilarAtasco(e,dt,sp);if(ESC.length)escEnemigo(e,dt);
   if(HAY_ALTO){const zz=zoneAt(e.x,e.y);if(zz&&zz.alto&&zz!==zoneP()){const b=pickBar();if(b){partic(e.x,e.y,'#555',6,40,.3,1);e.x=b.ix;e.y=b.iy;e.state='in'}}}
@@ -3264,7 +3268,7 @@ function nearBar(){const P=G.P;let best=null,bd=34+(G.players[G.act]&&G.players[
 function itemPrompt(it){switch(it.tipo){
  case'puerta':{const z=!it.d.za.abierta?it.d.za:!it.d.zb.abierta?it.d.zb:null;return'[E] '+VERBO_BLOQ(it.d,0)+' '+(z?'a '+z.nombre:'(atajo)')+' — '+it.d.coste+' ₽'}
  case'panel':{const m=MOV[panelMov(it)];if(G.own.has(m.id)){const f=muniFalta(m.id);return f<=0?m.nombre+' — munición al máximo':(m.energia&&!G.power)?m.nombre+' — requiere energía':'[E] Munición '+m.nombre+' — '+muniPrecio(m.id)+' ₽ ('+muniTot(m.id)+'/'+muniMax(m)+')'}if(m.energia&&!G.power)return m.nombre+' — requiere energía';return'[E] '+m.nombre+' — '+m.coste+' ₽ · '+m.descripcion+(freeSlot()<0?' ·':'')}
- case'baya':{const b=BAYA[it.baya];return bayaTiene(b)?(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya llevas la Bebida '+b.nombre):'[E] Bebida '+b.nombre+' — '+b.coste+' ₽ · '+b.desc}
+ case'baya':{const b=BAYA[it.baya];return bayaTiene(b)?(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya llevas la Bebida '+b.nombre):!G.power?'Bebida '+b.nombre+' — sin energía (activa la luz)':'[E] Bebida '+b.nombre+' — '+b.coste+' ₽ · '+b.desc}
  case'caja':return it.est==='idle'?'[E] Caja Misteriosa — '+COSTE_CAJA+' ₽'+([...G.own].some(id=>muniFalta(id)>0&&!panelDe(id))?' · munición de tus movimientos especiales':''):it.est==='anim'?'Abriendo... '+Math.ceil(it.t)+'s':'[E] Coger: '+MOV[it.res].nombre+(G.own.has(it.res)?' (ya lo tienes: recarga)':freeSlot()<0?' (elegirás cuál sustituir)':'')+' · '+Math.ceil(it.t)+'s';
  case'mt':return G.power?'[E] Máquina de MT — mejorar un movimiento: '+COSTE_MT+' ₽':'Máquina de MT — sin energía';
  case'hab':{const h=habs2(G.cr,G.et);return !G.power?'Máquina de habilidad — sin energía':!h.length?'Máquina de habilidad — solo para formas finales con dos habilidades':'[E] Cambiar habilidad: '+HABS[G.cr.hab].nombre+' → '+HABS[G.cr.hab===h[0]?h[1]:h[0]].nombre+' — '+COSTE_HAB+' ₽'}
@@ -3276,7 +3280,7 @@ function pay(c){if(G.money<c){msg('Te faltan '+(c-G.money)+' ₽',2.2,true);sfx(
 function interact(it){switch(it.tipo){
  case'puerta':if(pay(it.d.coste)){const n=abrirPuerta(it.d);msg(n.length?'Zona abierta: '+n.map(z=>z.nombre).join(' + '):VERBO_BLOQ(it.d,1)+' (atajo)',2.5);sfx('energia')}break;
  case'panel':{const m=MOV[panelMov(it)];if(!permitido(m.id)){msg('Tu criatura no puede usar '+m.nombre);sfx('error');return}if(G.own.has(m.id)){if(m.energia&&!G.power){msg('Necesitas activar la energía');sfx('error');return}comprarMuni(m.id);return}if(m.energia&&!G.power){msg('Necesitas activar la energía');sfx('error');return}learn(m.id,m.coste)}break;
- case'baya':{const b=BAYA[it.baya];if(bayaTiene(b)){msg(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya la llevas');return}
+ case'baya':{const b=BAYA[it.baya];if(bayaTiene(b)){msg(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya la llevas');return}if(!G.power){msg('La máquina no tiene energía: activa la luz primero',2.4,true);sfx('error');return}
   if(b.slot){if(pay(b.coste)){G.slot5=true;applyStats();msg('Bebida '+b.nombre+': ¡5.º hueco de ataque desbloqueado! (tecla 5)',4);sfx('evo')}return}
   if(G.perks.length<4){if(pay(b.coste)){G.perks.push(b.id);applyStats();msg('Bebida '+b.nombre+': '+b.desc)}}
   else{if(G.money<b.coste){msg('Te faltan '+(b.coste-G.money)+' ₽',2.2,true);sfx('error');return}
@@ -4139,7 +4143,7 @@ function netSnap(){const g=G;savePl();const S={t:'snap',n:++NET.seq,T:r2(g.t),ak
   d:p.deb?1:0,o:p.out?1:0,e:p.espera?1:0,rt:r1(p.revT||0),rp:r1(p.revP||0),au:p.ausente?1:0,al:p.alto?1:0,am:r2(p.s.aim||0)}));
  const ss=g.players.map(p=>JSON.stringify(netPJ(p.s)));S.ps=ss.map((s,i)=>{if(s===NET.lastS[i])return null;NET.lastS[i]=s;return JSON.parse(s)});
  S.en=g.enemies.map(e=>[netDefKey(e.def),r1(e.x),r1(e.y),r1(e.hp),r1(e.maxhp),r2(e.ang||0),r2(e.anim||0),e.flash>0?1:0,e.vr|0,e.tipo,e.state||'',e.bs||'',
-  (e.boss?1:0)|(e.jauria?2:0)|(e.muerto?4:0)|(e.quema>0?8:0)|(e.lento>0||e.stopT>0?16:0)|(e.veneno>0?32:0)|(e.stun>0?64:0)|(e.marca>0?128:0),r1(e.r),e._u||(e._u=++NET.uid)]);
+  (e.boss?1:0)|(e.jauria?2:0)|(e.muerto?4:0)|(e.quema>0?8:0)|(e.lento>0||e.stopT>0?16:0)|(e.veneno>0?32:0)|(e.stun>0?64:0)|(e.marca>0?128:0),r1(e.r),e._u||(e._u=++NET.uid),e.em===undefined?1:r1(e.em)]);
  S.bo=g.bossRef?g.enemies.indexOf(g.bossRef):-1;
  S.bu=g.bullets.map(b=>{const m=b.m||{};return[r1(b.x),r1(b.y),r1(b.vx),r1(b.vy),b.r,b.color,MOV[m.id]===m?m.id:'',m.elem||'',m.efx||'',b.o|0,b.z?b.z.id:'',b.life>0?r2(b.life):0,b._u||(b._u=++NET.uid)]});
  S.eb=g.eb.map(b=>[r1(b.x),r1(b.y),r1(b.vx),r1(b.vy),b.r,r2(b.life),b._u||(b._u=++NET.uid)]);
@@ -4254,7 +4258,7 @@ function applySnap(S){const g=G,primera=NET.first;NET.first=false;
  {const nm=new Map(),list=[];for(const a of S.en){const def=netDefOf(a[0]);if(!def)continue;const f=a[12],u=a[14];let e=NET.eMap.get(u);
    if(!e){e={def,x:a[1],y:a[2],ang:a[5],anim:a[6],cobro:0};e._p=undefined}
    e.def=def;e.hp=a[3];e.maxhp=a[4];e.flash=a[7]?.1:0;e.vr=a[8];e.tipo=a[9];e.state=a[10];e.bs=a[11]||undefined;e.boss=!!(f&1);e.jauria=!!(f&2);e.muerto=!!(f&4);
-   e.quema=f&8?1:0;e.lento=f&16?1:0;e.veneno=f&32?1:0;e.stun=f&64?1:0;e.marca=f&128?1:0;e.r=a[13];e._u=u;
+   e.quema=f&8?1:0;e.lento=f&16?1:0;e.veneno=f&32?1:0;e.stun=f&64?1:0;e.marca=f&128?1:0;e.r=a[13];e._u=u;if(a[15]!==undefined&&a[15]<1)e.em=a[15];else delete e.em;
    netSetT(e,a[1],a[2]);e._fa=e.ang;e._ta=a[5];e._fn=e.anim;e._tn=a[6];nm.set(u,e);list.push(e)}
   NET.eMap=nm;g.enemies=list}
  g.bossRef=S.bo>=0&&g.enemies[S.bo]?g.enemies[S.bo]:null;
