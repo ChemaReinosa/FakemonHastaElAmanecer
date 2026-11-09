@@ -1202,6 +1202,8 @@ const NET_CORR_SALTO=80;   /* diferencia (px) a partir de la cual el invitado se
 const NET_INTERP=1;   /* 1 = el invitado suaviza zombis y compañero entre dos actualizaciones del anfitrión; 0 = los dibuja tal cual llegan */
 const NET_INTERP_K=1;   /* velocidad de la interpolación respecto al intervalo entre actualizaciones (1 = llega justo a la siguiente; menos de 1 = va un poco más lenta y absorbe retrasos) */
 const NET_EXTRAP=1.5;   /* si una actualización del anfitrión se retrasa, el invitado sigue moviendo las entidades en su misma dirección hasta este tramo (1 = no extrapolar; 1.5 = hasta medio intervalo extra) */
+const SUELO_PRECALC=1;   /* 1 = el suelo se pre-proyecta una vez en una capa extra (más rápido, usa algo más de memoria); 0 = método clásico */
+const DT_MAX_INVITADO=.1;   /* paso máximo (s) por fotograma del invitado; el anfitrión usa .05. Más alto = no se ralentiza con pocos FPS, pero con tirones los pasos son más grandes */
 const NET_BUF_MAX=64000;   /* bytes pendientes de enviar en el canal a partir de los cuales el anfitrión salta una actualización (evita que el retraso crezca si la conexión va justa) */
 const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad no se interpola y salta a su nueva posición */
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
@@ -1222,13 +1224,14 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
    1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
    1.34 · Gráficos nuevos y más detallados para los jefes (Brutus, Doctor Putrefacto, Matriarca Infectada) y para los perros zombi
+   1.52 · Optimización del invitado (suelo pre-proyectado, FPS en el indicador de red, el movimiento no se ralentiza con pocos FPS) ·
    1.51 · Sala previa con jugadores, criatura y conexión · criaturas únicas por jugador ·
    1.50 · Cooperativo online hasta 4 jugadores (anfitrión + 3 invitados, reconexión por jugador) ·
    1.49 · Sombrillas sin recortes · máquinas de bebidas requieren luz · los zombis salen poco a poco de los hoyos ·
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.51';
+const VERSION='1.52';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1877,6 +1880,7 @@ function nextCell(e,f){const cx=e.x>>4,cy=e.y>>4;if(cx<0||cy<0||cx>=GW||cy>=GH)r
  return bj<0?null:[(bj%GW)*16+8,((bj/GW)|0)*16+8]}
 
 const mapC=document.createElement('canvas');
+const ISOG={cv:null,dirty:true,ox:0,ok:true};
 let seedv=7;const sr=()=>{seedv=(seedv*16807)%2147483647;return seedv/2147483647};
 const decC=document.createElement('canvas');const dcx=decC.getContext('2d');
 /* Aplica un mapa leído de Mapas/*.json: reconstruye zonas, obstáculos, ventanas, luces y rejillas de rutas */
@@ -1985,7 +1989,7 @@ function ventanaAlto(z,R){const v=z.vent||'S';
  else if(v==='E'){R('#0a1320',z.x+z.w,z.y+24,8,z.h-48);R('#7fc4ee',z.x+z.w+1,z.y+24,1,z.h-48);R('rgba(150,200,255,.35)',z.x+z.w+3,z.y+30,2,18)}
  else if(v==='W'){R('#0a1320',z.x-8,z.y+24,8,z.h-48);R('#7fc4ee',z.x-2,z.y+24,1,z.h-48);R('rgba(150,200,255,.35)',z.x-6,z.y+30,2,18)}
  else{R('#0a1320',z.x+24,z.y-8,z.w-48,8);R('#7fc4ee',z.x+24,z.y-8,z.w-48,1)}}
-function buildMap(){
+function buildMap(){ISOG.dirty=true;
  seedv=7;const ZV=ZONAS.filter(z=>z.visto),m=mapC.getContext('2d');m.fillStyle='#06060a';m.fillRect(0,0,WW,WH);
  const R=(c,x,y,w,h)=>{m.fillStyle=c;m.fillRect(x|0,y|0,w|0,h|0)};
  for(const z of ZV){
@@ -2500,10 +2504,21 @@ function bakeShadows(m){for(const p of OBS){const z=p.z;if(!z.visto||p[5]==='agu
  m.restore()}}
 
 /* ---------- Dibujo del mundo: suelo, lista ordenada por profundidad, oscuridad y efectos ---------- */
-function drawGround(c){const pts=[s2w(0,0),s2w(W,0),s2w(0,H),s2w(W,H)];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+/* Suelo pre-proyectado: mapC (plano del mapa) se convierte UNA vez a la proyección isométrica; cada frame es un simple recorte alineado a la pantalla.
+   Se invalida en buildMap(). Si el mapa es enorme (límite de memoria de móviles) se usa el método clásico. */
+function isoGround(){if(!ISOG.dirty&&ISOG.cv)return ISOG.cv;ISOG.dirty=false;const iw=Math.ceil((WW+WH)*KX)+2,ih=Math.ceil((WW+WH)*KY)+2;
+ if(iw*ih>14e6){ISOG.cv=null;ISOG.ok=false;return null}ISOG.ok=true;
+ if(!ISOG.cv)ISOG.cv=document.createElement('canvas');const k=ISOG.cv;k.width=iw;k.height=ih;ISOG.ox=WH*KX+1;
+ const q=k.getContext('2d');q.imageSmoothingEnabled=true;q.setTransform(KX,KY,-KX,KY,ISOG.ox,0);q.drawImage(mapC,0,0);return k}
+function drawGround(c){const k=SUELO_PRECALC?isoGround():null;if(k){const ox=ISOG.ox,sx=Math.max(0,Math.floor(ox-CX)-1),sy=Math.max(0,Math.floor(-CY)-1),sw=Math.min(k.width-sx,W+3),sh=Math.min(k.height-sy,H+3);
+  if(sw>0&&sh>0){c.save();noT(c);c.imageSmoothingEnabled=true;c.drawImage(k,sx,sy,sw,sh,sx+CX-ox,sy+CY,sw,sh);c.restore()}
+  drawDec(c);return}
+ const pts=[s2w(0,0),s2w(W,0),s2w(0,H),s2w(W,H)];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
  for(const p of pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])}
  x0=Math.max(0,Math.floor(x0)-14);y0=Math.max(0,Math.floor(y0)-14);x1=Math.min(WW,Math.ceil(x1)+14);y1=Math.min(WH,Math.ceil(y1)+14);if(x1<=x0||y1<=y0)return;
- c.imageSmoothingEnabled=true;c.drawImage(mapC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.drawImage(decC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.imageSmoothingEnabled=false}
+ c.imageSmoothingEnabled=true;c.drawImage(mapC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.imageSmoothingEnabled=true;c.drawImage(decC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.imageSmoothingEnabled=false}
+function drawDec(c){const pts=[s2w(0,0),s2w(W,0),s2w(0,H),s2w(W,H)];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const p of pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])}
+ x0=Math.max(0,Math.floor(x0)-14);y0=Math.max(0,Math.floor(y0)-14);x1=Math.min(WW,Math.ceil(x1)+14);y1=Math.min(WH,Math.ceil(y1)+14);if(x1<=x0||y1<=y0)return;c.imageSmoothingEnabled=true;c.drawImage(decC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.imageSmoothingEnabled=false}
 function entDraw(c,e){const sc=zdis(e.def.z)?1:Math.max(.85,e.r/6),sh=e.bs==='wind'?rnd(-1.5,1.5):0;setB(c,e.x+sh,e.y,0,6);
  if(e.boss){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,40,40,'+(.12+.07*Math.sin(G.t*5))+')';c.beginPath();c.arc(e.x,e.y-3,e.r*2.1,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
  const em=e.em!==undefined&&e.em<1?e.em:1;if(em<1){c.save();c.beginPath();c.rect(e.x-60,e.y-120,120,120+3);c.clip();c.translate(0,(1-em)*34*sc)}
@@ -3779,7 +3794,8 @@ function drawMini(){if(!G.mini||!G.perks.includes('radar'))return;const c=ctx,s=
 let last=0;
 let hudAcc=0,hudDt=1/30;
 function hudTick(dt){hudAcc+=dt;if(hudAcc>=.03){hudDt=hudAcc;hudAcc=0;hud()}}
-function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(G)markPis();
+let FPSM=1/60;
+function loop(ts){requestAnimationFrame(loop);{const r=(ts-last)/1000;if(r>0&&r<1)FPSM=FPSM*.92+r*.08}const dt=Math.min(NET.modo==='guest'?DT_MAX_INVITADO:.05,(ts-last)/1000||0);last=ts;if(G)markPis();
  if(G&&NET.modo==='guest'){if(G.estado!=='fin'&&(NET.fase==='juego'||NET.fase==='recon')){netGuestFrame(dt);if(G)hudTick(dt)}}else if(G&&!G.pausa&&G.estado!=='fin'){update(dt);if(G)hudTick(dt)}render()}
 function fit(){let s=Math.min(innerWidth/W,innerHeight/H);const si=Math.floor(s);if(si>=1&&s/si<1.15)s=si;const st=$('stage');st.style.width=W*s+'px';st.style.height=H*s+'px';st.style.setProperty('--u',s+'px')}
 window.addEventListener('resize',fit);fit();
@@ -4071,6 +4087,7 @@ function netSt(){const el=$('netSt');if(!el)return;
  else{if(NET.fase==='recon'){lines.push('◌ Reconectando…');bad('#fd4')}
   else if(NET.conn&&performance.now()-NET.conn.lastRx>NET_AVISO*1000){lines.push('⚠ Sin respuesta del anfitrión…');bad('#fd4')}
   else if(ver)for(let h=0;h<N;h++)lines.push(png(h))}
+ if(ver&&lines.length)lines.push('FPS '+Math.round(1/FPSM)+(NET.modo==='guest'&&NET.sInt?' · estado cada '+Math.round(NET.sInt*1000)+' ms':''));
  if(!lines.length){el.style.display='none';return}el.style.display='block';setT(el,lines.join('\n'));el.style.color=col}
 function salaUI(txt,go,cancel){show('sala');{const c=$('salaCambia');if(c)c.style.display=NET.modo==='guest'&&NET.fase==='listo'?'':'none'}$('salaT').textContent=NET.modo==='host'?'Sala online':'Unirse a una sala';
  $('salaCod').textContent=NET.modo==='host'?NET.code:'';$('salaCod').style.display=NET.modo==='host'?'block':'none';
