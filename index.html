@@ -1224,6 +1224,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.36   Nuevos objetos en el mapa, dos habilidades, maq. para intercambiarlas, cambios en el selecgtor de mapas, arreglo escaleras y sofa
    1.35   Añadido nueva habilidad, nuevos métodos de evolución por caramelos, nuevo cartel de muerte y cuenta atrás
    1.34 · Gráficos nuevos y más detallados para los jefes (Brutus, Doctor Putrefacto, Matriarca Infectada) y para los perros zombi
+   1.53 · Ranking: un registro por jugador en cooperativo y nº real de jugadores ·
    1.52 · Optimización del invitado (suelo pre-proyectado, FPS en el indicador de red, el movimiento no se ralentiza con pocos FPS) ·
    1.51 · Sala previa con jugadores, criatura y conexión · criaturas únicas por jugador ·
    1.50 · Cooperativo online hasta 4 jugadores (anfitrión + 3 invitados, reconexión por jugador) ·
@@ -1231,7 +1232,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.52';
+const VERSION='1.53';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -3949,6 +3950,11 @@ function rkFila(){const g=G,p0=g.act===0?{cr:g.cr,et:g.et}:g.players[0].s,dk=dif
   dano_total:g.st.dano,golpes_criticos:g.st.crit,granadas_usadas:g.st.gren,vidas_perdidas:g.st.vidasP,revives:g.st.rev,tablones:g.st.tab,
   criatura:p0.cr.stages[p0.et].nombre,criatura_base:p0.cr.id,evolucion:p0.et,dificultad:dk,mapa:g.mapa||MAPA_ID,modo:coop?'coop':'solo',companero:coop?(jr.map(p=>netClean(p.nombre)).filter(Boolean).join(', ').slice(0,60)||null):null,version_juego:VERSION};
  o.puntuacion=calcPuntos(o);return o}
+/* Cooperativo: un registro por jugador (mismos totales de equipo; cada uno con su nick, su criatura y sus compañeros). partida_uid distinto por jugador. */
+function rkFilas(){const o=rkFila();if(o.modo!=='coop')return[o];savePl();const g=G,nm=p=>netClean(p.nombre)||'Jugador '+(p.idx+1),rows=[];
+ g.players.forEach((p,k)=>{const r=Object.assign({},o),c=p.s.cr,et=p.s.et|0;
+  r.nick=nm(p);r.partida_uid=g.uid+(k?'-'+(k+1):'');r.criatura=c.stages[et].nombre;r.criatura_base=c.id;r.evolucion=et;
+  r.companero=g.players.filter(q=>q!==p).map(nm).join(', ').slice(0,60)||null;rows.push(r)});return rows}
 function rkPend(){try{return JSON.parse(localStorage.getItem(RK.pend))||[]}catch(e){return[]}}
 function rkGuardaPend(a){try{localStorage.setItem(RK.pend,JSON.stringify(a.slice(-20)))}catch(e){}}
 async function rkPost(o){const r=await fetch(SB_URL+'/rest/v1/ranking',{method:'POST',headers:Object.assign({'Content-Type':'application/json',Prefer:'return=minimal'},rkH),body:JSON.stringify(o)});return r.status}
@@ -3956,13 +3962,14 @@ async function rkReintenta(){const a=rkPend();if(!a.length)return;const rest=[];
 async function enviarRecord(){const st=$('rkSt');if(!st)return;st.textContent='';
  if(NET.modo==='guest'||G.round<1)return;
  if(G.cargada){st.textContent='Las partidas cargadas desde archivo no puntúan en el ranking global';return}
- let o;try{o=rkFila()}catch(e){return}
- st.textContent='Enviando récord… ('+o.puntuacion.toLocaleString('es-ES')+' puntos)';
- try{const c=await rkPost(o);
-  if(rkOk(c)){st.textContent='✔ Récord enviado al ranking global: '+o.puntuacion.toLocaleString('es-ES')+' puntos';rkReintenta()}
-  else if(rkDrop(c))st.textContent='✖ El ranking ha rechazado el récord (código '+c+')';
-  else throw 0}
- catch(e){const a=rkPend();a.push(o);rkGuardaPend(a);st.textContent='⚠ No se pudo enviar el récord: se reintentará más tarde'}}
+ let rows;try{rows=rkFilas()}catch(e){return}const o=rows[0],n=rows.length;
+ st.textContent='Enviando '+(n>1?n+' récords':'récord')+'… ('+o.puntuacion.toLocaleString('es-ES')+' puntos)';
+ let ok=0,rech=0,fallo=0,cod=0;
+ for(const r of rows){try{const c=await rkPost(r);if(rkOk(c))ok++;else if(rkDrop(c)){rech++;cod=c}else throw 0}
+  catch(e){fallo++;const a=rkPend();a.push(r);rkGuardaPend(a)}}
+ if(fallo)st.textContent='⚠ No se pudo enviar '+(n>1?'algún récord':'el récord')+': se reintentará más tarde';
+ else if(rech)st.textContent='✖ El ranking ha rechazado '+(n>1?rech+' de '+n+' récords':'el récord')+' (código '+cod+')';
+ else{st.textContent='✔ '+(n>1?n+' récords enviados':'Récord enviado')+' al ranking global: '+o.puntuacion.toLocaleString('es-ES')+' puntos';rkReintenta()}}
 function rkAbre(from){RK.from=from;show('ranking');
  const sm=$('rkMapa');
  if(!sm._ok){sm._ok=1;
@@ -3975,14 +3982,14 @@ function rkVista(v){RK.vista=v;const g=v==='global';$('rkFiltros').style.display
 function rkPersonal(){const L=$('rkLista');let h='Récord: <b>ronda '+(save.record|0)+'</b> · Bajas totales: '+(save.matados||0)+'<br><br>';
  h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+rkEsc(netClean(r.nick))+'</b> — ':'')+'Ronda '+(+r.ronda)+' — '+(+r.matados)+' bajas — '+rkEsc(r.cr)+' ('+rkEsc(r.f)+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';L.innerHTML=h}
 async function rkCarga(){const L=$('rkLista');L.textContent='Cargando…';
- let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,created_at&order=puntuacion.desc,ronda.desc&limit=30';
+ let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at&order=puntuacion.desc,ronda.desc&limit=30';
  for(const[k,id]of[['mapa','rkMapa'],['dificultad','rkDif'],['modo','rkModo']]){const v=$(id).value;if(v)q+='&'+k+'=eq.'+encodeURIComponent(v)}
  try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;const d=await r.json();
   if(!d.length){L.textContent='Aún no hay récords con estos filtros.';return}
   const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},
   F=v=>{const t=new Date(v);if(!v||isNaN(t))return'—';const z=n=>String(n).padStart(2,'0');return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+String(t.getFullYear()).slice(2)+'<br>'+z(t.getHours())+':'+z(t.getMinutes())};
   L.innerHTML='<table><tr><th>#</th><th>Jugador</th><th>Mapa</th><th class="c" title="Número de jugadores">Jug.</th><th class="n">Puntos</th><th class="n">Ronda</th><th class="n">Bajas</th><th class="n">Tiempo</th><th>Criatura</th><th>Fecha</th></tr>'
-   +d.map((x,i)=>'<tr><td>'+(i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b></td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="c">'+(x.modo==='coop'?2:1)+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>'}
+   +d.map((x,i)=>'<tr><td>'+(i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b></td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="c">'+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>'}
  catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
 $('mRank').onclick=()=>{audioInit();rkAbre('menu')};
 $('rkVer').onclick=()=>rkAbre('fin');
