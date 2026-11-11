@@ -548,3 +548,55 @@ Kind=Colmillos
 Descripción= El entorno espacial hizo desarrollar a Seviper unas escamas que le dieron el tipo dragón. Salta de punto en punto de la tierra con rapidez y desparpajo. 
 Evolutions=
 
+[924]
+Name=Zang
+InternalName=ZANG
+Type1=NORMAL
+BaseStats=50,75,50,60,40,40
+Rareness=190
+Abilities=IMMUNITY
+HiddenAbility=TOXICBOOST
+Special=DASH
+StartMove=neutro_1
+Height=0.8
+Weight=15.7
+Color=White
+Kind=Gato Hurón
+Descripcion=Pese a su pequeño tamaño, es muy atrevido. Se pasa las horas buscando Viper para hacerse el gallito, pero se acobarda si aparece Seviper
+Descripción=ZANGOOSE,Caramelos,50
+
+[925]
+Name=Zangoose
+InternalName=ZANGOOSE
+Type1=NORMAL
+BaseStats=73,115,60,90,60,60
+Rareness=90
+Abilities=IMMUNITY
+HiddenAbility=TOXICBOOST
+Special=DASH
+StartMove=neutro_1
+Height=1.3
+Weight=40.3
+Color=White
+Kind=Gato Hurón
+Descripción=Cuando lucha, se yergue sobre las patas traseras y ataca con sus afiladas zarpas. El pelaje se le eriza si se encuentra con un Seviper.
+Evolutions=
+
+[926]
+Name=Terrangoose
+InternalName=TERRANGOOSE
+Type1=NORMAL
+Type2=GROUND
+BaseStats=95,116,80,90,75,75
+Rareness=70
+Abilities=SANDFORCE,SANDRUSH
+HiddenAbility=SANDSPIT
+Special=DASH,NOVA
+StartMove=neutro_1
+Height=1.6
+Weight=50.3
+Color=White
+Habitat=Grassland
+Kind=Hurón de tierra
+Descripción=Zangoose evolucionó y desarrolló una simbiosis con la tierra y aprendió a ser uno con ella. Le encanta atajar enemigos desde sus propios hoyos en la tierra.
+Evolutions=
