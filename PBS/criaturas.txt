@@ -563,7 +563,7 @@ Weight=15.7
 Color=White
 Kind=Gato Hurón
 Descripcion=Pese a su pequeño tamaño, es muy atrevido. Se pasa las horas buscando Viper para hacerse el gallito, pero se acobarda si aparece Seviper
-Descripción=ZANGOOSE,Caramelos,50
+Evolutions=ZANGOOSE,Caramelos,50
 
 [925]
 Name=Zangoose
@@ -580,7 +580,7 @@ Weight=40.3
 Color=White
 Kind=Gato Hurón
 Descripción=Cuando lucha, se yergue sobre las patas traseras y ataca con sus afiladas zarpas. El pelaje se le eriza si se encuentra con un Seviper.
-Evolutions=
+Evolutions=TERRANGOOSE,Caramelos,100
 
 [926]
 Name=Terrangoose
