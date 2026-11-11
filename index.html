@@ -98,7 +98,7 @@ body.touch[data-np="4"] #hP4{left:calc(max(1.5%,env(safe-area-inset-left,0px)) +
 body[data-tema=claro] .mj{background:#f4f4ea;border-color:#999}body[data-tema=claro] .mj small{color:#555}body[data-tema=claro] .mj .pips{color:#a60}
 #rot{position:fixed;top:0;left:0;right:0;z-index:60;background:#a30;color:#fff;text-align:center;padding:4px;font-size:12px;display:none}
 @media (orientation:portrait) and (pointer:coarse){#rot{display:block}}
-.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(8,8,14,.93);z-index:50;padding:16px;overflow:auto;text-align:center;touch-action:pan-y}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(8,8,14,.93);z-index:50;padding:44px 16px 16px;overflow:auto;text-align:center;touch-action:pan-y}
 .screen.on{display:flex}
 #netSt{position:absolute;right:6px;top:18px;white-space:pre;text-align:right;line-height:1.25;font:bold 9px/1.25 monospace;text-shadow:1px 1px #000;pointer-events:none;display:none;z-index:6}
 #salaCod{font:bold 52px monospace;letter-spacing:10px;color:#ffd24a;text-shadow:3px 3px 0 #000;user-select:all}
@@ -112,6 +112,8 @@ body.netGuest #difBox{display:none}
 .wmark{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:11px "Courier New",monospace;letter-spacing:2px;color:#fff;opacity:.55;text-shadow:0 1px 0 #000;pointer-events:none;z-index:3}
 #bestiario *{touch-action:pan-y}
 #bestCards{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+#online .oCaja{display:flex;flex-direction:column;gap:8px;align-items:center;border:2px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 16px;background:rgba(255,255,255,.04);min-width:min(340px,88vw)}
+#online .oTit{font-weight:bold;font-size:14px}#online .oSub{font-size:12px;opacity:.7;margin-top:-4px}#online .oO{font-size:12px;opacity:.6;margin:6px 0}
 #oCod{font:bold 26px monospace;letter-spacing:6px;text-transform:uppercase;text-align:center;width:9em;padding:6px;border-radius:8px;border:2px solid #ffd24a;background:#10131a;color:#fff}
 .screen h1{margin:0;font-size:clamp(24px,6vw,44px);color:#9f6;letter-spacing:2px;text-shadow:3px 3px 0 #264}
 .screen h2{margin:0;color:#ffd24a}
@@ -191,7 +193,19 @@ body.touch #iFull{display:block}#iFull.nofs{display:none!important}#iFull:active
 .mB:hover{filter:brightness(1.25)}.mB:active{transform:translateY(2px);box-shadow:0 1px 0 #0a0f08}
 .mB.main{font-size:22px;padding:15px 16px;border-color:#ffd24a;background:linear-gradient(#5f8a2e,#2f5a1c);box-shadow:0 4px 0 #1a3010,0 0 22px rgba(120,220,80,.3),0 8px 18px rgba(0,0,0,.55)}
 #mGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#conSig{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));z-index:60;display:flex;align-items:flex-end;gap:6px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,.45);color:#fff;font:bold 11px "Courier New",monospace;pointer-events:none}
+body.jugando #conSig{display:none}
+#conSig .cb{display:inline-flex;gap:2px;align-items:flex-end;height:16px}#conSig .cb i{width:5px;background:rgba(255,255,255,.25);border-radius:1px}
+#conSig .cb i:nth-child(1){height:5px}#conSig .cb i:nth-child(2){height:8px}#conSig .cb i:nth-child(3){height:12px}#conSig .cb i:nth-child(4){height:16px}
+#conSig.l1 .cb i:nth-child(-n+1){background:#f55}#conSig.l2 .cb i:nth-child(-n+2){background:#fd4}#conSig.l3 .cb i:nth-child(-n+3){background:#9e6}#conSig.l4 .cb i{background:#6f6}
+#conSig.l0 .cb i{background:rgba(255,80,80,.35)}#conSig.l0 #conTxt{color:#f88}#conSig.m .cb i{animation:conM 1s infinite alternate}@keyframes conM{to{background:rgba(255,255,255,.6)}}
+.avRed{position:fixed;top:48px;left:50%;transform:translateX(-50%);max-width:min(92vw,560px);z-index:70;display:none;background:#4a1d12;border:2px solid #ff9a6a;color:#fff;padding:8px 34px 8px 12px;border-radius:10px;font:bold 13px/1.3 "Courier New",monospace;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.avRed.on{display:block}.avRed b.x{position:absolute;right:8px;top:4px;cursor:pointer;font-size:18px;opacity:.8}
+body.jugando #avisoCon{display:none!important}
 #mGrid .mB:last-child:nth-child(odd){grid-column:1/-1}
+#mAjustes.gear{position:absolute;top:max(10px,env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));width:46px;height:46px;padding:0;border-radius:50%;border:2px solid #3f5a3b;background:linear-gradient(#26331f,#161d13);color:#f2f2e6;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 2px 0 #0a0f08,0 4px 10px rgba(0,0,0,.4);z-index:3}
+#mAjustes.gear:active{transform:translateY(2px)}
+body[data-tema=claro] #mAjustes.gear{color:#222;background:linear-gradient(#f4f8ea,#d8e2c6);border-color:#264}
 .mB.sec{font-size:14px;padding:10px 8px;flex-direction:column;gap:2px}
 .mLink{background:none;border:none;color:#9ab;font:12px "Courier New",monospace;text-decoration:underline;cursor:pointer;margin-top:2px}
 #mDatosSt{font-size:11px;opacity:.6;text-align:center}
@@ -341,7 +355,10 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <div id="iPress"><span class="kb">Pulsa una tecla o haz clic</span><span class="tc">Toca la pantalla</span></div>
  </div>
 </div>
+<div id="conSig" title="Calidad de la conexión"><span class="cb"><i></i><i></i><i></i><i></i></span><span id="conTxt">Midiendo…</span></div>
+<div id="avisoCon" class="avRed" role="alert"></div><div id="avisoGfx" class="avRed" role="alert"></div>
 <div class="screen" id="menu">
+ <button id="mAjustes" class="gear" aria-label="Ajustes" title="Ajustes">⚙</button>
  <div id="verTag"></div><div class="wmark">by ChemaJuve</div>
  <div id="mTop"><h1 id="mT"><span class="pk">Fakem<span class="ball"></span>n</span><span class="zb">Hasta el Amanecer<i></i><i></i><i></i><i></i><i></i></span></h1>
  <div id="mSub">Supervivencia por oleadas</div></div>
@@ -351,7 +368,6 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <div id="mGrid">
    <button class="mB sec" id="mBest"><span>📖</span>Bestiario</button>
    <button class="mB sec" id="mAyuda"><span>❓</span>Cómo se juega</button>
-   <button class="mB sec" id="mAjustes"><span>⚙</span>Ajustes</button>
   </div>
   <button class="mB sec" id="mRank"><span>🌍</span>Ranking global</button>
   <button class="mB sec" id="mTienda" style="display:none">Mejoras permanentes</button>
@@ -444,8 +460,9 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
 <div class="screen" id="online"><h2>🌐 Cooperativo online (hasta 4 jugadores)</h2>
  <div class="txt" style="max-width:420px;font-size:13px;opacity:.9">Uno crea la sala (elige mapa, dificultad y criatura) y le pasa el código corto a los demás (hasta 3 más), que pulsan «Unirse».</div>
  <div style="display:flex;flex-direction:column;gap:4px;align-items:center"><input id="oNick" maxlength="12" placeholder="TU NOMBRE" autocomplete="off" spellcheck="false"><div id="oErr" style="color:#f88;font-size:12px;min-height:14px"></div></div>
- <button class="mB main" id="oCrear"><span>＋</span>Crear sala</button>
- <div style="display:flex;flex-direction:column;gap:8px;align-items:center"><input id="oCod" maxlength="8" placeholder="CÓDIGO" autocomplete="off"><button class="mB" id="oUnir"><span>→</span>Unirse</button></div>
+ <div class="oCaja"><div class="oTit">① Crear una sala nueva</div><div class="oSub">Tú eliges mapa, dificultad y criatura</div><button class="mB main" id="oCrear"><span>＋</span>Crear sala</button></div>
+ <div class="oO">— o —</div>
+ <div class="oCaja"><div class="oTit">② Unirte a la sala de otro jugador</div><div class="oSub">Escribe el código que te ha pasado</div><input id="oCod" maxlength="8" placeholder="CÓDIGO" autocomplete="off"><button class="mB" id="oUnir"><span>→</span>Unirse</button></div>
  <button class="btn sm" id="oBack">‹ Volver</button></div>
 <div class="screen" id="sala"><h2 id="salaT">Sala online</h2><div id="salaCod"></div><div id="salaL"></div><div class="txt" id="salaTxt" style="max-width:420px;white-space:pre-line"></div>
  <button class="mB main" id="salaGo" style="display:none"><span>▶</span>Empezar</button><button class="btn" id="salaCambia" style="display:none">↺ Cambiar criatura</button><button class="btn" id="salaCancel">Cancelar</button></div>
@@ -1219,6 +1236,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.57   Indicador de conexión (barras en la esquina superior izquierda, fuera de partida) con avisos de conexión lenta/sin conexión y de gráficos de criaturas que no cargan; ajustes con icono de engranaje en la esquina superior derecha del menú; en 'Cooperativo online' crear sala y unirse con código quedan en recuadros separados
    1.56   HUD compacto con 3-4 jugadores (tarjetas de compañeros más pequeñas y en fila en móvil) y ranking global paginado de 15 en 15
    1.55   Optimización del dibujado: capa de oscuridad a media resolución (DARK_RES) y conos de linterna pre-dibujados; ~40 % menos coste de dibujado en las pruebas
    1.54   Seguridad del ranking: la puntuación y la coherencia de las estadísticas se validan en el servidor (Supabase), con límite de envíos por IP y permisos mínimos; y se elimina código muerto (funciones antiguas de dibujo y auxiliares sin uso)
@@ -1245,7 +1263,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.56';
+const VERSION='1.57';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1402,8 +1420,29 @@ function buildCreatures(text){
   const stages=chain.map(r=>stageOf(r,tipos));
   list.push({id:b.InternalName.toUpperCase(),sid:b._id,tipo:k1,tipos,stages,evoCand:req,hab:habOf(stages[0].stats),habBase:habOf(stages[0].stats),exclusivo:EXCL[k1]||k1+'_x',rareza:+b.Rareness||255})}
  return list}
+/* ---------- Calidad de la conexión: barras fijas (esquina superior izquierda, fuera de partida) + avisos ----------
+   Se mide el tiempo de respuesta del servidor del ranking (petición mínima) cada 25 s mientras se está en los menús, y se
+   avisa si es mala o no hay conexión. También se avisa si no cargan los gráficos de las criaturas (se usa una imagen por defecto). */
+const CON={lvl:-1,ms:[],lastMs:0,cierraCon:false,gfx:new Set(),gfxT:0,gfxAv:-1e9,tIni:performance.now()};
+function conNivel(ms,ok){if(!navigator.onLine)return 0;if(!ok)return 1;let n=ms<200?4:ms<450?3:ms<900?2:1;const c=navigator.connection&&navigator.connection.effectiveType;if(c==='slow-2g'||c==='2g')n=Math.min(n,1);return n}
+function conAviso(el,txt,cierra){const e=$(el);if(!txt){e.classList.remove('on');return}e.innerHTML=txt+'<b class="x" title="Cerrar">×</b>';e.classList.add('on');e.querySelector('.x').onclick=()=>{e.classList.remove('on');if(cierra)cierra()}}
+function conPinta(){const e=$('conSig');if(!e)return;const l=CON.lvl;e.className=l<0?'m':'l'+l;
+ $('conTxt').textContent=l<0?'Midiendo…':l===0?'Sin conexión':CON.lastMs?Math.round(CON.lastMs)+' ms':'';
+ if(l===0)conAviso('avisoCon','⚠ Sin conexión a internet. El modo online y el ranking no funcionarán, y puede que algunos gráficos no carguen.',()=>{CON.cierraCon=true});
+ else if(l===1&&!CON.cierraCon)conAviso('avisoCon','⚠ Conexión muy lenta o inestable. Todo puede tardar en cargar (gráficos, ranking, modo online).',()=>{CON.cierraCon=true});
+ else{conAviso('avisoCon','');if(l>=3)CON.cierraCon=false}}
+async function conSonda(){if(document.hidden||document.body.classList.contains('jugando'))return;const t0=performance.now();let ok=false,ms=0;
+ try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),6000);const r=await fetch(SB_URL+'/rest/v1/ranking?select=id&limit=1',{headers:rkH,signal:ctl.signal,cache:'no-store'});clearTimeout(to);ok=r.status<500;ms=performance.now()-t0}catch(e){ms=performance.now()-t0}
+ if(ok){CON.ms.push(ms);if(CON.ms.length>3)CON.ms.shift();const o=CON.ms.slice().sort((a,b)=>a-b);CON.lastMs=o[o.length>>1]}else CON.ms=[];
+ CON.lvl=conNivel(ok?CON.lastMs:0,ok);if(!ok)CON.lastMs=0;conPinta()}
+setTimeout(()=>{if(CON.lvl<0)conAviso('avisoCon','Comprobando la conexión… si tarda mucho, es posible que tu conexión sea lenta.',()=>{})},3000);
+setInterval(conSonda,25000);addEventListener('online',()=>{CON.lvl=-1;conPinta();conSonda()});addEventListener('offline',()=>{CON.lvl=0;CON.lastMs=0;conPinta()});
+document.addEventListener('DOMContentLoaded',()=>{conPinta();conSonda()});if(document.readyState!=='loading'){conPinta();conSonda()}
+function conGfxFallo(kind,id){CON.gfx.add(kind+id);clearTimeout(CON.gfxT);CON.gfxT=setTimeout(()=>{const n=CON.gfx.size;if(!n||performance.now()-CON.gfxAv<60000)return;CON.gfxAv=performance.now();
+  const mala=CON.lvl<=2||!navigator.onLine,txt='⚠ No se han podido cargar los gráficos de '+n+(n===1?' criatura':' criaturas')+' (se muestra una imagen por defecto).'+(mala?' Es probable que sea por la mala conexión: recarga la página cuando mejore.':' Comprueba que existen en la carpeta Graphics.');
+  conAviso('avisoGfx',txt,()=>{});setTimeout(()=>conAviso('avisoGfx',''),14000)},2500)}
 function imgUrls(kind,id){const dir=kind==='chr'?'Characters':'Battlers',names=[String(id),pad3(id)],u=[];for(const n of names){const f=FILES[kind][n.toLowerCase()];if(f)u.push(f)}for(const n of names)u.push('Graphics/'+dir+'/'+n+'.png');return u}
-function loadImgObj(kind,id){const o={ok:false,el:null,w:0,h:0},urls=imgUrls(kind,id);let i=0;(function next(){if(i>=urls.length)return;const im=new Image();im.onload=()=>{o.ok=true;o.el=im;o.w=im.naturalWidth;o.h=im.naturalHeight};im.onerror=next;im.src=urls[i++]})();return o}
+function loadImgObj(kind,id){const o={ok:false,el:null,w:0,h:0,fail:false},urls=imgUrls(kind,id);let i=0,ronda=0;(function next(){if(i>=urls.length){if(ronda<1&&location.protocol!=='file:'){ronda=1;i=0;setTimeout(next,2500);return}o.fail=true;conGfxFallo(kind,id);return}const im=new Image();im.onload=()=>{o.ok=true;o.el=im;o.w=im.naturalWidth;o.h=im.naturalHeight};im.onerror=next;im.src=urls[i++]})();return o}
 function ensureChr(cr){cr.stages.forEach(st=>{if(!st.chr)st.chr=loadImgObj('chr',st.id)})}
 const FRAME_DIRS={down:0,left:1,right:2,up:3};   /* fila de la hoja 4x4 para cada dirección (editable) */
 function sheetInfo(im){const r=im.w/im.h;if(r>.7&&r<1.45)return{cols:4,fw:im.w/4,fh:im.h/4,dirs:true};if(r>=1.45){const n=Math.max(1,Math.round(r));return{cols:n,fw:im.w/n,fh:im.h,dirs:false}}return{cols:1,fw:im.w,fh:im.h,dirs:false}}
