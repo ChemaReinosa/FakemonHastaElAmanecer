@@ -23,6 +23,12 @@ canvas#c{image-rendering:pixelated;display:block;width:100%;height:100%;backgrou
 #msg.warn{left:50%;right:auto;transform:translateX(-50%);max-width:90%;width:max-content;color:#ff3b3b;background:rgba(0,0,0,.6);padding:.3em .8em;border-radius:6px}
 #hP2,#hP3,#hP4{position:absolute;top:2.4em;left:1.5%;display:none;width:22%;background:rgba(0,0,0,.55);padding:.2em .5em;border-radius:3px;font-size:.85em;color:#9df;font-weight:bold}
 #hP2 .b,#hP3 .b,#hP4 .b{height:.5em;background:#300;border:1px solid #000;margin:.15em 0}#hP2 .b i,#hP3 .b i,#hP4 .b i{display:block;height:100%;background:#58f;width:100%}#hP2 .s,#hP3 .s,#hP4 .s{color:#fff;font-weight:normal}#hP3{top:6em}#hP4{top:9.6em}
+.btn:disabled{opacity:.35;pointer-events:none}
+/* 3-4 jugadores: tarjetas de compañeros más pequeñas (una línea de nombre, barra y corazones/estado) */
+body[data-np="3"] #hP2,body[data-np="3"] #hP3,body[data-np="4"] #hP2,body[data-np="4"] #hP3,body[data-np="4"] #hP4{font-size:.72em;width:17%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-np="3"] #hP2 *,body[data-np="3"] #hP3 *,body[data-np="4"] #hP2 *,body[data-np="4"] #hP3 *,body[data-np="4"] #hP4 *{overflow:hidden;text-overflow:ellipsis}
+body[data-np="3"] #hP3{top:2.4em;left:calc(1.5% + 18%)}body[data-np="3"] #hP2{top:2.4em}
+body[data-np="4"] #hP2{top:2.4em}body[data-np="4"] #hP3{top:2.4em;left:calc(1.5% + 18%)}body[data-np="4"] #hP4{top:2.4em;left:calc(1.5% + 36%)}
 #prompt{position:absolute;bottom:17%;left:5%;right:5%;text-align:center;background:rgba(0,0,0,.6);padding:.25em;border-radius:3px;display:none;color:#fff3a0}
 #bl{position:absolute;bottom:1.5%;left:1.5%;width:34%}
 #hpbar{position:relative;height:1.3em;background:#300;border:1px solid #000}
@@ -80,6 +86,10 @@ body.touch .sl{min-width:7em;max-width:8.2em;padding:.45em .45em}
 /* Móvil: la vida/vidas/bebidas suben arriba a la izquierda (abajo chocaban con la barra de ataques y el joystick) */
 body.touch #bl{bottom:auto;top:2.7em;left:max(1.5%,env(safe-area-inset-left,0px));width:min(30%,26em)}
 body.touch #hP2,body.touch #hP3,body.touch #hP4{left:calc(max(1.5%,env(safe-area-inset-left,0px)) + min(30%,26em) + 1.2%);width:22%}body.touch #hP2{top:2.7em}body.touch #hP3{top:6.3em}body.touch #hP4{top:9.9em}
+/* móvil con 3-4 jugadores: en fila, a continuación de tu propia barra */
+body.touch[data-np="3"] #hP2,body.touch[data-np="3"] #hP3,body.touch[data-np="4"] #hP2,body.touch[data-np="4"] #hP3,body.touch[data-np="4"] #hP4{top:2.7em;width:15%;font-size:.68em}
+body.touch[data-np="3"] #hP3,body.touch[data-np="4"] #hP3{left:calc(max(1.5%,env(safe-area-inset-left,0px)) + min(30%,26em) + 1.2% + 16%)}
+body.touch[data-np="4"] #hP4{left:calc(max(1.5%,env(safe-area-inset-left,0px)) + min(30%,26em) + 1.2% + 32%)}
 #hGren{color:#ffb070}#hKills{color:#ff8a8a}#hZona{color:#9fe3ff}
 .finSp img,.finSp canvas{width:96px;height:96px;object-fit:contain;image-rendering:pixelated}
 .btn.act{background:#5a7a3a;border-color:#ffd24a}body[data-tema=claro] .btn.act{background:#bfe0a0}
@@ -444,6 +454,7 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
  <div class="opc"><button class="btn sm" id="rkTG">🌍 Global</button><button class="btn sm" id="rkTP">🏆 Mis récords</button></div>
  <div class="opc" id="rkFiltros"><select class="inp" id="rkMapa"></select><select class="inp" id="rkDif"></select><select class="inp" id="rkModo"></select></div>
  <div class="txt" id="rkLista" style="max-width:640px;width:100%"></div>
+ <div id="rkPag" style="display:none;gap:8px;align-items:center;justify-content:center"><button class="btn sm" id="rkPrev">◀ Anterior</button><span id="rkPagN" style="min-width:5.5em;text-align:center"></span><button class="btn sm" id="rkNext">Siguiente ▶</button></div>
  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn sm" id="rkRec">↻ Actualizar</button><button class="btn" id="rkBack">Volver</button></div></div>
 <div class="screen" id="fin"><h2>Has caído...</h2><div class="txt" id="finTxt"></div><div id="rkSt" style="font-size:13px;min-height:18px;opacity:.9"></div><button class="btn" id="rkVer">🌍 Ver ranking global</button><button class="btn" id="fRe">Jugar de nuevo</button><button class="btn" id="fMenu">Menú</button></div>
 <div class="screen" id="modal"><h2 id="modalT"></h2><div id="modalB" style="display:flex;flex-direction:column;gap:8px"></div></div>
@@ -1208,6 +1219,8 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.56   HUD compacto con 3-4 jugadores (tarjetas de compañeros más pequeñas y en fila en móvil) y ranking global paginado de 15 en 15
+   1.55   Optimización del dibujado: capa de oscuridad a media resolución (DARK_RES) y conos de linterna pre-dibujados; ~40 % menos coste de dibujado en las pruebas
    1.54   Seguridad del ranking: la puntuación y la coherencia de las estadísticas se validan en el servidor (Supabase), con límite de envíos por IP y permisos mínimos; y se elimina código muerto (funciones antiguas de dibujo y auxiliares sin uso)
    1.53   Ranking cooperativo: un registro por jugador (cada uno con su nick, criatura y compañeros) y la columna 'Jug.' muestra el nº real de jugadores
    1.52   Optimización del invitado (suelo pre-proyectado, paso máximo de movimiento más alto para que no se ralentice con pocos FPS), FPS y 'estado cada' en el indicador de red e interruptores SUELO_PRECALC y DT_MAX_INVITADO
@@ -1232,7 +1245,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.54';
+const VERSION='1.56';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -2044,9 +2057,9 @@ const mouseW=()=>s2w(mouse.x,mouse.y+9);
 const ISO_COMP=.6;
 function inW(sx,sy){const m=Math.min(1,Math.hypot(sx,sy));if(!m)return[0,0];const v=sv2w(sx,sy),l=Math.hypot(v[0],v[1])||1;let wx=v[0]/l,wy=v[1]/l;
  const sl=Math.hypot((wx-wy)*KX,(wx+wy)*KY),f=Math.pow(Math.SQRT2*KX/sl,ISO_COMP);return[wx*m*f,wy*m*f]}
-function isoT(c,z){c.setTransform(KX,KY,-KX,KY,CX,CY-(z||0))}
+function isoT(c,z){const k=c.k||1;c.setTransform(KX*k,KY*k,-KX*k,KY*k,CX*k,(CY-(z||0))*k)}
 function setB(c,x,y,z,foot){c.setTransform(1,0,0,1,Math.round(isoX(x,y)+CX)-Math.round(x),Math.round(isoY(x,y)+CY-(z||0)-(foot==null?6:foot))-Math.round(y))}
-function noT(c){c.setTransform(1,0,0,1,0,0)}
+function noT(c){const k=c.k||1;c.setTransform(k,0,0,k,0,0)}
 
 /* ---- color ---- */
 function rgbOf(c){if(c[0]==='#'){if(c.length===4)c='#'+c[1]+c[1]+c[2]+c[2]+c[3]+c[3];const n=parseInt(c.slice(1,7),16);return[n>>16,n>>8&255,n&255]}const m=c.match(/[\d.]+/g);return[+m[0],+m[1],+m[2]]}
@@ -2542,8 +2555,12 @@ function drawWorld(c){const X0=-CX-70,X1=-CX+W+70,Y0=-CY-70,Y1=-CY+H+90,L=[];
  for(const o of L){if(o.cv){c.setTransform(1,0,0,1,CX,CY);c.drawImage(o.cv,o.l,o.t)}else o.f(c)}noT(c)}
 
 /* ---- oscuridad con cono de luz (se calcula en el plano del suelo con la misma matriz isométrica) ---- */
+/* Cono de linterna pre-dibujado (apunta a +x, vértice en (0,hy)): se pinta rotado con drawImage en vez de crear 2 degradados por jugador y fotograma */
+const CONE_SPR={};
+function coneSpr(R,half,al){const key=R+'|'+half+'|'+al;let S=CONE_SPR[key];if(S)return S;const hy=Math.ceil(R*Math.sin(half))+2,c=document.createElement('canvas');c.width=R+2;c.height=hy*2;const g=c.getContext('2d'),gr=g.createRadialGradient(0,hy,5,0,hy,R);
+ gr.addColorStop(0,'rgba(0,0,0,'+al+')');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.moveTo(0,hy);g.arc(0,hy,R,-half,half);g.closePath();g.fill();return CONE_SPR[key]=S={c,hy}}
 function drawDark(P,A){
- dctx.imageSmoothingEnabled=false;noT(dctx);dctx.globalCompositeOperation='source-over';dctx.clearRect(0,0,W,H);dctx.fillStyle='rgba(4,4,10,'+A+')';dctx.fillRect(0,0,W,H);dctx.globalCompositeOperation='destination-out';
+ dctx.imageSmoothingEnabled=true;noT(dctx);dctx.globalCompositeOperation='source-over';dctx.clearRect(0,0,W,H);dctx.fillStyle='rgba(4,4,10,'+A+')';dctx.fillRect(0,0,W,H);dctx.globalCompositeOperation='destination-out';
  if(!window._pspr){const q=document.createElement('canvas');q.width=q.height=64;const g=q.getContext('2d'),gr=g.createRadialGradient(32,32,.5,32,32,32);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);window._pspr=q}
  const punch=(x,y,r,a0,a1,lift)=>{const X=isoX(x,y)+CX,Y=isoY(x,y)+CY-(lift||0),rr=r*1.5;if(X<-rr||X>W+rr||Y<-rr||Y>H+rr)return;isoT(dctx,lift||0);dctx.globalAlpha=a0;dctx.drawImage(window._pspr,x-r,y-r,r*2,r*2);dctx.globalAlpha=1};
  for(const z of ZONAS){if(!z.visto)continue;const a=Math.min(.95,(z.luz||.4)+(G.power?.25:0)),col='rgba(0,0,0,'+a+')';
@@ -2559,8 +2576,8 @@ function drawDark(P,A){
  if(G.telep){const T=G.telep;punch(T.done?T.dx:T.sx,T.done?T.dy:T.sy,64,.9)}
  for(let i=0;i<G.players.length;i++){const q=G.players[i],Q=q.P,aim=i===G.act?G.aim:q.s.aim;if(q.out)continue;
   punch(Q.x,Q.y,52,1);punch(Q.x,Q.y,46,.8,0,12);
-  isoT(dctx);let g=dctx.createRadialGradient(Q.x,Q.y,5,Q.x,Q.y,230);g.addColorStop(0,'rgba(0,0,0,.95)');g.addColorStop(1,'rgba(0,0,0,0)');dctx.fillStyle=g;dctx.beginPath();dctx.moveTo(Q.x,Q.y);dctx.arc(Q.x,Q.y,230,aim-.6,aim+.6);dctx.closePath();dctx.fill();
-  isoT(dctx,13);g=dctx.createRadialGradient(Q.x,Q.y,5,Q.x,Q.y,200);g.addColorStop(0,'rgba(0,0,0,.55)');g.addColorStop(1,'rgba(0,0,0,0)');dctx.fillStyle=g;dctx.beginPath();dctx.moveTo(Q.x,Q.y);dctx.arc(Q.x,Q.y,200,aim-.5,aim+.5);dctx.closePath();dctx.fill()}
+  isoT(dctx);dctx.translate(Q.x,Q.y);dctx.rotate(aim);{const S=coneSpr(230,.6,.95);dctx.imageSmoothingEnabled=false;dctx.drawImage(S.c,0,-S.hy)}
+  isoT(dctx,13);dctx.translate(Q.x,Q.y);dctx.rotate(aim);{const S=coneSpr(200,.5,.55);dctx.imageSmoothingEnabled=false;dctx.drawImage(S.c,0,-S.hy);dctx.imageSmoothingEnabled=true}}
  noT(dctx);dctx.globalCompositeOperation='source-over'}
 
 /* ---- efectos: lo plano va en el suelo (matriz iso), lo vertical se dibuja de pie ---- */
@@ -2650,7 +2667,7 @@ function renderMain(){noT(ctx);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#0
  ctx.restore();noT(ctx);
  drawWorld(ctx);
  let A=G.power?.4:.62;if(G.flick>0||Math.random()<.003)A=Math.min(.85,A+.12);
- drawDark(P,A);noT(ctx);ctx.drawImage(dk,0,0);
+ drawDark(P,A);noT(ctx);ctx.imageSmoothingEnabled=true;ctx.drawImage(dk,0,0,W,H);ctx.imageSmoothingEnabled=false;
  const[psx,psy]=w2s(P.x,P.y,8);
  /* resplandor cálido de la linterna y de las lámparas encendidas (aditivo) */
  ctx.save();ctx.globalCompositeOperation='lighter';isoT(ctx,6);
@@ -2671,7 +2688,8 @@ function renderMain(){noT(ctx);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#0
  evoSprite();drawMini()}
 
 /* ---------- Estado de partida ---------- */
-const cv=$('c'),ctx=cv.getContext('2d');const dk=document.createElement('canvas');dk.width=W;dk.height=H;const dctx=dk.getContext('2d');
+const cv=$('c'),ctx=cv.getContext('2d');const DARK_RES=.5;   /* resolución de la capa de oscuridad respecto a la pantalla (.5 = mitad: ~4 veces menos píxeles; es un degradado suave y casi no se nota). 1 = resolución completa */
+const dk=document.createElement('canvas');dk.width=Math.ceil(W*DARK_RES);dk.height=Math.ceil(H*DARK_RES);const dctx=dk.getContext('2d');dctx.k=DARK_RES;
 const cam={x:0,y:0};const keys={},mouse={x:240,y:135,down:false};
 const sticks={l:{id:null,ox:0,oy:0,x:0,y:0},r:{id:null,ox:0,oy:0,x:0,y:0}};
 let selId='',touchOn=false;
@@ -3500,10 +3518,12 @@ function hud(){const g=G,P=g.P;{const mu=$('muerte'),me=g.players[g.act],on=!!(m
  let pt='';if(!debil()){const al=aliadoCaido(),it=nearItem();pt=al?(touchOn?'Mantén [E] para revivir…':'Mantén [E] para revivir a J'+numJ(al.idx)+' ('+Math.ceil(REVIVIR_TIEMPO-al.revP)+' s)'):it?itemPrompt(it):nearBar()?(g.repLatch?'Reparando… toca [E] para parar':touchOn?'Toca [E] para reparar':(nearBar().hoyo?'Mantén [E] para echar tierra al hoyo (+5 ₽ cada capa)':'Mantén [E] para poner tablones (+5 ₽ cada uno)')):''}else if(g.players.length>1&&!g.players[0].out){const p0=g.players[0];pt=p0.espera?'Caído: vuelves al empezar la siguiente ronda':'Caído: tu compañero puede revivirte ('+Math.ceil(p0.revT)+' s)'}const pr=$('prompt');if(pt){pr.style.display='block';setT(pr,pt)}else pr.style.display='none';hudJ2()}
 const netSw=(i,k)=>i===k?0:i===0?k:i;   /* intercambia el hueco 0 con el hueco k (el invitado se ve a sí mismo como jugador 0) */
 const numJ=i=>(NET.modo==='guest'?netSw(i,NET.slot|0):i)+1;
-function hudJ2(){for(let k=1;k<=3;k++){const el=$('hP'+(k+1)),p=G.players[k];if(!el)continue;if(!p){el.style.display='none';continue}const q=p.s;el.style.display='block';
- setT(el.children[0],'J'+numJ(k)+(p.bot?' (bot)':'')+(p.nombre&&!p.bot?' '+netClean(p.nombre).slice(0,8):'')+' · '+q.cr.stages[q.et].nombre);
+function hudJ2(){const N=G.players.length,C=N>=3;if(document.body.dataset.np!==String(N))document.body.dataset.np=N;
+ for(let k=1;k<=3;k++){const el=$('hP'+(k+1)),p=G.players[k];if(!el)continue;if(!p){el.style.display='none';continue}const q=p.s;el.style.display='block';
+ setT(el.children[0],C?'J'+numJ(k)+(p.bot?' (bot)':(p.nombre?' '+netClean(p.nombre).slice(0,8):'')):'J'+numJ(k)+(p.bot?' (bot)':'')+(p.nombre&&!p.bot?' '+netClean(p.nombre).slice(0,8):'')+' · '+q.cr.stages[q.et].nombre);
  {const w=Math.max(0,p.P.hp)/q.maxHp*100+'%',f=el.children[1].firstChild;if(f._w!==w){f._w=w;f.style.width=w}}
- setT(el.children[2],'♥'.repeat(Math.max(0,q.lives))+' · '+q.money+' ₽'+(p.ausente?' · DESCONECTADO':p.out?' · FUERA':p.espera?' · KO hasta la siguiente ronda':p.deb?' · CAÍDO '+Math.ceil(p.revT)+' s':''))}}
+ const st=p.ausente?(C?' · OFF':' · DESCONECTADO'):p.out?' · FUERA':p.espera?(C?' · KO':' · KO hasta la siguiente ronda'):p.deb?' · '+(C?'':'CAÍDO ')+Math.ceil(p.revT)+' s':'';
+ setT(el.children[2],'♥'.repeat(Math.max(0,q.lives))+(C?'':' · '+q.money+' ₽')+st)}}
 
 /* ---------- Actualización ---------- */
 function reviveJ(p){const g=G,P=g.P,todos=todosDeb();p.deb=false;
@@ -3850,24 +3870,27 @@ function rkAbre(from){RK.from=from;show('ranking');
   add($('rkDif'),'','Todas las dificultades');for(const k in DIFS)add($('rkDif'),k,DIFS[k].n);
   add($('rkModo'),'','Solo y cooperativo');add($('rkModo'),'solo','Solo');add($('rkModo'),'coop','Cooperativo')}
  rkVista('global')}
-function rkVista(v){RK.vista=v;const g=v==='global';$('rkFiltros').style.display=g?'':'none';$('rkRec').style.display=g?'':'none';$('rkTit').textContent=g?'🌍 Ranking global':'🏆 Mis récords';$('rkTG').classList.toggle('main',g);$('rkTP').classList.toggle('main',!g);if(g)rkCarga();else rkPersonal()}
+function rkVista(v){RK.vista=v;const g=v==='global';$('rkFiltros').style.display=g?'':'none';$('rkRec').style.display=g?'':'none';$('rkTit').textContent=g?'🌍 Ranking global':'🏆 Mis récords';$('rkTG').classList.toggle('main',g);$('rkTP').classList.toggle('main',!g);if(g)rkCarga(0);else rkPersonal()}
 function rkPersonal(){const L=$('rkLista');let h='Récord: <b>ronda '+(save.record|0)+'</b> · Bajas totales: '+(save.matados||0)+'<br><br>';
  h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+rkEsc(netClean(r.nick))+'</b> — ':'')+'Ronda '+(+r.ronda)+' — '+(+r.matados)+' bajas — '+rkEsc(r.cr)+' ('+rkEsc(r.f)+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';L.innerHTML=h}
-async function rkCarga(){const L=$('rkLista');L.textContent='Cargando…';
- let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at&order=puntuacion.desc,ronda.desc&limit=30';
+const RK_PAG=15;   /* filas por página del ranking global */
+async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pag:RK.pag|0;const P=$('rkPag');P.style.display='none';L.textContent='Cargando…';
+ let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at&order=puntuacion.desc,ronda.desc,id.asc&limit='+(RK_PAG+1)+'&offset='+RK.pag*RK_PAG;
  for(const[k,id]of[['mapa','rkMapa'],['dificultad','rkDif'],['modo','rkModo']]){const v=$(id).value;if(v)q+='&'+k+'=eq.'+encodeURIComponent(v)}
- try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;const d=await r.json();
-  if(!d.length){L.textContent='Aún no hay récords con estos filtros.';return}
+ try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;let d=await r.json();
+  if(!d.length){L.textContent=RK.pag?'No hay más récords.':'Aún no hay récords con estos filtros.';if(RK.pag){P.style.display='flex';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=false;$('rkNext').disabled=true}return}
+  const hay=d.length>RK_PAG;d=d.slice(0,RK_PAG);
   const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},
   F=v=>{const t=new Date(v);if(!v||isNaN(t))return'—';const z=n=>String(n).padStart(2,'0');return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+String(t.getFullYear()).slice(2)+'<br>'+z(t.getHours())+':'+z(t.getMinutes())};
   L.innerHTML='<table><tr><th>#</th><th>Jugador</th><th>Mapa</th><th class="c" title="Número de jugadores">Jug.</th><th class="n">Puntos</th><th class="n">Ronda</th><th class="n">Bajas</th><th class="n">Tiempo</th><th>Criatura</th><th>Fecha</th></tr>'
-   +d.map((x,i)=>'<tr><td>'+(i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b></td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="c">'+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>'}
+   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b></td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="c">'+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
+  P.style.display=(RK.pag||hay)?'flex':'none';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=RK.pag===0;$('rkNext').disabled=!hay}
  catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
 $('mRank').onclick=()=>{audioInit();rkAbre('menu')};
 $('rkVer').onclick=()=>rkAbre('fin');
 $('rkBack').onclick=()=>show(RK.from);
-$('rkRec').onclick=rkCarga;$('rkTG').onclick=()=>rkVista('global');$('rkTP').onclick=()=>rkVista('personal');
-['rkMapa','rkDif','rkModo'].forEach(id=>$(id).addEventListener('change',rkCarga));
+$('rkRec').onclick=()=>rkCarga();$('rkPrev').onclick=()=>rkCarga(Math.max(0,RK.pag-1));$('rkNext').onclick=()=>rkCarga(RK.pag+1);$('rkTG').onclick=()=>rkVista('global');$('rkTP').onclick=()=>rkVista('personal');
+['rkMapa','rkDif','rkModo'].forEach(id=>$(id).addEventListener('change',()=>rkCarga(0)));
 rkReintenta();
 
 loadTypeSheet();startTitle();
