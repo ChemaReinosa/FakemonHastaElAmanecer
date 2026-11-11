@@ -1236,6 +1236,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.58   Máquina expendedora (la de antes) y nueva máquina industrial como muebles distintos; los zombis trepadores ya no atraviesan máquinas ni muebles altos (solo trepan los bajos); voz de zombi más realista (sintetizada con vocal y aliento) y soporte de archivos en la carpeta Audio/ (zombi1..8)
    1.57   Indicador de conexión (barras en la esquina superior izquierda, fuera de partida) con avisos de conexión lenta/sin conexión y de gráficos de criaturas que no cargan; ajustes con icono de engranaje en la esquina superior derecha del menú; en 'Cooperativo online' crear sala y unirse con código quedan en recuadros separados
    1.56   HUD compacto con 3-4 jugadores (tarjetas de compañeros más pequeñas y en fila en móvil) y ranking global paginado de 15 en 15
    1.55   Optimización del dibujado: capa de oscuridad a media resolución (DARK_RES) y conos de linterna pre-dibujados; ~40 % menos coste de dibujado en las pruebas
@@ -1263,7 +1264,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.57';
+const VERSION='1.58';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1574,7 +1575,7 @@ function panelMov(it){if(it.mov)return it.mov;if(it._pm&&it._pc===G.cr.id)return
 let AC=null,master,musGain,sfxGain,noiseBuf;
 /* Volúmenes (0-100) de las opciones: música (musGain) y efectos (sfxGain) cuelgan de master por separado */
 function applyVol(){if(!AC)return;musGain.gain.value=.2*(save.cfg.volMus??80)/100;sfxGain.gain.value=(save.cfg.volSfx??80)/100*1.25}
-function audioInit(){if(AC){if(AC.state==='suspended')AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.5;master.connect(AC.destination);musGain=AC.createGain();musGain.gain.value=.16;musGain.connect(master);sfxGain=AC.createGain();sfxGain.connect(master);applyVol();noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;musicLoop()}catch(e){AC=null}}
+function audioInit(){if(AC){if(AC.state==='suspended')AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.5;master.connect(AC.destination);musGain=AC.createGain();musGain.gain.value=.16;musGain.connect(master);sfxGain=AC.createGain();sfxGain.connect(master);applyVol();noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;musicLoop();zAudioCarga()}catch(e){AC=null}}
 function tone(f,d,type,vol,slide,dest,when){const t=AC.currentTime+(when||0);const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f+slide),t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(dest||sfxGain);o.start(t);o.stop(t+d+.03)}
 function noise(d,vol,fc,when){const t=AC.currentTime+(when||0);const s=AC.createBufferSource();s.buffer=noiseBuf;s.loop=true;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=fc||1000;const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(sfxGain);s.start(t,Math.random());s.stop(t+d+.03)}
 const SFX={
@@ -1590,12 +1591,29 @@ const SFX={
  explosion(){noise(.4,.25,300);tone(70,.3,'sawtooth',.2,-40)},recarga(){noise(.05,.22,2600);tone(150,.07,'square',.16,-70);tone(330,.05,'square',.09,0,null,.1)},
  recargaFin(){tone(240,.05,'square',.14,120);noise(.04,.2,3800,.01);tone(520,.1,'triangle',.16,260,null,.07)},
  hab(){tone(200,.3,'sawtooth',.2,400);noise(.2,.15,1200)},
- groan2(){tone(rnd(55,85),.6,'sawtooth',.16,-18);tone(rnd(90,120),.4,'triangle',.09,-30);noise(.3,.05,500)},
- groan(){tone(rnd(55,85),.6,'sawtooth',.07,-18);tone(rnd(90,120),.4,'triangle',.04,-30)},
+ groan2(){zVoz(1)},groan(){zVoz(.45)},
  trueno(){noise(.9,.34,260);noise(.25,.3,2500);tone(52,.8,'sawtooth',.22,-22);tone(38,1.1,'sine',.25,-10,null,.05)},
  lanzar(){tone(300,.15,'triangle',.12,500)},
  cambio(){tone(620,.04,'square',.08);tone(920,.05,'square',.06,0,null,.04)}
 };
+/* Voz de zombi. Si existen archivos en la carpeta Audio/ (zombi1..zombi8 con extensión .ogg, .mp3 o .wav) suena uno al azar con tono variable;
+   si no hay archivos (o no se pueden leer), se usa un gruñido sintetizado: cuerdas vocales con temblor + formantes de vocal + aliento rasposo. */
+const ZAUD={bufs:[],cargando:false};
+function zAudioCarga(){if(ZAUD.cargando||!AC||location.protocol==='file:')return;ZAUD.cargando=true;
+ for(let i=1;i<=8;i++)(async()=>{for(const ext of['ogg','mp3','wav']){try{const r=await fetch('Audio/zombi'+i+'.'+ext);if(!r.ok)continue;ZAUD.bufs.push(await AC.decodeAudioData(await r.arrayBuffer()));return}catch(e){}}})()}
+function zVoz(k){if(ZAUD.bufs.length){const s=AC.createBufferSource(),g=AC.createGain();s.buffer=ZAUD.bufs[Math.random()*ZAUD.bufs.length|0];s.playbackRate.value=rnd(.88,1.12);g.gain.value=.9*k;s.connect(g);g.connect(sfxGain);s.start();return}
+ const t=AC.currentTime,d=rnd(.9,1.5),f0=rnd(70,105),v=.3*k,o=AC.createOscillator(),o2=AC.createOscillator(),lfo=AC.createOscillator(),lg=AC.createGain(),g=AC.createGain(),f1=AC.createBiquadFilter(),f2=AC.createBiquadFilter();
+ o.type='sawtooth';o2.type='square';o.frequency.setValueAtTime(f0*1.25,t);o.frequency.exponentialRampToValueAtTime(f0*.62,t+d);o2.frequency.setValueAtTime(f0*1.26,t);o2.frequency.exponentialRampToValueAtTime(f0*.63,t+d);
+ lfo.frequency.value=rnd(8,14);lg.gain.value=f0*.14;lfo.connect(lg);lg.connect(o.frequency);lg.connect(o2.frequency);
+ f1.type='bandpass';f1.Q.value=5;f1.frequency.setValueAtTime(rnd(380,520),t);f1.frequency.linearRampToValueAtTime(rnd(650,850),t+d*.55);f1.frequency.linearRampToValueAtTime(rnd(320,420),t+d);
+ f2.type='bandpass';f2.Q.value=6;f2.frequency.setValueAtTime(rnd(900,1100),t);f2.frequency.linearRampToValueAtTime(rnd(1300,1700),t+d*.55);f2.frequency.linearRampToValueAtTime(rnd(800,950),t+d);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.12);g.gain.setValueAtTime(v,t+d*.45);g.gain.exponentialRampToValueAtTime(.001,t+d);
+ o.connect(f1);o2.connect(f1);o.connect(f2);f1.connect(g);f2.connect(g);g.connect(sfxGain);
+ const o2g=AC.createGain();o2g.gain.value=.35;o2.disconnect();o2.connect(o2g);o2g.connect(f1);
+ for(const x of[o,o2,lfo]){x.start(t);x.stop(t+d+.05)}
+ /* aliento rasposo */
+ const n=AC.createBufferSource(),nf=AC.createBiquadFilter(),ng=AC.createGain();n.buffer=noiseBuf;n.loop=true;nf.type='bandpass';nf.frequency.value=rnd(1300,2000);nf.Q.value=1.2;
+ ng.gain.setValueAtTime(.0001,t);ng.gain.exponentialRampToValueAtTime(v*.5,t+.2);ng.gain.exponentialRampToValueAtTime(.001,t+d);n.connect(nf);nf.connect(ng);ng.connect(sfxGain);n.start(t,Math.random());n.stop(t+d+.05)}
 function sfx(n){if(NET.modo!=='local'&&netSfx(n))return;if(!AC||!save.cfg.sfx)return;try{SFX[n]()}catch(e){}}
 /* Ruidos de perro zombi: ladrido / gruñido, con volumen según la distancia al jugador */
 function dogSfx(e,tipo){if(!AC||!save.cfg.sfx||!G)return;const d=dist(e.x,e.y,G.P.x,G.P.y),k=Math.max(0,1-d/420);if(k<=.03)return;
@@ -1903,8 +1921,11 @@ function inMuro(x,y){for(const o of MUROS)if(x>=o[0]&&x<=o[0]+o[2]&&y>=o[1]&&y<=
 function rebuildWalk(){WALK=[];ZONAS.forEach(z=>WALK.push(z));PUERTAS.forEach(d=>{if(d.abierta)WALK.push(d)})}
 function inRects(x,y){if(inMuro(x,y))return false;for(const r of WALK)if(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h)return true;return false}
 function walk(x,y,r){return inRects(x,y)&&inRects(x-r,y-r)&&inRects(x+r,y-r)&&inRects(x-r,y+r)&&inRects(x+r,y+r)}
-function hitObs(x,y,r){for(const o of OBS){const cx=clamp(x,o[0],o[0]+o[2]),cy=clamp(y,o[1],o[1]+o[3]);if((x-cx)*(x-cx)+(y-cy)*(y-cy)<r*r)return true}return false}
-function okPos(x,y,r,fly){if(!walk(x,y,r*.8))return false;if(!fly&&hitObs(x,y,r*.8))return false;return true}
+function hitObs(x,y,r,fly){for(const o of OBS){if(fly&&obsBajo(o))continue;const cx=clamp(x,o[0],o[0]+o[2]),cy=clamp(y,o[1],o[1]+o[3]);if((x-cx)*(x-cx)+(y-cy)*(y-cy)<r*r)return true}return false}
+/* Los que trepan (vuela) solo pasan por encima de obstáculos bajos (<= TREPA_H de alto): máquinas, taquillas, cajas altas, columnas y muros los bloquean */
+const TREPA_H=26;
+function obsBajo(o){if(o.bajo===undefined){const d=P3[o[5]&&P3[o[5]]?o[5]:'generico'];o.bajo=o[5]==='aguaB'||(d.h<=TREPA_H&&o[5]!=='muro'&&o[5]!=='butacas'&&o[5]!=='columna')}return o.bajo}
+function okPos(x,y,r,fly){if(!walk(x,y,r*.8))return false;if(hitObs(x,y,r*.8,fly))return false;return true}
 /* Se mueve en pasos de <=3 px para que ninguna entidad (ni un empujón) salte una pared */
 function moveE(e,dx,dy,fly){let m=false;const n=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/3)),sx=dx/n,sy=dy/n;
  for(let i=0;i<n;i++){let mv=false;if(okPos(e.x+sx,e.y,e.r,fly)){e.x+=sx;mv=true}if(okPos(e.x,e.y+sy,e.r,fly)){e.y+=sy;mv=true}if(!mv)break;m=true}return m}
@@ -1918,7 +1939,7 @@ function zoneAt(x,y){let best=null,bd=1e9;for(const z of ZONAS){const dx=Math.ma
 function zoneP(){const P=G.P;if(G._zx!==P.x||G._zy!==P.y){G._zx=P.x;G._zy=P.y;G._zz=zoneAt(P.x,P.y)}return G._zz}
 function rayFree(x,y,a,max,z){const o={z,win:false},ca=Math.cos(a),sa=Math.sin(a);for(let d=0;d<=max;d+=3)if(!airStep(o,x+ca*d,y+sa*d))return Math.max(0,d-3);return airStep(o,x+ca*max,y+sa*max)?max:Math.max(0,max-3)}
 function los(x1,y1,x2,y2,z){const d=dist(x1,y1,x2,y2),o={z,win:false},n=Math.max(1,Math.ceil(d/3));for(let i=0;i<=n;i++){const t=i/n;if(!airStep(o,x1+(x2-x1)*t,y1+(y2-y1)*t))return false}return true}
-function buildGrids(){for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const cx=i*16+8,cy=j*16+8,w=walk(cx,cy,6);walkF[j*GW+i]=w?1:0;walkG[j*GW+i]=w&&!hitObs(cx,cy,7)?1:0;walkW[j*GW+i]=walk(cx,cy,11)&&!hitObs(cx,cy,12)?1:0}for(const s of ESC)for(const i of[s.ia,s.ib])walkF[i]=walkG[i]=walkW[i]=1}
+function buildGrids(){for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const cx=i*16+8,cy=j*16+8,w=walk(cx,cy,6);walkF[j*GW+i]=w&&!hitObs(cx,cy,7,true)?1:0;walkG[j*GW+i]=w&&!hitObs(cx,cy,7)?1:0;walkW[j*GW+i]=walk(cx,cy,11)&&!hitObs(cx,cy,12)?1:0}for(const s of ESC)for(const i of[s.ia,s.ib])walkF[i]=walkG[i]=walkW[i]=1}
 function bfs(grid,out,px,py){out.fill(-1);const sx=clamp(px>>4,0,GW-1),sy=clamp(py>>4,0,GH-1);let h=0,t=0;out[sy*GW+sx]=0;BQ[t++]=sy*GW+sx;
  while(h<t){const c=BQ[h++],cx=c%GW,cy=(c/GW)|0,v=out[c];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const ni=ny*GW+nx;if(out[ni]>=0||!grid[ni])continue;if(dx&&dy&&(!grid[cy*GW+nx]||!grid[ny*GW+cx]))continue;out[ni]=v+1;BQ[t++]=ni}const l=ESCM?ESCM[c]:-1;if(l>=0&&out[l]<0&&grid[l]){out[l]=v+1;BQ[t++]=l}}}
 function nextCell(e,f){const cx=e.x>>4,cy=e.y>>4;if(cx<0||cy<0||cx>=GW||cy>=GH)return null;const i=cy*GW+cx;let best=f[i]>=0?f[i]:1e9,bj=-1;
@@ -2155,10 +2176,19 @@ P3.taquilla={h:36,paint(c,x,y,w,d,col){boxF(c,x,y,0,w,d,36,col||'#4a5a6a');
  faceS(c,x,y+d,0,w,36,(m,ww,hh)=>{const R=Rr_(m);for(let i=0;i<ww;i+=10){R('#4a5a6a',i,0,9,hh);R('#2a3844',i+1,2,7,2);R('#2a3844',i+1,5,7,1);R('#1a2430',i+4,12,1,hh-18);R('#aab',i+6,hh/2,1,3);R('rgba(255,255,255,.08)',i,0,1,hh)}R('rgba(0,0,0,.2)',0,0,ww,hh)});
  faceE(c,x+w,y,0,d,36,(m,ww,hh)=>{const R=Rr_(m);R('rgba(0,0,0,.5)',0,0,ww,hh);R('rgba(255,255,255,.05)',3,2,1,hh-4)});
  faceT(c,x,y,36,w,d,m=>{Rr_(m)('rgba(255,255,255,.14)',x+1,y+1,w-2,d-2)})}};
-P3.maquina={h:34,paint(c,x,y,w,d,col){boxF(c,x,y,0,w,d,34,'#2c333c');
+P3.expendedora={h:34,paint(c,x,y,w,d,col){boxF(c,x,y,0,w,d,34,'#2c333c');
  faceS(c,x,y+d,0,w,34,(m,ww,hh)=>{drawVend(Rr_(m),0,0,ww,hh,{seed:hsh(x,y)})});
  faceE(c,x+w,y,0,d,34,(m,ww,hh)=>{const R=Rr_(m);R('rgba(0,0,0,.55)',0,0,ww,hh);R('#4a5461',1,1,1,hh-2);R('rgba(255,255,255,.05)',3,4,ww-6,2)});
  faceT(c,x,y,34,w,d,m=>{Rr_(m)('#d8262c',x+2,y+2,w-4,Math.max(2,d-4));Rr_(m)('rgba(255,255,255,.3)',x+2,y+2,w-4,1)})}};
+P3.maquina={h:40,paint(c,x,y,w,d,col){
+ boxF(c,x,y,0,w,d,6,'#2a2d31');boxF(c,x+1,y+1,6,w-2,d-2,34,col||'#6b7580',{cs:'#8a95a0',ce:'#4f5861'});
+ faceS(c,x+1,y+d-1,6,w-2,34,(m,ww,hh)=>{const R=Rr_(m);R('rgba(0,0,0,.18)',0,0,ww,hh);
+  for(let i=3;i<ww-3;i+=7){R('#2b2f33',i,2,3,hh-4);R('rgba(255,255,255,.12)',i,2,1,hh-4)}
+  R('#caa42c',0,hh-7,ww,3);R('#1b1d20',0,hh-7,ww,1);R('#caa42c',0,2,ww,2);
+  R('#1d6b3a',ww-8,5,4,4);R('#b3322b',ww-8,11,4,4);R('rgba(255,255,255,.35)',ww-8,5,1,1)});
+ faceE(c,x+w-1,y+1,6,d-2,34,(m,ww,hh)=>{const R=Rr_(m);R('rgba(0,0,0,.45)',0,0,ww,hh);R('#8a949e',1,1,1,hh-2);
+  R('#caa42c',0,hh-7,ww,3);R('#1b1d20',0,6,ww,1);R('#1b1d20',0,16,ww,1);R('#1b1d20',0,26,ww,1)});
+ faceT(c,x+1,y+1,40,w-2,d-2,m=>{const R=Rr_(m);R('#9aa4ae',x+2,y+2,w-4,d-4);R('#4a525a',x+w/2-4,y+d/2-4,8,8);R('#2b2f33',x+w/2-2,y+d/2-2,4,4);R('rgba(255,255,255,.35)',x+2,y+2,w-4,1)})}};
 P3.camilla={h:12,paint(c,x,y,w,d,col){
  for(const[lx,ly]of[[x,y],[x+w-2,y],[x,y+d-2],[x+w-2,y+d-2]]){boxF(c,lx,ly,0,2,2,7,'#222',{hi:false})}
  boxF(c,x,y,7,w,d,3,'#6c747c');boxF(c,x+1,y+1,10,w-2,d-2,2,'#d8dde2',{cs:'#aeb4ba',ce:'#8c9298'});
