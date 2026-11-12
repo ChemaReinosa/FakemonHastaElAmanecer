@@ -1432,9 +1432,13 @@ function conPinta(){const e=$('conSig');if(!e)return;const l=CON.lvl;e.className
  if(l===0)conAviso('avisoCon','⚠ Sin conexión a internet. El modo online y el ranking no funcionarán, y puede que algunos gráficos no carguen.',()=>{CON.cierraCon=true});
  else if(l===1&&!CON.cierraCon)conAviso('avisoCon','⚠ Conexión muy lenta o inestable. Todo puede tardar en cargar (gráficos, ranking, modo online).',()=>{CON.cierraCon=true});
  else{conAviso('avisoCon','');if(l>=3)CON.cierraCon=false}}
-async function conSonda(){if(document.hidden||document.body.classList.contains('jugando'))return;const t0=performance.now();let ok=false,ms=0;
- try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),6000);const r=await fetch(SB_URL+'/rest/v1/ranking?select=id&limit=1',{headers:rkH,signal:ctl.signal,cache:'no-store'});clearTimeout(to);ok=r.status<500;ms=performance.now()-t0}catch(e){ms=performance.now()-t0}
- if(ok){CON.ms.push(ms);if(CON.ms.length>3)CON.ms.shift();const o=CON.ms.slice().sort((a,b)=>a-b);CON.lastMs=o[o.length>>1]}else CON.ms=[];
+async function conSonda(){if(document.hidden||document.body.classList.contains('jugando'))return;let ok=false,ms=0;
+ const ping=async()=>{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),6000),t0=performance.now();
+  try{await fetch(SB_URL+'/auth/v1/health?_='+Date.now(),{mode:'no-cors',cache:'no-store',signal:ctl.signal});return performance.now()-t0}finally{clearTimeout(to)}};
+ try{await ping();      /* calienta: DNS + TCP + TLS (se descarta) */
+  ms=await ping();      /* medida real, con la conexión ya abierta */
+  ok=true}catch(e){}
+ if(ok){CON.ms.push(ms);if(CON.ms.length>3)CON.ms.shift();CON.lastMs=Math.min(...CON.ms)}else CON.ms=[];
  CON.lvl=conNivel(ok?CON.lastMs:0,ok);if(!ok)CON.lastMs=0;conPinta()}
 setTimeout(()=>{if(CON.lvl<0)conAviso('avisoCon','Comprobando la conexión… si tarda mucho, es posible que tu conexión sea lenta.',()=>{})},3000);
 setInterval(conSonda,25000);addEventListener('online',()=>{CON.lvl=-1;conPinta();conSonda()});addEventListener('offline',()=>{CON.lvl=0;CON.lastMs=0;conPinta()});
