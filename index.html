@@ -1239,6 +1239,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.60   Ranking global: se quita la columna 'Jug.' y el nº de jugadores de la partida se muestra entre paréntesis tras el nombre, p. ej. Chema (3)
    1.59   Sala previa cooperativa: botón 'Comprobar mejor host' (mide la latencia entre todos los jugadores) y, si otro jugador tiene mejor conexión, opción de cederle la sala; los demás pasan solos a la sala nueva conservando su criatura
    1.58   Máquina expendedora (la de antes) y nueva máquina industrial como muebles distintos; los zombis trepadores ya no atraviesan máquinas ni muebles altos (solo trepan los bajos); voz de zombi más realista (sintetizada con vocal y aliento) y soporte de archivos en la carpeta Audio/ (zombi1..8)
    1.57   Indicador de conexión (barras en la esquina superior izquierda, fuera de partida) con avisos de conexión lenta/sin conexión y de gráficos de criaturas que no cargan; ajustes con icono de engranaje en la esquina superior derecha del menú; en 'Cooperativo online' crear sala y unirse con código quedan en recuadros separados
@@ -1268,7 +1269,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.59';
+const VERSION='1.60';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -3959,8 +3960,8 @@ async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pa
   const hay=d.length>RK_PAG;d=d.slice(0,RK_PAG);
   const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},
   F=v=>{const t=new Date(v);if(!v||isNaN(t))return'—';const z=n=>String(n).padStart(2,'0');return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+String(t.getFullYear()).slice(2)+'<br>'+z(t.getHours())+':'+z(t.getMinutes())};
-  L.innerHTML='<table><tr><th>#</th><th>Jugador</th><th>Mapa</th><th class="c" title="Número de jugadores">Jug.</th><th class="n">Puntos</th><th class="n">Ronda</th><th class="n">Bajas</th><th class="n">Tiempo</th><th>Criatura</th><th>Fecha</th></tr>'
-   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b></td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="c">'+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
+  L.innerHTML='<table><tr><th>#</th><th>Jugador</th><th>Mapa</th><th class="n">Puntos</th><th class="n">Ronda</th><th class="n">Bajas</th><th class="n">Tiempo</th><th>Criatura</th><th>Fecha</th></tr>'
+   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b> ('+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+')</td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
   P.style.display=(RK.pag||hay)?'flex':'none';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=RK.pag===0;$('rkNext').disabled=!hay}
  catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
 $('mRank').onclick=()=>{audioInit();rkAbre('menu')};
