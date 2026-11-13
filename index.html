@@ -101,6 +101,7 @@ body[data-tema=claro] .mj{background:#f4f4ea;border-color:#999}body[data-tema=cl
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(8,8,14,.93);z-index:50;padding:44px 16px 16px;overflow:auto;text-align:center;touch-action:pan-y}
 .screen.on{display:flex}
 #netSt{position:absolute;right:6px;top:18px;white-space:pre;text-align:right;line-height:1.25;font:bold 9px/1.25 monospace;text-shadow:1px 1px #000;pointer-events:none;display:none;z-index:6}
+#salaRes{display:flex;flex-direction:column;gap:6px;min-width:min(420px,92vw);margin:4px 0}
 #salaCod{font:bold 52px monospace;letter-spacing:10px;color:#ffd24a;text-shadow:3px 3px 0 #000;user-select:all}
 body.netGuest #difBox{display:none}
 #oNick{font:bold 18px monospace;text-align:center;width:11em;max-width:80vw;padding:6px;border-radius:8px;border:2px solid #9f6;background:#10131a;color:#fff}
@@ -465,7 +466,7 @@ Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada
  <div class="oCaja"><div class="oTit">② Unirte a la sala de otro jugador</div><div class="oSub">Escribe el código que te ha pasado</div><input id="oCod" maxlength="8" placeholder="CÓDIGO" autocomplete="off"><button class="mB" id="oUnir"><span>→</span>Unirse</button></div>
  <button class="btn sm" id="oBack">‹ Volver</button></div>
 <div class="screen" id="sala"><h2 id="salaT">Sala online</h2><div id="salaCod"></div><div id="salaL"></div><div class="txt" id="salaTxt" style="max-width:420px;white-space:pre-line"></div>
- <button class="mB main" id="salaGo" style="display:none"><span>▶</span>Empezar</button><button class="btn" id="salaCambia" style="display:none">↺ Cambiar criatura</button><button class="btn" id="salaCancel">Cancelar</button></div>
+ <div id="salaRes"></div><button class="mB main" id="salaGo" style="display:none"><span>▶</span>Empezar</button><button class="btn" id="salaProbe" style="display:none">📡 Comprobar mejor host</button><button class="mB" id="salaCede" style="display:none"></button><button class="btn" id="salaCambia" style="display:none">↺ Cambiar criatura</button><button class="btn" id="salaCancel">Cancelar</button></div>
 <div class="screen" id="netMsg"><h2>Conexión</h2><div class="txt" id="netMsgT"></div><button class="btn" id="netMsgOk">Volver al menú</button></div>
 <div class="screen" id="ranking"><h2 id="rkTit">🌍 Ranking global</h2>
  <div class="opc"><button class="btn sm" id="rkTG">🌍 Global</button><button class="btn sm" id="rkTP">🏆 Mis récords</button></div>
@@ -1219,6 +1220,8 @@ const NET_AVISO=3;   /* segundos sin recibir datos antes de mostrar "sin respues
 const NET_TIMEOUT=15;   /* segundos sin recibir datos para dar la conexión por perdida */
 const NET_RECONECTAR=60;   /* segundos que tiene el invitado para volver a la partida tras caerse */
 const NET_REINTENTO=3;   /* segundos entre intentos de reconexión del invitado */
+const NET_SONDA_N=10;   /* mensajes de prueba por enlace al comprobar el mejor host */
+const NET_SONDA_MAX=20;   /* segundos máximos que espera el anfitrión los resultados de la prueba */
 const NET_CODIGO_LONG=5;   /* letras/números del código de sala */
 const NET_ITEMS_CADA=1.5;   /* segundos entre reenvíos completos de los objetos (Caja, etc.) al invitado */
 const NET_PARTS_MAX=60;   /* partículas nuevas máximas que se envían al invitado en cada actualización */
@@ -1236,6 +1239,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.59   Sala previa cooperativa: botón 'Comprobar mejor host' (mide la latencia entre todos los jugadores) y, si otro jugador tiene mejor conexión, opción de cederle la sala; los demás pasan solos a la sala nueva conservando su criatura
    1.58   Máquina expendedora (la de antes) y nueva máquina industrial como muebles distintos; los zombis trepadores ya no atraviesan máquinas ni muebles altos (solo trepan los bajos); voz de zombi más realista (sintetizada con vocal y aliento) y soporte de archivos en la carpeta Audio/ (zombi1..8)
    1.57   Indicador de conexión (barras en la esquina superior izquierda, fuera de partida) con avisos de conexión lenta/sin conexión y de gráficos de criaturas que no cargan; ajustes con icono de engranaje en la esquina superior derecha del menú; en 'Cooperativo online' crear sala y unirse con código quedan en recuadros separados
    1.56   HUD compacto con 3-4 jugadores (tarjetas de compañeros más pequeñas y en fila en móvil) y ranking global paginado de 15 en 15
@@ -1264,7 +1268,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.58';
+const VERSION='1.59';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -3492,7 +3496,7 @@ $('mTienda').onclick=()=>{audioInit();buildShop();show('tienda')};$('tBack').onc
 $('mJugar').onclick=async()=>{audioInit();if(!MAPA_ID){await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return}}buildMaps();show('mapSel')};$('mOnline').onclick=async()=>{audioInit();if(!MAPA_ID){await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return}}$('oNick').value=save.cfg.nick||'';$('oErr').textContent='';show('online')};
 $('oCrear').onclick=()=>{if(!netPideNick())return;NET.creando=true;buildMaps();show('mapSel')};
 $('oUnir').onclick=()=>{if(!netPideNick())return;const c=$('oCod').value.trim().toUpperCase();if(c.length>=3)netUnirse(c)};$('oBack').onclick=()=>show('menu');
-$('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('salaCambia').onclick=()=>netCambiar();$('netMsgOk').onclick=()=>{G=null;show('menu')};
+$('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('salaCambia').onclick=()=>netCambiar();$('salaProbe').onclick=()=>netSondeo();$('salaCede').onclick=()=>netCede();$('netMsgOk').onclick=()=>{G=null;show('menu')};
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
 $('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
 $('mBest').onclick=()=>{buildBest();show('bestiario')};$('bBack').onclick=()=>show('menu');
@@ -4005,10 +4009,13 @@ NETT.mem={
  host(code,cb){const lobby=new BroadcastChannel('pkz-'+code);
   lobby.onmessage=e=>{const m=e.data;if(m&&m.k==='hello'){const conn=memConn('pkz-'+code+'-'+m.id,'h');lobby.postMessage({k:'ack',id:m.id});cb.onconn(conn)}};
   setTimeout(()=>cb.onlisto(),0);return{close(){lobby.close()}}},
- join(code,cb){const cid=Math.random().toString(36).slice(2,8),lobby=new BroadcastChannel('pkz-'+code);let done=false;
+ join(code,cb){const cid=Math.random().toString(36).slice(2,8),lobby=new BroadcastChannel('pkz-'+code);let done=false,pqF=null;
+  const pp=new BroadcastChannel('pkzpp-'+cid);pp.onmessage=e=>{const m=e.data;if(!m)return;if(m.t==='pp'){const r=new BroadcastChannel('pkzpp-'+m.from);r.postMessage({t:'pq',n:m.n});setTimeout(()=>r.close(),50)}else if(m.t==='pq'&&pqF)pqF(m)};
   lobby.onmessage=e=>{const m=e.data;if(m&&m.k==='ack'&&m.id===cid&&!done){done=true;clearTimeout(tm);cb.onopen(memConn('pkz-'+code+'-'+cid,'g'))}};
   const tm=setTimeout(()=>{if(!done){done=true;cb.onerror('No hay ninguna sala con ese código')}},2500);
-  lobby.postMessage({k:'hello',id:cid});return{close(){lobby.close()}}}};
+  lobby.postMessage({k:'hello',id:cid});
+  return{close(){lobby.close();try{pp.close()}catch(e){}},pid:()=>cid,
+   sonda(p,n,cb){const o=new BroadcastChannel('pkzpp-'+p);netMide(x=>o.postMessage({t:'pp',n:x.n,from:cid}),f=>{pqF=f},n,r=>{pqF=null;o.close();cb(r)})}}}};
 
 /* ---------- Transporte PeerJS (WebRTC con servidor público solo para emparejar) ---------- */
 function peerOpts(){const q=new URLSearchParams(location.search),o={debug:0};if(q.get('peerhost')){o.host=q.get('peerhost');o.port=+(q.get('peerport')||9000);o.path=q.get('peerpath')||'/';o.secure=q.get('peersecure')==='1'}return o}
@@ -4023,12 +4030,18 @@ NETT.peer={
   return{close(){try{peer.destroy()}catch(e){}}}},
  join(code,cb){if(typeof peerjs==='undefined'){setTimeout(()=>cb.onerror('Falta la librería de red'),0);return{close(){}}}
   const peer=new peerjs.Peer(undefined,peerOpts());let done=false;
+  peer.on('connection',dc=>{const c=peerConn(dc);c.onmsg=m=>{if(m&&m.t==='pp')c.send({t:'pq',n:m.n})}});   /* responde a las pruebas de latencia de otros invitados */
   const fail=m=>{if(done)return;done=true;try{peer.destroy()}catch(e){}cb.onerror(m)};
   const tm=setTimeout(()=>fail('No se pudo conectar (¿código incorrecto o red bloqueada?)'),12000);
   peer.on('error',e=>fail(e.type==='peer-unavailable'?'No hay ninguna sala con ese código':'Error de red: '+(e.type||e.message)));
   peer.on('open',()=>{const dc=peer.connect('pkzombies-'+code,{reliable:true,serialization:'json'});
    dc.on('open',()=>{if(done)return;done=true;clearTimeout(tm);cb.onopen(peerConn(dc))})});
-  return{close(){try{peer.destroy()}catch(e){}}}}};
+  return{close(){try{peer.destroy()}catch(e){}},pid:()=>peer.id||'',
+   sonda(p,n,cb){let dc,fin=false,tm;const end=r=>{if(fin)return;fin=true;clearTimeout(tm);try{dc&&dc.close()}catch(e){}cb(r)};
+    tm=setTimeout(()=>end([]),9000);
+    try{dc=peer.connect(p,{reliable:true,serialization:'json'})}catch(e){end([]);return}
+    dc.on('error',()=>{if(!dc.open)end([])});
+    dc.on('open',()=>{clearTimeout(tm);const c=peerConn(dc);netMide(o=>c.send(o),f=>{c.onmsg=f},n,end)})}}}};
 const netTransp=()=>NET.tipo==='mem'?NETT.mem:NETT.peer;
 
 /* ---------- Estado de red ---------- */
@@ -4066,7 +4079,8 @@ function netSt(){const el=$('netSt');if(!el)return;
  if(!lines.length){el.style.display='none';return}el.style.display='block';setT(el,lines.join('\n'));el.style.color=col}
 function salaUI(txt,go,cancel){show('sala');{const c=$('salaCambia');if(c)c.style.display=NET.modo==='guest'&&NET.fase==='listo'?'':'none'}$('salaT').textContent=NET.modo==='host'?'Sala online':'Unirse a una sala';
  $('salaCod').textContent=NET.modo==='host'?NET.code:'';$('salaCod').style.display=NET.modo==='host'?'block':'none';
- $('salaTxt').textContent=txt;$('salaGo').style.display=go?'':'none';$('salaCancel').textContent=cancel||'Cancelar'}
+ $('salaTxt').textContent=txt;$('salaGo').style.display=go?'':'none';$('salaCancel').textContent=cancel||'Cancelar';
+ $('salaProbe').style.display='none';$('salaCede').style.display='none';$('salaRes').innerHTML=''}
 function netMsgPantalla(t){$('netMsgT').textContent=t;show('netMsg')}
 
 /* ---------- ANFITRIÓN ---------- */
@@ -4079,7 +4093,82 @@ function salaRender(L,me,txt,go){salaUI(txt,go);$('salaL').innerHTML=L.map((x,i)
 function netLobbyData(){const L=[{n:NET.myName||'Anfitrión',c:NET.hostCr.id,r:0}];for(const k of netGsConn()){const g=NET.gs[k];L.push({n:g.name,c:g.cr?g.cr.id:null,r:Math.round(g.rtt||0)})}return L}
 function netSalaRefresh(){if(NET.modo!=='host'||NET.fase!=='sala')return;const ks=netGsConn(),L=netLobbyData(),ok=ks.length>0&&ks.every(k=>NET.gs[k].cr);
  ks.forEach((k,i)=>NET.gs[k].conn.send({t:'lobby',L,me:i+1,tk:L.filter((x,j)=>j!==i+1&&x.c).map(x=>x.c)}));
- salaRender(L,0,ks.length?(ok?'¡Todos listos! Pulsa Empezar.':'Esperando a que todos elijan criatura…'):'Esperando jugadores… (hasta 3 más)',ok)}
+ const S=NET.sd,bus=!!(S&&(S.fase==='mide'||S.fase==='cede'||S.fase==='ir'));
+ let txt=ks.length?(ok?'¡Todos listos! Pulsa Empezar.':'Esperando a que todos elijan criatura…'):'Esperando jugadores… (hasta 3 más)';
+ if(S&&S.fase==='mide')txt='Midiendo la conexión entre todos los jugadores…';else if(S&&(S.fase==='cede'||S.fase==='ir'))txt='Cediendo la sala a '+S.name+'…';else if(S&&S.res)txt=S.res.txt;else if(S&&S.msg)txt=S.msg+'\n'+txt;
+ salaRender(L,0,txt,ok&&!bus);netSondaUI(ok&&!bus)}
+/* ---------- Comprobar mejor host (sala previa) ----------
+   Cada invitado mide la latencia (NET_SONDA_N mensajes) hacia el anfitrión y hacia los invitados con número mayor (conexión directa temporal).
+   El anfitrión reúne la matriz y puntúa a cada jugador como posible anfitrión: media de costes hacia los demás + la mitad del peor. Gana la menor puntuación.
+   Solo se propone el cambio si mejora claramente (≥15 % y ≥15 ms). Ceder la sala = el elegido crea una sala nueva y los demás pasan a ella. */
+function netMide(send,reg,n,cb){const r=[],t0={};let i=0,fin=false,iv,tm;
+ const done=()=>{if(fin)return;fin=true;clearInterval(iv);clearTimeout(tm);reg(null);cb(r)};
+ reg(m=>{if(m&&m.t==='pq'&&t0[m.n]!=null){r.push(performance.now()-t0[m.n]);delete t0[m.n];if(r.length>=n)done()}});
+ iv=setInterval(()=>{if(i>=n){clearInterval(iv);return}t0[i]=performance.now();send({t:'pp',n:i});i++},150);
+ tm=setTimeout(done,n*150+2000)}
+function netStat(r,n){const lost=Math.max(0,n-r.length);r=r.slice();if(r.length>=6)r.shift();if(!r.length)return null;
+ const q=r.slice().sort((a,b)=>a-b),m=q[q.length>>1],p=q[Math.min(q.length-1,Math.ceil(q.length*.9)-1)];return{m:Math.round(m),c:Math.round(m+(p-m)+lost*25),l:lost}}
+function netSondaReset(){if(NET.sd){clearTimeout(NET.sd.tm);NET.sd=null}}
+function netSondeo(){if(NET.modo!=='host'||NET.fase!=='sala'||(NET.sd&&(NET.sd.fase==='mide'||NET.sd.fase==='cede'||NET.sd.fase==='ir')))return;
+ const ks=netGsConn();if(!ks.length||ks.some(k=>!NET.gs[k].cr))return;netSondaReset();
+ const id=Math.random().toString(36).slice(2,7),S=NET.sd={fase:'mide',id,ks:ks.slice(),rep:{}};
+ ks.forEach((k,i)=>NET.gs[k].conn.send({t:'probe',id,n:NET_SONDA_N,tg:ks.slice(i+1).map(j=>({k:j,p:NET.gs[j].pid||''}))}));
+ S.tm=setTimeout(netSondaFin,NET_SONDA_MAX*1000);netSalaRefresh()}
+function netSondaFin(){const S=NET.sd;if(!S||S.fase!=='mide')return;clearTimeout(S.tm);
+ const ks=S.ks;if(ks.some(k=>!NET.gs[k]||!NET.gs[k].conn||!NET.gs[k].conn.open)){NET.sd=null;netSalaRefresh();return}
+ const nodes=[0].concat(ks),nm=a=>a===0?(NET.myName||'Anfitrión'):NET.gs[a].name;
+ const link=(a,b)=>{if(a>b){const t=a;a=b;b=t}const r=S.rep[b];if(a===0)return r&&r.h||null;const q=S.rep[a];return q&&q[b]||null};
+ const sc={},info={};
+ for(const a of nodes){const st=nodes.filter(b=>b!==a).map(b=>link(a,b));
+  if(st.some(x=>!x)){info[a]={fail:1};sc[a]=Infinity;continue}
+  const c=st.map(x=>x.c),m=st.map(x=>x.m);sc[a]=c.reduce((p,q)=>p+q,0)/c.length+Math.max(...c)/2;
+  info[a]={avg:Math.max(1,Math.round(m.reduce((p,q)=>p+q,0)/m.length))}}
+ let best=0;for(const a of nodes)if(sc[a]<sc[best])best=a;
+ const rec=best!==0&&sc[best]<=sc[0]*.85&&sc[0]-sc[best]>=15?best:0;
+ let txt;
+ if(!isFinite(sc[best]))txt='No se pudo medir la conexión con todos los jugadores. Inténtalo de nuevo.';
+ else if(ks.length===1)txt='Con 2 jugadores la latencia es la misma sea quien sea el anfitrión ('+info[0].avg+' ms). No hay mejora posible.';
+ else if(rec)txt='Mejor host: '+nm(rec)+' (media de '+info[rec].avg+' ms con los demás, frente a '+(info[0].avg||'?')+' ms contigo).\nPuedes cederle la sala.';
+ else txt='Tu conexión ya es la mejor para ser anfitrión (o la diferencia es mínima).';
+ NET.sd={res:{ks:ks.slice(),rows:nodes.map(a=>({a,n:nm(a),i:info[a]})),rec,txt}};netSalaRefresh()}
+function netSondaUI(libre){const S=NET.sd,res=S&&S.res,b=$('salaProbe'),c=$('salaCede'),r=$('salaRes');
+ b.style.display=libre?'':'none';b.textContent=res?'📡 Volver a comprobar':'📡 Comprobar mejor host';
+ c.style.display=libre&&res&&res.rec?'':'none';if(res&&res.rec&&NET.gs[res.rec])c.innerHTML='<span>👑</span>Ceder la sala a '+netEsc(NET.gs[res.rec].name);
+ r.innerHTML=res?res.rows.map((x,j)=>'<div class="sRow'+(res.rec&&x.a===res.rec?' yo':'')+'"><b>J'+(j+1)+'</b><span class="sn">'+netEsc(x.n)+(x.a===0?' (tú)':'')+'</span>'+(x.i.fail?'<span class="ms">sin enlace</span>':netSig(x.i.avg))+'<span class="ok" style="min-width:20px">'+(res.rec&&x.a===res.rec?'👑':'')+'</span></div>').join(''):''}
+function netCede(){const S=NET.sd,k=S&&S.res&&S.res.rec;if(!k||NET.modo!=='host'||NET.fase!=='sala')return;const g=NET.gs[k];if(!g||!g.conn||!g.conn.open||!g.cr)return;
+ netSondaReset();const name=g.name,tm=setTimeout(()=>{if(NET.sd&&NET.sd.fase==='cede'){NET.sd={msg:'No se pudo ceder la sala a '+name+'. Sigues siendo el anfitrión.'};netSalaRefresh()}},15000);
+ NET.sd={fase:'cede',k,name,tm};g.conn.send({t:'migHost'});netSalaRefresh()}
+/* El anfitrión actual pasa a ser invitado de la sala nueva (conserva su criatura) */
+function netMigIr(code){if(NET.modo!=='host')return;const cr=NET.hostCr,room=NET.room;
+ for(const x of NET.gs)if(x&&x.conn){x.conn.onmsg=null;x.conn.onclose=null}
+ NET.gs=[];NET.hostCr=null;NET.room=null;netSondaReset();NET.lobby=null;NET.migCr=cr?cr.id:null;
+ netUnirse(code);setTimeout(()=>{try{room&&room.close()}catch(e){}},1500)}
+/* El invitado elegido crea la sala nueva y, cuando está lista, avisa al anfitrión actual */
+function netMigAsumir(){const oc=NET.conn,orm=NET.room;
+ if(NET.modo!=='guest'||!oc||!oc.open||NET.migT||!(NET.fase==='listo'||NET.fase==='elegir'))return;
+ const cr=CRIATURAS.find(c=>c.id===selId),dif=NET.dif;
+ if(!cr){try{oc.send({t:'migFail'})}catch(e){}return}
+ NET.migT=1;let n=0;const fallo=()=>{NET.migT=0;try{oc.send({t:'migFail'})}catch(e){}};
+ setTimeout(()=>{if(NET.migT)fallo()},12000);
+ const crear=()=>{const code=netCodigo();let room=null;
+  room=netTransp().host(code,{
+   onlisto(){if(!NET.migT){try{room.close()}catch(e){}return}NET.migT=0;
+    if(dif&&DIFS[dif])save.cfg.dif=dif;
+    NET.modo='host';NET.fase='sala';NET.hostCr=cr;NET.gs=[null,null,null,null];NET.conn=null;NET.room=room;NET.code=code;NET.lobby=null;NET.tk=[];NET.sd=null;
+    oc.onmsg=null;oc.onclose=null;document.body.classList.remove('netGuest');
+    try{oc.send({t:'migOk',code})}catch(e){}
+    setTimeout(()=>{try{oc.close()}catch(e){}try{orm&&orm.close()}catch(e){}},2500);
+    netSalaRefresh()},
+   onerror(e){try{room&&room.close()}catch(x){}if(!NET.migT)return;if(e==='retry'&&++n<6)crear();else fallo()},
+   onconn(conn){conn.onmsg=mm=>netHostMsg(conn,mm);conn.onclose=()=>netHostClose(conn)}})};
+ crear()}
+/* Invitado: mide su latencia hacia el anfitrión y hacia los invitados indicados y se lo comunica */
+function netGuestSonda(m){if(NET.modo!=='guest'||!NET.conn)return;const n=Math.min(20,m.n|0||10),id=m.id,rep={},tg=(m.tg||[]).filter(x=>x);
+ const can=x=>x.p&&NET.room&&NET.room.sonda;let pend=1+tg.filter(can).length;
+ tg.forEach(x=>{if(!can(x))rep[x.k]=null});
+ const fin=()=>{if(--pend>0)return;netSend({t:'probeRes',id,r:rep})};
+ netMide(o=>netSend(o),f=>{NET.pqH=f},n,r=>{rep.h=netStat(r,n);fin()});
+ tg.filter(can).forEach(x=>NET.room.sonda(x.p,n,r=>{rep[x.k]=netStat(r,n);fin()}))}
 function netSala(n){NET.code=netCodigo();salaUI('Creando sala…');
  NET.room=netTransp().host(NET.code,{
   onlisto(){salaUI('Pásales este código a tus amigos y espera a que se unan (hasta 3)…',false)},
@@ -4089,10 +4178,11 @@ function netHostMsg(conn,m){if(!m||!m.t)return;const k=netGsOf(conn),g=k?NET.gs[
  switch(m.t){
  case'hi':{
   if(k)break;
+  if(NET.fase==='sala'&&NET.sd&&(NET.sd.fase==='cede'||NET.sd.fase==='ir')){conn.send({t:'full',r:'La sala está cambiando de anfitrión, inténtalo en unos segundos'});setTimeout(()=>conn.close(),200);break}
   if(NET.fase==='sala'){let f=0;for(let j=1;j<=3;j++){const x=NET.gs[j];if(!x||!x.conn||!x.conn.open){f=j;break}}
-   if(f){NET.gs[f]={conn,name:netClean(m.name)||'Jugador '+(f+1),cr:null,tok:String(m.tok||''),inp:{x:0,y:0,aim:0,f:0,e:0},evq:[],ak:0,lastS:[],sfxQ:new Set(),rtt:0,ausT:0};
+   if(f){NET.gs[f]={conn,name:netClean(m.name)||'Jugador '+(f+1),cr:null,tok:String(m.tok||''),pid:String(m.pid||''),inp:{x:0,y:0,aim:0,f:0,e:0},evq:[],ak:0,lastS:[],sfxQ:new Set(),rtt:0,ausT:0};
     const mp=MAPAS[MAPA_ID];conn.send({t:'welcome',v:2,map:{id:MAPA_ID,text:JSON.stringify(mp.data)},pbs:m.pbsH===netHash(PBS_TEXT)?null:PBS_TEXT,dif:difKey(),hc:NET.hostCr.id,hn:NET.myName||''});
-    netSalaRefresh()}
+    netSondaReset();netSalaRefresh()}
    else{conn.send({t:'full',r:'La sala está llena'});setTimeout(()=>conn.close(),200)}}
   else if(NET.fase==='juego'&&G){let f=0;if(m.rejoin&&m.tok)for(let j=1;j<NET.gs.length;j++){const x=NET.gs[j],p=G.players[j];if(x&&x.tok===String(m.tok)&&p&&p.ausente&&x.ausT>0){f=j;break}}
    if(f)netReentra(conn,f);else{conn.send({t:'full',r:'La partida ya ha empezado'});setTimeout(()=>conn.close(),200)}}
@@ -4103,9 +4193,15 @@ function netHostMsg(conn,m){if(!m||!m.t)return;const k=netGsOf(conn),g=k?NET.gs[
  case'in':if(g){const i=g.inp;i.x=+m.x||0;i.y=+m.y||0;i.aim=+m.aim||0;i.f=m.f?1:0;i.e=m.e?1:0;if(m.s>g.ak)g.ak=m.s;if(m.ev&&g.evq.length<60)for(const e of m.ev)g.evq.push(String(e))}break;
  case'ping':if(g){g.rtt=+m.rtt||g.rtt;conn.send({t:'pong',ts:m.ts})}break;
  case'pick':if(g)netPick(m,k);break;
+ case'pp':conn.send({t:'pq',n:m.n});break;
+ case'probeRes':{const S=NET.sd;if(g&&S&&S.fase==='mide'&&S.id===m.id&&m.r&&typeof m.r==='object'){S.rep[k]=m.r;if(S.ks.every(j=>S.rep[j]))netSondaFin()}break}
+ case'migOk':if(g&&NET.sd&&NET.sd.fase==='cede'&&NET.sd.k===k&&m.code){const code=String(m.code).slice(0,8),nm=g.name;clearTimeout(NET.sd.tm);
+  for(const j of netGsConn())if(j!==k)NET.gs[j].conn.send({t:'mig',code,n:nm});
+  NET.sd.fase='ir';netSalaRefresh();setTimeout(()=>netMigIr(code),600)}break;
+ case'migFail':if(g&&NET.sd&&NET.sd.fase==='cede'&&NET.sd.k===k){clearTimeout(NET.sd.tm);NET.sd={msg:'No se pudo ceder la sala a '+g.name+'. Sigues siendo el anfitrión.'};netSalaRefresh()}break;
  case'bye':conn.close();netHostClose(conn);break}}
 function netHostClose(conn){const k=netGsOf(conn);if(!k)return;const g=NET.gs[k];
- if(NET.fase==='sala'){NET.gs[k]=null;netSalaRefresh()}
+ if(NET.fase==='sala'){NET.gs[k]=null;netSondaReset();netSalaRefresh()}
  else if(NET.fase==='juego'&&G){const p=G.players[k];if(!p||p.ausente)return;
   p.ausente=true;p.deb=true;p.out=true;p.espera=false;p.revP=0;g.ausT=NET_RECONECTAR;g.inp={x:0,y:0,aim:0,f:0,e:0};g.evq=[];
   for(const id in NET.pend)if(NET.pend[id].idx===k)delete NET.pend[id];p.modalOpen=0;
@@ -4199,14 +4295,15 @@ function netUnirse(code,rejoin){if(!rejoin||!NET.tok)NET.tok=Math.random().toStr
  NET.room=netTransp().join(code,{
   onerror(e){NET.joining=false;if(rejoin){netReintento();return}NET.modo='local';NET.fase='';salaUI(e,false,'Volver')},
   onopen(conn){NET.joining=false;NET.conn=conn;conn.onmsg=netGuestMsg;conn.onclose=()=>netGuestClose(conn);
-   conn.send({t:'hi',v:2,pbsH:netHash(PBS_TEXT),rejoin:rejoin?1:0,name:NET.myName||'',tok:NET.tok});NET.pingT=0}})}
+   conn.send({t:'hi',v:2,pbsH:netHash(PBS_TEXT),rejoin:rejoin?1:0,name:NET.myName||'',tok:NET.tok,pid:NET.room&&NET.room.pid?NET.room.pid():''});NET.pingT=0}})}
 function netGuestMsg(m){if(!m||!m.t)return;
  switch(m.t){
  case'welcome':{NET.hostName=netClean(m.hn);NET.cfgBak={dif:save.cfg.dif,mapa:save.cfg.mapa};NET.datosAjenos=true;
   addMapa(m.map.id+'.json',m.map.text);if(MAPAS[m.map.id]){G=null;elegirMapa(m.map.id)}
   if(m.pbs)applyData(m.pbs);
   NET.hostCrId=m.hc;NET.dif=m.dif;NET.fase='elegir';NET.tk=[m.hc];if(selId===m.hc){const f=CRIATURAS.find(c=>c.id!==m.hc);if(f)selId=f.id}$('selAviso').textContent='';
-  document.body.classList.add('netGuest');$('sBack').textContent='‹ Salir';$('sGo').innerHTML='<span>▶</span>¡Listo!';buildSel();refreshDif();show('sel');break}
+  document.body.classList.add('netGuest');$('sBack').textContent='‹ Salir';$('sGo').innerHTML='<span>▶</span>¡Listo!';buildSel();refreshDif();show('sel');
+  if(NET.migCr){const mc=NET.migCr;NET.migCr=null;if(mc!==m.hc&&CRIATURAS.some(c=>c.id===mc)){selId=mc;buildSel();netListo()}}break}
  case'lobby':{NET.tk=m.tk||[];NET.lobby=m;if(NET.fase==='elegir'){if(NET.tk.includes(selId)){const f=CRIATURAS.find(c=>!NET.tk.includes(c.id));if(f)selId=f.id}buildSel()}else if(NET.fase==='listo')salaRender(m.L,m.me,'Esperando a que el anfitrión empiece…',false);break}
  case'rej':NET.fase='elegir';$('selAviso').textContent=m.r||'';document.body.classList.add('netGuest');buildSel();show('sel');break;
  case'full':netMsgPantalla(m.r||'No se puede entrar en la sala');netLimpiar();break;
@@ -4217,6 +4314,10 @@ function netGuestMsg(m){if(!m||!m.t)return;
  case'modal':if(G){const d=m.a;modal(d.t,d.o.map((l,i)=>({t:l,f:()=>netSend({t:'pick',id:d.id,i})})),d.nc,d.cl?()=>netSend({t:'pick',id:d.id,i:-1}):undefined);NET.modalId=d.id}break;
  case'modalClose':if(G&&G.modal){G.modal=false;show(null)}break;
  case'pong':NET.rtt=performance.now()-m.ts;break;
+ case'pq':if(NET.pqH)NET.pqH(m);break;
+ case'probe':netGuestSonda(m);break;
+ case'migHost':netMigAsumir();break;
+ case'mig':if(NET.modo==='guest'&&(NET.fase==='elegir'||NET.fase==='listo')&&m.code){NET.migCr=NET.fase==='listo'?selId:null;const c=NET.conn;if(c){c.onmsg=null;c.onclose=null}NET.conn=null;NET.lobby=null;netUnirse(String(m.code).slice(0,8))}break;
  case'bye':if(NET.fase!=='union'){const f=NET.fase;netLimpiar();G=null;netMsgPantalla('El anfitrión ha salido de la partida')}break}}
 function netGuestStart(m){const cs=m.cs||[],ns=m.ns||[],k=m.slot|0,crs=cs.map(id=>CRIATURAS.find(c=>c.id===id));
  if(!k||cs.length<2||crs.some(c=>!c)){netMsgPantalla('Criaturas no coinciden con las del anfitrión');return}
