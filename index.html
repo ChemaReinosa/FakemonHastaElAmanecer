@@ -1290,6 +1290,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.63   Ranking: los invitados se marcan con (Inv.); solo las 6 primeras criaturas son libres, el resto requiere cuenta y haber llegado a la ronda 10; el Bestiario es solo para usuarios con cuenta; arreglado el botón Jugar que a veces necesitaba dos pulsaciones (no esperaba a que terminara la carga inicial)
    1.62   Cuentas opcionales con Supabase (email + contraseña): ajustes, bestiario, récords y estadísticas en la nube; el modo invitado no cambia y no hay migración de datos locales; el ranking global enlaza el récord con la cuenta (user_id)
    1.61   Evento de apagón (al acabar una ronda, con poca probabilidad y solo si la energía ya estaba activada: oscuridad casi total, máquinas apagadas, aviso en el HUD; se arregla pulsando de nuevo el interruptor) y apartado Accesibilidad en Ajustes (tamaño de letra del HUD, reducir partículas/destellos, modo sin flash, modo daltónico)
    1.60   Ranking global: se quita la columna 'Jug.' y el nº de jugadores de la partida se muestra entre paréntesis tras el nombre, p. ej. Chema (3)
@@ -1322,7 +1323,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.62';
+const VERSION='1.63';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1766,7 +1767,7 @@ async function ingest(files,force){let txt=null,n=0,nc=0,nb=0,nm=0,picOk=false;c
  else if(n){CRIATURAS.forEach(c=>c.stages.forEach(st=>{st.chr=null}));refreshDatos()}
  {const el=$('datosRes');const html=(txt==null&&!n&&!nm&&!picOk)?'<div style="color:#f88">No he encontrado criaturas.txt ni PNG en lo que has elegido. Elige la carpeta que contiene PBS, Graphics y Mapas.</div>':'<div style="color:#9f6">'+(txt!=null?'✔ criaturas.txt cargado: '+CRIATURAS.length+' criaturas jugables. ':'')+(n?'✔ Sprites: '+nc+' Characters, '+nb+' Battlers. ':'')+(nm?'✔ Mapas: '+nm+'. ':'')+(picOk?'✔ Iconos de tipo. ':'')+'Ya puedes volver y jugar.</div><br>';if(el)el.innerHTML=html}}
 /* ---------- Mapas: carpeta Mapas/*.json ---------- */
-const MAPAS={};let MAPA_ID='',MAPA_SRC='';const MAPA_ERR=[];
+let INIT_P=null;const MAPAS={};let MAPA_ID='',MAPA_SRC='';const MAPA_ERR=[];
 function validarMapa(m){if(!m||typeof m!=='object')return'no es un objeto JSON';if(!(m.ancho>0&&m.alto>0))return'faltan ancho/alto';if(!Array.isArray(m.zonas)||!m.zonas.length)return'no tiene zonas';
  const ids=new Set();for(const z of m.zonas){if(!z.id||![z.x,z.y,z.w,z.h].every(Number.isFinite))return'zona inválida '+(z.id||'?');ids.add(z.id)}
  for(const d of m.puertas||[])if(!ids.has(d.a)||!ids.has(d.b))return'puerta con zona inexistente ('+d.id+')';for(const o of m.objetos||[])if(!ids.has(o.zona))return'objeto en zona inexistente ('+o.zona+')';
@@ -3729,11 +3730,14 @@ function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(
  $('finTxt').innerHTML='<div class="finSp"></div><div>Jugador: <b>'+netClean((G.players[0]&&G.players[0].nombre)||save.cfg.nick||'')+'</b><br>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
 const cap=s=>s==='neutro'?'Normal':s.charAt(0).toUpperCase()+s.slice(1);
 const chipsHtml=tipos=>'<div class="chips">'+tipos.map(t=>'<span class="chip" style="background:'+tipoColor(t)+'">'+cap(t)+'</span>').join('')+'</div>';
-function buildSel(){const box=$('cards');box.innerHTML='';
+const CREA_LIBRES=6,CREA_RONDA=10;   /* solo las 6 primeras criaturas son libres; el resto pide cuenta + ronda 10 en algún mapa */
+function creaBloq(c){const i=CRIATURAS.indexOf(c);return i>=CREA_LIBRES&&!(ACC.on&&(save.record|0)>=CREA_RONDA)}
+function selValida(){const c=CRIATURAS.find(x=>x.id===selId);if(!c||creaBloq(c))selId=CRIATURAS[0].id}
+function buildSel(){const box=$('cards');box.innerHTML='';selValida();
  {const nb=$('sNickBox'),loc=!NET.creando&&NET.modo!=='guest';nb.style.display=loc?'':'none';if(loc&&!$('sNick').value)$('sNick').value=save.cfg.nick||''}
- CRIATURAS.forEach(c=>{const tkn=NET.modo==='guest'&&(NET.tk||[]).includes(c.id),lock=false,et=0,st=c.stages[0];
+ CRIATURAS.forEach(c=>{const tkn=NET.modo==='guest'&&(NET.tk||[]).includes(c.id),lock=creaBloq(c),et=0,st=c.stages[0];
   const d=document.createElement('div');d.className='card'+(lock||tkn?' lock':'')+(selId===c.id&&!tkn?' sel':'');d.style.setProperty('--tc',tipoColor(c.tipos[0]));d.appendChild(battlerEl(st));
-  d.insertAdjacentHTML('beforeend','<b>'+st.nombre+'</b>'+chipsHtml(c.tipos)+(tkn?'<span class="lk">En uso</span>':lock?'<span class="lk">🔒 Récord ronda '+c.desbloqueo+'</span>':'<small>'+st.calc.hp+' PV</small>'));
+  d.insertAdjacentHTML('beforeend','<b>'+st.nombre+'</b>'+chipsHtml(c.tipos)+(tkn?'<span class="lk">En uso</span>':lock?'<span class="lk">🔒 '+(ACC.on?'Llega a la ronda '+CREA_RONDA:'Inicia sesión y llega a la ronda '+CREA_RONDA)+'</span>':'<small>'+st.calc.hp+' PV</small>'));
   d.onclick=()=>{if(!lock&&!tkn){selId=c.id;$('selAviso').textContent='';buildSel()}};box.appendChild(d)});
  const c=CRIATURAS.find(x=>x.id===selId);if(c){const et=0,st=c.stages[et],S=st.stats,mx=Math.max(120,...Object.values(S));
   const bars=[['PV',S.hp,'#ee5555'],['Ataque',S.atk,'#ff9933'],['Defensa',S.def,'#ffcc44'],['Velocidad',S.spe,'#55ccff'],['At. Esp.',S.spa,'#aa77ff'],['Def. Esp.',S.spd,'#77dd99']].map(([l,v,col])=>'<span>'+l+'</span><span class="sb"><i style="width:'+Math.min(100,v/mx*100)+'%;background:'+col+'"></i></span><span class="sv">'+v+'</span>').join('');
@@ -3757,13 +3761,19 @@ function buildShop(){$('tiendaCand').innerHTML='Caramelos disponibles: <b>🍬 '
   else{b.textContent='🍬 '+cost;if(save.wallet<cost)b.style.opacity=.5;b.onclick=()=>{if(save.wallet<cost)return;save.wallet-=cost;save.mejoras[m.id]=lv+1;persist();sfx('comprar');buildShop();refreshMenu()}}
   d.appendChild(b);box.appendChild(d)})}
 $('mTienda').onclick=()=>{audioInit();buildShop();show('tienda')};$('tBack').onclick=()=>show('menu');
-$('mJugar').onclick=async()=>{audioInit();if(!MAPA_ID){await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return}}buildMaps();show('mapSel')};$('mOnline').onclick=async()=>{audioInit();if(!MAPA_ID){await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return}}$('oNick').value=save.cfg.nick||'';$('oErr').textContent='';show('online')};
+/* Espera la carga inicial (INIT_P) antes de decidir; con esa carga a medias, el primer clic parecía no hacer nada */
+let menuBusy=false;
+async function menuListo(btn){if(menuBusy)return false;menuBusy=true;const h=btn.innerHTML;btn.disabled=true;btn.style.opacity=.6;
+ try{audioInit();try{await INIT_P}catch(e){}if(!MAPA_ID)await autoBuscar();if(!MAPA_ID){refreshDatos();show('datos');return false}return true}
+ finally{btn.disabled=false;btn.style.opacity='';menuBusy=false}}
+$('mJugar').onclick=async()=>{if(!await menuListo($('mJugar')))return;buildMaps();show('mapSel')};
+$('mOnline').onclick=async()=>{if(!await menuListo($('mOnline')))return;$('oNick').value=save.cfg.nick||'';$('oErr').textContent='';show('online')};
 $('oCrear').onclick=()=>{if(!netPideNick())return;NET.creando=true;buildMaps();show('mapSel')};
 $('oUnir').onclick=()=>{if(!netPideNick())return;const c=$('oCod').value.trim().toUpperCase();if(c.length>=3)netUnirse(c)};$('oBack').onclick=()=>show('menu');
 $('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('salaCambia').onclick=()=>netCambiar();$('salaProbe').onclick=()=>netSondeo();$('salaCede').onclick=()=>netCede();$('netMsgOk').onclick=()=>{G=null;show('menu')};
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
-$('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
-$('mBest').onclick=()=>{buildBest();show('bestiario')};$('bBack').onclick=()=>show('menu');
+$('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;selValida();if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
+$('mBest').onclick=()=>{if(!ACC.on){accAviso('El Bestiario solo está disponible para usuarios con cuenta. Inicia sesión para usarlo.',true);accAbre();return}buildBest();show('bestiario')};$('bBack').onclick=()=>show('menu');
 function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
  CRIATURAS.forEach(c=>{const mx=save.bestiario[c.id],ok=mx!==undefined;if(ok)got++;const et=ok?Math.min(mx,c.stages.length-1):0,st=c.stages[et];
   const d=document.createElement('div');d.className='card'+(ok?'':' lock');d.style.cursor='default';
@@ -3805,6 +3815,7 @@ function cargarPartida(d){
  const cr=CRIATURAS.find(c=>c.id===d.cr);if(!cr){alert('La criatura de esta partida ('+d.cr+') no está en los datos cargados.');return}
  if(d.mapa&&MAPAS[d.mapa]&&MAPA_ID!==d.mapa){G=null;elegirMapa(d.mapa)}
  if(DIFS[d.dif]){save.cfg.dif=d.dif;persist()}
+ if(creaBloq(cr)){alert('Esta criatura está bloqueada: requiere cuenta y haber llegado a la ronda '+CREA_RONDA+'.');return}
  audioInit();selId=cr.id;newGame(cr);G.cargada=true;if(d.uid){const u=String(d.uid).replace(/[^\w-]/g,'').slice(0,24);if(u)G.uid=u}
  G.et=Math.max(0,Math.min(cr.stages.length-1,d.et|0));G.money=d.money|0;G.kills=d.kills|0;G.candy=d.candy|0;G.lives=d.lives|0||1;G.granadas=d.granadas|0;
  G.perks=(d.perks||[]).filter(p=>BAYA[p]&&!BAYA[p].slot);G.slot5=d.slot5!==undefined?!!d.slot5:((d.et|0)>=1||!!(d.slots&&d.slots[4]));G.smPend=d.smPend||null;G.teleRound=d.teleRound===null||d.teleRound===undefined?undefined:d.teleRound;
@@ -4228,7 +4239,7 @@ function rkPersonal(){const L=$('rkLista');let h='Récord: <b>ronda '+(save.reco
  h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+rkEsc(netClean(r.nick))+'</b> — ':'')+'Ronda '+(+r.ronda)+' — '+(+r.matados)+' bajas — '+rkEsc(r.cr)+' ('+rkEsc(r.f)+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';L.innerHTML=h}
 const RK_PAG=15;   /* filas por página del ranking global */
 async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pag:RK.pag|0;const P=$('rkPag');P.style.display='none';L.textContent='Cargando…';
- let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at&order=puntuacion.desc,ronda.desc,id.asc&limit='+(RK_PAG+1)+'&offset='+RK.pag*RK_PAG;
+ let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at,user_id&order=puntuacion.desc,ronda.desc,id.asc&limit='+(RK_PAG+1)+'&offset='+RK.pag*RK_PAG;
  for(const[k,id]of[['mapa','rkMapa'],['dificultad','rkDif'],['modo','rkModo']]){const v=$(id).value;if(v)q+='&'+k+'=eq.'+encodeURIComponent(v)}
  try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;let d=await r.json();
   if(!d.length){L.textContent=RK.pag?'No hay más récords.':'Aún no hay récords con estos filtros.';if(RK.pag){P.style.display='flex';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=false;$('rkNext').disabled=true}return}
@@ -4236,7 +4247,7 @@ async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pa
   const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},
   F=v=>{const t=new Date(v);if(!v||isNaN(t))return'—';const z=n=>String(n).padStart(2,'0');return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+String(t.getFullYear()).slice(2)+'<br>'+z(t.getHours())+':'+z(t.getMinutes())};
   L.innerHTML='<table><tr><th>#</th><th>Jugador</th><th>Mapa</th><th class="n">Puntos</th><th class="n">Ronda</th><th class="n">Bajas</th><th class="n">Tiempo</th><th>Criatura</th><th>Fecha</th></tr>'
-   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b> ('+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+')</td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
+   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b>'+(x.user_id?'':' (Inv.)')+' ('+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+')</td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
   P.style.display=(RK.pag||hay)?'flex':'none';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=RK.pag===0;$('rkNext').disabled=!hay}
  catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
 $('mRank').onclick=()=>{audioInit();rkAbre('menu')};
@@ -4764,7 +4775,7 @@ window.PZNET=NET;
  throwGrenade=function(){if(gj()){NET.evOut.push('g');return}return _tg()};
  cycleWeapon=function(d){if(gj()){NET.evOut.push('w'+d);return}return _cw(d)};
  setCur=function(i){if(gj()){NET.evOut.push('s'+i);return}return _sc(i)}}
-refreshMenu();requestAnimationFrame(loop);initData();restoreSave();accInit();
+refreshMenu();requestAnimationFrame(loop);INIT_P=initData();restoreSave();accInit();
 addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>{if(document.hidden)persist()});
 setTimeout(()=>{persist();setTimeout(()=>{if(!LS_OK&&!IDB_OK){const m=$('menu');if(m&&!$('mWarn')){const w=document.createElement('div');w.id='mWarn';w.style.cssText='color:#f88;font-size:12px;max-width:420px;margin-top:6px';w.textContent='⚠ Tu navegador está bloqueando el guardado (¿modo privado o vista previa dentro de otra página?). El progreso se perderá al cerrar. Abre el archivo directamente en el navegador.';$('mSub').after(w)}}},800)},400);
 </script>
