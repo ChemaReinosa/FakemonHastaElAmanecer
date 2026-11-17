@@ -16,6 +16,17 @@ canvas#c{image-rendering:pixelated;display:block;width:100%;height:100%;backgrou
 #hud{position:absolute;inset:0;pointer-events:none;font-size:calc(max(9px,calc(var(--u)*6))*var(--hs,1));text-shadow:1px 1px 0 #000;z-index:6}
 #top{position:absolute;top:1%;left:1.5%;right:1.5%;display:flex;gap:2%;font-weight:bold;flex-wrap:wrap}
 #top span{background:rgba(0,0,0,.55);padding:.15em .5em;border-radius:3px}
+/* cuentas */
+.cuentaB{position:absolute;top:max(10px,env(safe-area-inset-top,0px));right:calc(max(10px,env(safe-area-inset-right,0px)) + 56px);height:44px;max-width:46vw;padding:0 14px;border-radius:22px;border:2px solid #7dff9b;background:linear-gradient(#1c2a20,#101a14);color:#cfeedd;font:bold 13px "Courier New",monospace;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;z-index:3}
+body[data-tema=claro] .cuentaB{color:#222;background:linear-gradient(#f4f8ea,#d8e2c6);border-color:#264}
+#cuenta input{font:bold 16px "Courier New",monospace;padding:10px 12px;border-radius:8px;border:2px solid #456;background:#0e0e14;color:#fff;width:min(82vw,320px);text-align:center}
+body[data-tema=claro] #cuenta input{background:#fff;color:#222}
+#cuenta .cuTabs{display:flex;gap:8px;justify-content:center}
+#cuenta .cuTabs .main{background:#3d6b3d;border-color:#ffe36a}
+#cuIn,#cuRec{display:flex;flex-direction:column;align-items:center;gap:10px}
+#cuMsg{min-height:2.6em;max-width:min(88vw,380px);font-weight:bold;font-size:13px}
+.cuPriv{max-width:min(88vw,380px);font-size:11px;opacity:.65;margin-top:6px}
+#sNick[readonly],#oNick[readonly]{opacity:.8;border-style:dashed}
 #hApagon{position:absolute;top:14.5%;left:50%;transform:translateX(-50%);display:none;white-space:nowrap;background:rgba(0,0,0,.72);color:#ffb020;border:1px solid #ffb020;padding:.15em .7em;border-radius:3px;font-weight:bold;font-size:.95em}
 /* accesibilidad: modo daltónico (azul/naranja en vez de verde/rojo) y modo sin flash (sin parpadeos CSS) */
 body.dalt .sl.sup{border-color:#4aa8ff;animation-name:supPd}body.dalt .sl.sup i.ef{color:#4aa8ff}body.dalt .sl.inm i.ef{color:#d9a6ff}
@@ -362,9 +373,34 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
  </div>
 </div>
 <div id="conSig" title="Calidad de la conexión"><span class="cb"><i></i><i></i><i></i><i></i></span><span id="conTxt">Midiendo…</span></div>
-<div id="avisoCon" class="avRed" role="alert"></div><div id="avisoGfx" class="avRed" role="alert"></div>
+<div id="avisoCon" class="avRed" role="alert"></div><div id="avisoGfx" class="avRed" role="alert"></div><div id="avisoCta" class="avRed" role="alert"></div>
+<div class="screen" id="cuenta">
+ <h2 id="cuT">Cuenta</h2>
+ <div id="cuOut" style="display:none">
+  <div style="font:bold 20px 'Courier New',monospace" id="cuNick"></div>
+  <div style="opacity:.7;margin:4px 0 12px" id="cuMail"></div>
+  <button class="btn" id="cuSalir">Cerrar sesión</button>
+  <div style="margin-top:10px"><button class="btn sm" id="cuBorrar">Eliminar cuenta</button></div>
+ </div>
+ <div id="cuIn">
+  <div class="cuTabs"><button class="btn sm main" id="cuTabE">Entrar</button><button class="btn sm" id="cuTabR">Crear cuenta</button></div>
+  <input id="cuNickR" maxlength="12" placeholder="NICK (3-12 letras)" autocomplete="nickname" spellcheck="false" style="display:none">
+  <input id="cuMailI" type="email" placeholder="email" autocomplete="email" spellcheck="false">
+  <input id="cuPass" type="password" placeholder="contraseña (mín. 8)" autocomplete="current-password">
+  <button class="btn" id="cuGo">Entrar</button>
+  <button class="btn sm" id="cuOlv">He olvidado mi contraseña</button>
+ </div>
+ <div id="cuRec" style="display:none">
+  <input id="cuPass2" type="password" placeholder="nueva contraseña (mín. 8)" autocomplete="new-password">
+  <button class="btn" id="cuRecGo">Guardar contraseña</button>
+ </div>
+ <div id="cuMsg" role="status"></div>
+ <button class="btn sm" id="cuVolver">Jugar como invitado</button>
+ <div class="cuPriv">La cuenta es opcional. Si la creas guardamos tu email, tu nick y tu progreso (ajustes, bestiario y récords) para sincronizarlos. Puedes eliminarla cuando quieras desde aquí.</div>
+</div>
 <div class="screen" id="menu">
  <button id="mAjustes" class="gear" aria-label="Ajustes" title="Ajustes">⚙</button>
+ <button id="mCuenta" class="cuentaB" type="button">👤 Iniciar sesión</button>
  <div id="verTag"></div><div class="wmark">by ChemaJuve</div>
  <div id="mTop"><h1 id="mT"><span class="pk">Fakem<span class="ball"></span>n</span><span class="zb">Hasta el Amanecer<i></i><i></i><i></i><i></i><i></i></span></h1>
  <div id="mSub">Supervivencia por oleadas</div></div>
@@ -1254,6 +1290,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.62   Cuentas opcionales con Supabase (email + contraseña): ajustes, bestiario, récords y estadísticas en la nube; el modo invitado no cambia y no hay migración de datos locales; el ranking global enlaza el récord con la cuenta (user_id)
    1.61   Evento de apagón (al acabar una ronda, con poca probabilidad y solo si la energía ya estaba activada: oscuridad casi total, máquinas apagadas, aviso en el HUD; se arregla pulsando de nuevo el interruptor) y apartado Accesibilidad en Ajustes (tamaño de letra del HUD, reducir partículas/destellos, modo sin flash, modo daltónico)
    1.60   Ranking global: se quita la columna 'Jug.' y el nº de jugadores de la partida se muestra entre paréntesis tras el nombre, p. ej. Chema (3)
    1.59   Sala previa cooperativa: botón 'Comprobar mejor host' (mide la latencia entre todos los jugadores) y, si otro jugador tiene mejor conexión, opción de cederle la sala; los demás pasan solos a la sala nueva conservando su criatura
@@ -1285,7 +1322,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.61';
+const VERSION='1.62';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1403,11 +1440,201 @@ function normalizeSave(s){if(!s.records)s.records=[];if(!s.bestiario)s.bestiario
   for(const id in (s.evo||{}))s.bestiario[id]=Math.max(s.bestiario[id]??0,+s.evo[id]||0)}
  delete s.caramelos;delete s.evo;delete s.wallet;delete s.mejoras}
 let LS_OK=true,IDB_OK=true;
-function persist(){save._ts=Date.now();const s=JSON.stringify(save);
+/* ---------- Cuentas opcionales (Supabase Auth) ----------
+   El juego funciona SIEMPRE sin cuenta (modo invitado). Con cuenta, ajustes, bestiario, récords y estadísticas viven en Supabase
+   (tablas perfiles y records) y NO se tocan los datos locales del invitado: mientras hay sesión, persist() no escribe en el navegador.
+   Sin librerías: se llama a la API REST de Auth. En el navegador solo se guarda el refresh token (pkz_ses), nunca la contraseña. */
+const ACC={on:false,uid:null,email:'',nick:'',tok:null,ref:null,exp:0,busy:null,sub:false,again:false,t:null,mudo:false,warned:false,modo:'in',recTok:null,
+ last:{aj:'',be:'',st:''},KEY:'pkz_ses',PEND:'pkz_acc_pend'};
+const ACC_CFG=['sfx','musica','volMus','volSfx','tema','dif','verNombres','verPing','autoDisparo','redFx','sinFlash','dalt'];   /* ajustes de gusto personal que viajan con la cuenta (no los del dispositivo: brillo, botones táctiles, mapa) */
+function accAviso(txt,forzar){if(ACC.warned&&!forzar)return;ACC.warned=true;conAviso('avisoCta',txt,()=>{});setTimeout(()=>conAviso('avisoCta',''),12000)}
+function accEspera(fn){const t=setInterval(()=>{if(!G||G.estado==='fin'){clearInterval(t);fn()}},1500)}   /* no se cambia de datos en mitad de una partida */
+/* ---- API ---- */
+async function accAuth(path,body,method,tok){
+ const h={'Content-Type':'application/json',apikey:SB_KEY};if(tok)h.Authorization='Bearer '+tok;let r;
+ try{r=await fetch(SB_URL+'/auth/v1/'+path,{method:method||'POST',headers:h,body:body?JSON.stringify(body):undefined})}catch(e){throw{red:true}}
+ let j=null;try{j=await r.json()}catch(e){}
+ if(!r.ok)throw{auth:true,status:r.status,code:(j&&(j.error_code||j.code||j.error))||'',msg:(j&&(j.msg||j.message||j.error_description))||''};
+ return j||{}}
+function accSes(j){ACC.tok=j.access_token;ACC.ref=j.refresh_token||ACC.ref;ACC.exp=Date.now()+Math.max(30,(+j.expires_in||3600)-60)*1000;
+ if(j.user){ACC.uid=j.user.id;ACC.email=j.user.email||ACC.email}
+ try{localStorage.setItem(ACC.KEY,JSON.stringify({r:ACC.ref,uid:ACC.uid}))}catch(e){}}
+async function accToken(){
+ if(!ACC.ref)return null;if(ACC.tok&&Date.now()<ACC.exp)return ACC.tok;
+ if(!ACC.busy)ACC.busy=accAuth('token?grant_type=refresh_token',{refresh_token:ACC.ref}).then(j=>{accSes(j);return ACC.tok}).finally(()=>{ACC.busy=null});
+ return ACC.busy}
+async function accRest(path,o){o=o||{};const t=await accToken();if(!t)throw{red:true};
+ const h={apikey:SB_KEY,Authorization:'Bearer '+t};let b;if(o.body!==undefined){b=JSON.stringify(o.body);h['Content-Type']='application/json'}if(o.prefer)h.Prefer=o.prefer;
+ let r;try{r=await fetch(SB_URL+'/rest/v1/'+path,{method:o.method||'GET',headers:h,body:b,keepalive:!!b&&b.length<60000})}catch(e){throw{red:true}}
+ if(!r.ok){let j=null;try{j=await r.json()}catch(e){}throw{status:r.status,code:(j&&j.code)||'',msg:(j&&j.message)||''}}
+ if((o.method||'GET')==='GET'||r.status===200)try{return await r.json()}catch(e){}
+ return null}
+async function accRpcAnon(nombre,args){let r;try{r=await fetch(SB_URL+'/rest/v1/rpc/'+nombre,{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify(args)})}catch(e){throw{red:true}}
+ if(!r.ok)throw{status:r.status};return r.json()}
+function accErr(e,ctx){
+ if(!e)return'Error desconocido.';
+ if(e.red)return'Sin conexión con el servidor. Puedes seguir jugando como invitado.';
+ const c=String(e.code||'').toLowerCase(),m=String(e.msg||'').toLowerCase(),s=e.status|0;
+ if(c==='user_already_exists'||c==='email_exists'||/already (been )?registered|already exists/.test(m))return'Ya existe una cuenta con ese email. Prueba a iniciar sesión.';
+ if(c==='weak_password'||/password.*(short|least|weak|characters)/.test(m))return'La contraseña es demasiado corta o débil (mínimo 8 caracteres).';
+ if(c==='invalid_credentials'||/invalid login/.test(m))return'Email o contraseña incorrectos.';
+ if(c==='email_not_confirmed')return'Confirma tu email antes de entrar (revisa tu bandeja de entrada).';
+ if(c==='validation_failed'||c==='email_address_invalid'||/valid email|invalid.*email/.test(m))return'El email no es válido.';
+ if(c==='same_password')return'La nueva contraseña debe ser distinta de la anterior.';
+ if(c==='signup_disabled')return'El registro de cuentas está desactivado.';
+ if(c==='sin_perfil')return'Tu cuenta no tiene perfil (¿falta aplicar el SQL de cuentas en Supabase?).';
+ if(s===429||/rate.?limit/.test(c))return'Demasiados intentos. Espera un momento y vuelve a probar.';
+ if(ctx==='reg'&&(c==='unexpected_failure'||s===500||/database error/.test(m)))return'No se pudo crear la cuenta. Es probable que ese nick ya esté en uso: prueba con otro.';
+ return'No se pudo completar la operación (error '+(s||'?')+').'}
+function accFallo(e){
+ if(e&&((e.auth&&e.status>=400&&e.status<500&&e.status!==429)||e.status===401)){accSalirLocal('Tu sesión ha caducado. Has vuelto al modo invitado.',false,true);return}
+ accAviso('No se pudo sincronizar con tu cuenta. Sigues jugando y se reintentará.')}
+/* ---- datos de la cuenta <-> save ---- */
+function accLimpiaAj(a){const o={};if(!a||typeof a!=='object')return o;
+ for(const k of ACC_CFG){const v=a[k];if(v===undefined)continue;
+  if(k==='tema'){if(v==='oscuro'||v==='claro')o[k]=v}
+  else if(k==='dif'){if(typeof v==='string'&&DIFS[v])o[k]=v}
+  else if(k==='volMus'||k==='volSfx'){if(Number.isFinite(+v))o[k]=Math.max(0,Math.min(100,+v))}
+  else if(typeof v==='boolean')o[k]=v}
+ return o}
+function accLimpiaBe(b){const o={};if(!b||typeof b!=='object')return o;
+ for(const k in b){if(k==='__proto__'||k==='constructor'||k==='prototype'||k.length>40)continue;const v=+b[k];if(Number.isFinite(v))o[k]=Math.max(0,Math.min(9,v|0))}return o}
+const accAj=()=>{const o={};for(const k of ACC_CFG)if(save.cfg&&save.cfg[k]!==undefined)o[k]=save.cfg[k];return o};
+const accSt=()=>({record:Math.max(0,Math.min(999,save.record|0)),matados:Math.max(0,Math.min(1e7,save.matados|0))});
+function accAplica(p,rc){
+ for(const k of Object.keys(save))delete save[k];
+ const D={sfx:true,musica:true,tema:'oscuro',opac:70,dif:'normal',volMus:80,volSfx:80},st=accLimpiaSt(p.stats);
+ Object.assign(save,{record:st.record,matados:st.matados,cfg:Object.assign({},D,accLimpiaAj(p.ajustes)),bestiario:accLimpiaBe(p.bestiario),
+  records:rc.map(r=>({nick:p.nick,ronda:r.ronda|0,matados:r.matados|0,cr:String(r.criatura||''),f:new Date(r.fecha).toLocaleDateString('es-ES'),dif:r.dificultad}))});
+ save.cfg.nick=p.nick;try{normalizeSave(save)}catch(e){}
+ ACC.last={aj:JSON.stringify(accAj()),be:JSON.stringify(save.bestiario),st:JSON.stringify(accSt())};refreshMenu()}
+function accLimpiaSt(s){s=s&&typeof s==='object'?s:{};return{record:Math.max(0,Math.min(999,+s.record|0)),matados:Math.max(0,Math.min(1e7,+s.matados|0))}}
+function cargaInvitado(){   /* vuelve al save de invitado tal como estaba en el navegador */
+ for(const k of Object.keys(save))delete save[k];
+ const D={sfx:true,musica:true,tema:'oscuro',opac:70,dif:'normal',volMus:80,volSfx:80};
+ Object.assign(save,{record:0,matados:0,caramelos:{},evo:{},cfg:Object.assign({},D),mejoras:{},records:[]});
+ try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s){Object.assign(save,s);save.cfg=Object.assign({},D,s.cfg)}}catch(e){}
+ normalizeSave(save);restoreSave()}
+/* ---- sincronización (con retardo de 2 s) ---- */
+function accSync(ya){if(!ACC.on||ACC.mudo)return;clearTimeout(ACC.t);ACC.t=setTimeout(()=>accSubir(),ya?0:2000)}
+async function accSubir(){
+ if(!ACC.on)return;if(ACC.sub){ACC.again=true;return}ACC.sub=true;
+ try{
+  const aj=accAj(),ajS=JSON.stringify(aj),st=accSt(),stS=JSON.stringify(st),be=save.bestiario;let beS=JSON.stringify(be);
+  if(ajS===ACC.last.aj&&stS===ACC.last.st&&beS===ACC.last.be)return;
+  const body={updated_at:new Date().toISOString()};
+  if(beS!==ACC.last.be){   /* el bestiario solo sube: se combina con la nube por si otro dispositivo avanzó */
+   const r=await accRest('perfiles?select=bestiario&limit=1'),rem=accLimpiaBe(r&&r[0]&&r[0].bestiario);
+   for(const k in rem)if((+be[k]||0)<rem[k]||!(k in be))be[k]=rem[k];
+   beS=JSON.stringify(be);body.bestiario=be}
+  if(ajS!==ACC.last.aj)body.ajustes=aj;
+  if(stS!==ACC.last.st)body.stats=st;
+  await accRest('perfiles?user_id=eq.'+ACC.uid,{method:'PATCH',body,prefer:'return=minimal'});
+  ACC.last={aj:ajS,be:beS,st:stS};accReintenta()
+ }catch(e){accFallo(e);if(ACC.on&&(e.red||e.status>=500||e.status===429)){clearTimeout(ACC.t);ACC.t=setTimeout(()=>accSubir(),20000)}}
+ finally{ACC.sub=false;if(ACC.again){ACC.again=false;accSync()}}}
+/* ---- récords de la cuenta (historial personal) ---- */
+const accPend=()=>{try{return JSON.parse(localStorage.getItem(ACC.PEND))||[]}catch(e){return[]}};
+const accGuardaPend=a=>{try{if(a.length)localStorage.setItem(ACC.PEND,JSON.stringify(a.slice(-20)));else localStorage.removeItem(ACC.PEND)}catch(e){}};
+async function accEnvia(r){
+ try{await accRest('records?on_conflict=user_id,partida_uid',{method:'POST',body:r,prefer:'resolution=ignore-duplicates,return=minimal'});return true}
+ catch(e){if(e.red||e.status>=500||e.status===429){const a=accPend();if(!a.some(x=>x.partida_uid===r.partida_uid)){a.push(r);accGuardaPend(a)}}else if(e.status===401)accFallo(e);return false}}
+async function accRecord(){
+ if(!ACC.on||G.cargada||G.round<1)return;let o;try{o=rkFila()}catch(e){return}
+ accEnvia({partida_uid:String(o.partida_uid).slice(0,64),ronda:o.ronda,matados:o.zombies_matados,criatura:String(o.criatura||'').slice(0,40),mapa:String(o.mapa||'').slice(0,60),dificultad:o.dificultad,modo:o.modo,puntuacion:o.puntuacion})}
+async function accReintenta(){if(!ACC.on)return;const a=accPend();if(!a.length)return;const rest=[];for(const r of a){if(!(await accEnvia(r)))rest.push(r);if(!ACC.on)return}accGuardaPend(rest.filter((x,i,arr)=>arr.findIndex(y=>y.partida_uid===x.partida_uid)===i))}
+/* ---- entrar / salir ---- */
+async function accEntra(){
+ const [pf,rc]=await Promise.all([accRest('perfiles?select=nick,ajustes,bestiario,stats&limit=1'),accRest('records?select=criatura,ronda,matados,dificultad,fecha&order=ronda.desc,matados.desc&limit=8')]);
+ const p=pf&&pf[0];if(!p)throw{status:404,code:'sin_perfil'};
+ const aplica=()=>{ACC.on=true;ACC.mudo=false;ACC.nick=p.nick;accAplica(p,rc||[]);accPintaUI();accReintenta()};
+ if(G&&G.estado!=='fin')accEspera(aplica);else aplica()}
+function accSalirLocal(aviso,force,forzarAviso){
+ if(!force&&G&&G.estado!=='fin'){ACC.mudo=true;clearTimeout(ACC.t);accEspera(()=>accSalirLocal(aviso,true,forzarAviso));return}
+ clearTimeout(ACC.t);ACC.on=false;ACC.mudo=false;ACC.uid=ACC.tok=ACC.ref=null;ACC.email=ACC.nick='';ACC.exp=0;ACC.last={aj:'',be:'',st:''};
+ try{localStorage.removeItem(ACC.KEY);localStorage.removeItem(ACC.PEND)}catch(e){}
+ cargaInvitado();accPintaUI();refreshMenu();if(aviso)accAviso(aviso,forzarAviso)}
+async function accSalir(){
+ accOcupado(true);accMsg('Cerrando sesión…',true);clearTimeout(ACC.t);
+ try{await Promise.race([accSubir(),new Promise(r=>setTimeout(r,5000))])}catch(e){}   /* se guarda todo antes de salir (si hay red) */
+ try{if(ACC.tok)await accAuth('logout?scope=local',null,'POST',ACC.tok)}catch(e){}
+ accOcupado(false);accSalirLocal();accMsg('');show('menu')}
+async function accBorrar(){
+ if(!confirm('¿Eliminar tu cuenta?\n\nSe borrarán tu perfil, tus ajustes, tu bestiario y tu historial. Tus récords del ranking global se conservan, pero ya sin ligar a tu cuenta. No se puede deshacer.'))return;
+ accOcupado(true);accMsg('Eliminando cuenta…',true);
+ try{await accRest('rpc/eliminar_mi_cuenta',{method:'POST',body:{}});accOcupado(false);accSalirLocal('Tu cuenta se ha eliminado. Estás en modo invitado.',false,true);accMsg('');show('menu')}
+ catch(e){accOcupado(false);accMsg(accErr(e))}}
+/* ---- pantalla de cuenta ---- */
+const accVerde='#9f6',accRojo='#f88';
+function accMsg(t,ok){const m=$('cuMsg');m.textContent=t||'';m.style.color=ok?accVerde:accRojo}
+function accOcupado(v){['cuGo','cuOlv','cuTabE','cuTabR','cuSalir','cuBorrar','cuRecGo'].forEach(i=>{const b=$(i);if(b)b.disabled=v})}
+function accPintaBtn(t){const b=$('mCuenta');if(!b)return;b.textContent=t||(ACC.on?'👤 '+ACC.nick:'👤 Iniciar sesión');b.title=ACC.on?'Tu cuenta':'Iniciar sesión o crear cuenta (opcional)'}
+function accPintaUI(){
+ accPintaBtn();const sn=$('sNick'),on=$('oNick');
+ if(ACC.on){sn.value=ACC.nick;on.value=ACC.nick;sn.readOnly=on.readOnly=true}
+ else{sn.readOnly=on.readOnly=false;sn.value=on.value=save.cfg&&save.cfg.nick||''}}
+function accModo(m){ACC.modo=m;$('cuTabE').classList.toggle('main',m==='in');$('cuTabR').classList.toggle('main',m==='reg');
+ $('cuNickR').style.display=m==='reg'?'':'none';$('cuGo').textContent=m==='reg'?'Crear cuenta':'Entrar';$('cuOlv').style.display=m==='in'?'':'none';
+ $('cuPass').autocomplete=m==='reg'?'new-password':'current-password';accMsg('')}
+function accAbre(){
+ const on=ACC.on;$('cuIn').style.display=on?'none':'';$('cuOut').style.display=on?'':'none';$('cuRec').style.display='none';
+ $('cuT').textContent=on?'Tu cuenta':'Cuenta';if(on){$('cuNick').textContent=ACC.nick;$('cuMail').textContent=ACC.email||''}
+ $('cuVolver').textContent=on?'Volver':'Jugar como invitado';accModo('in');accMsg('');show('cuenta')}
+async function accGo(){
+ const email=$('cuMailI').value.trim(),pw=$('cuPass').value;
+ if(!/^\S+@\S+\.\S+$/.test(email))return accMsg('Escribe un email válido.');
+ if(ACC.modo==='reg'){
+  const raw=$('cuNickR').value.trim(),nick=netClean(raw).trim();
+  if(nick.length<3||nick.length>12||nick!==raw)return accMsg('El nick debe tener entre 3 y 12 caracteres y no puede incluir < > & ".');
+  if(pw.length<8)return accMsg('La contraseña es demasiado corta (mínimo 8 caracteres).');
+  accOcupado(true);accMsg('Creando cuenta…',true);
+  try{
+   try{if(await accRpcAnon('nick_disponible',{p_nick:nick})===false){accMsg('Ese nick ya está en uso. Prueba con otro.');return}}
+   catch(e){if(e.red)throw e}   /* si la función no existe en el servidor, se sigue: el trigger comprueba igualmente el nick */
+   const j=await accAuth('signup',{email,password:pw,data:{nick}});
+   if(!j.access_token){accMsg('Cuenta creada. Revisa tu email para confirmarla y luego inicia sesión.',true);accModo('in');return}
+   accSes(j);await accEntra();accMsg('');show('menu')
+  }catch(e){if(ACC.ref&&!ACC.on)accReset();accMsg(accErr(e,'reg'))}
+  finally{accOcupado(false)}
+ }else{
+  if(!pw)return accMsg('Escribe tu contraseña.');
+  accOcupado(true);accMsg('Entrando…',true);
+  try{const j=await accAuth('token?grant_type=password',{email,password:pw});accSes(j);await accEntra();$('cuPass').value='';accMsg('');show('menu')}
+  catch(e){if(ACC.ref&&!ACC.on)accReset();accMsg(accErr(e))}
+  finally{accOcupado(false)}}}
+function accReset(){ACC.ref=ACC.tok=ACC.uid=null;ACC.email='';ACC.exp=0;try{localStorage.removeItem(ACC.KEY)}catch(e){}}
+async function accOlvide(){
+ const email=$('cuMailI').value.trim();if(!/^\S+@\S+\.\S+$/.test(email))return accMsg('Escribe tu email arriba y vuelve a pulsar.');
+ accOcupado(true);accMsg('Enviando…',true);
+ try{await accAuth('recover',Object.assign({email},/^https?:/.test(location.protocol)?{redirect_to:location.origin+location.pathname}:{}));accMsg('Si ese email tiene cuenta, recibirás un enlace para cambiar la contraseña.',true)}
+ catch(e){accMsg(accErr(e))}finally{accOcupado(false)}}
+async function accNuevaPass(){
+ const pw=$('cuPass2').value;if(pw.length<8)return accMsg('La contraseña es demasiado corta (mínimo 8 caracteres).');
+ accOcupado(true);accMsg('Guardando…',true);
+ try{await accAuth('user',{password:pw},'PUT',ACC.recTok);ACC.recTok=null;$('cuPass2').value='';$('cuRec').style.display='none';$('cuIn').style.display='';accModo('in');accMsg('Contraseña cambiada. Ya puedes entrar.',true)}
+ catch(e){accMsg(accErr(e))}finally{accOcupado(false)}}
+/* ---- arranque: si hay sesión guardada se carga el perfil; si algo falla, se sigue como invitado y se avisa una vez ---- */
+async function accInit(){
+ $('mCuenta').onclick=accAbre;$('cuVolver').onclick=()=>show('menu');$('cuTabE').onclick=()=>accModo('in');$('cuTabR').onclick=()=>accModo('reg');
+ $('cuGo').onclick=accGo;$('cuOlv').onclick=accOlvide;$('cuSalir').onclick=accSalir;$('cuBorrar').onclick=accBorrar;$('cuRecGo').onclick=accNuevaPass;
+ ['cuMailI','cuPass','cuNickR'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')accGo()}));$('cuPass2').addEventListener('keydown',e=>{if(e.key==='Enter')accNuevaPass()});
+ accPintaBtn();
+ const h=location.hash||'';   /* enlace de "olvidé mi contraseña" */
+ if(/type=recovery/.test(h)){const m=h.match(/access_token=([^&]+)/);if(m){ACC.recTok=decodeURIComponent(m[1]);try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+  setTimeout(()=>{accAbre();$('cuIn').style.display='none';$('cuRec').style.display='';$('cuT').textContent='Nueva contraseña'},300)}}
+ let ses=null;try{ses=JSON.parse(localStorage.getItem(ACC.KEY))}catch(e){}
+ if(!ses||!ses.r)return;
+ ACC.ref=ses.r;ACC.uid=ses.uid||null;accPintaBtn('👤 …');
+ try{await accToken();await accEntra()}
+ catch(e){
+  if(e&&e.auth&&e.status>=400&&e.status<500&&e.status!==429){accReset();accPintaBtn();accAviso('Tu sesión ha caducado. Juegas como invitado: puedes volver a iniciar sesión desde el menú.',true)}
+  else{ACC.ref=ACC.tok=null;accPintaBtn();accAviso(e&&e.status===404?accErr(e):'No se pudo conectar con tu cuenta. Juegas como invitado y se reintentará la próxima vez.')}}}
+
+function persist(){save._ts=Date.now();if(ACC.on){accSync(document.hidden);return}const s=JSON.stringify(save);
  try{localStorage.setItem(SAVE_KEY,s);LS_OK=true}catch(e){LS_OK=false}
  try{idbPut('save',s).then(()=>{IDB_OK=true},()=>{IDB_OK=false})}catch(e){IDB_OK=false}}
 /* Copia de seguridad en IndexedDB: si localStorage está vacío o bloqueado, se recupera el progreso de aquí al arrancar */
-async function restoreSave(){try{const all=await idbAll(),raw=all.save;if(!raw)return;const s=JSON.parse(raw);
+async function restoreSave(){if(ACC.on)return;try{const all=await idbAll(),raw=all.save;if(!raw)return;const s=JSON.parse(raw);
  if(!s||(s._ts||0)<=(save._ts||0))return;
  Object.assign(save,s);save.cfg=Object.assign({sfx:true,musica:true,tema:'oscuro',opac:70,dif:'normal',volMus:80,volSfx:80},s.cfg);
  normalizeSave(save);
@@ -3497,7 +3724,7 @@ function modal(t,ops,noCancel,onCancel){if(G.act){if(NET.modo==='host'&&G.player
  if(!noCancel){const c=document.createElement('button');c.className='btn sm';c.textContent=onCancel?'No, gracias':'Cancelar';c.onclick=()=>{close();if(onCancel)onCancel()};b.appendChild(c)}function close(){if(NET.modo==='local')G.pausa=false;G.modal=false;show(null)}show('modal')}
 function togglePause(){if(!G||G.estado==='fin'||G.modal)return;if(NET.modo!=='local'&&G.players.length>1){NET.ovl=!NET.ovl;if(NET.ovl){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(NET.ovl?'pausa':null);return}G.pausa=!G.pausa;if(G.pausa){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(G.pausa?'pausa':null)}
 function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(NET.modo==='host')netHostFin();save.record=Math.max(save.record,G.round);save.matados=(save.matados||0)+KT;
- save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();enviarRecord();
+ save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();enviarRecord();accRecord();
  $('finTxt').style.cssText='display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:left';
  $('finTxt').innerHTML='<div class="finSp"></div><div>Jugador: <b>'+netClean((G.players[0]&&G.players[0].nombre)||save.cfg.nick||'')+'</b><br>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
 const cap=s=>s==='neutro'?'Normal':s.charAt(0).toUpperCase()+s.slice(1);
@@ -3967,12 +4194,20 @@ function rkFilas(){const o=rkFila();if(o.modo!=='coop')return[o];savePl();const 
   r.companero=g.players.filter(q=>q!==p).map(nm).join(', ').slice(0,60)||null;rows.push(r)});return rows}
 function rkPend(){try{return JSON.parse(localStorage.getItem(RK.pend))||[]}catch(e){return[]}}
 function rkGuardaPend(a){try{localStorage.setItem(RK.pend,JSON.stringify(a.slice(-20)))}catch(e){}}
-async function rkPost(o){const r=await fetch(SB_URL+'/rest/v1/ranking',{method:'POST',headers:Object.assign({'Content-Type':'application/json',Prefer:'return=minimal'},rkH),body:JSON.stringify(o)});return r.status}
+async function rkPost(o){
+ const h=Object.assign({'Content-Type':'application/json',Prefer:'return=minimal'},rkH),go=(hh,b)=>fetch(SB_URL+'/rest/v1/ranking',{method:'POST',headers:hh,body:JSON.stringify(b)}),inv=Object.assign({},o,{user_id:undefined});
+ if(!o.user_id)return(await go(h,o)).status;   /* invitado: exactamente como antes */
+ let t=null;if(ACC.on&&ACC.uid===o.user_id){try{t=await accToken()}catch(e){}}
+ if(!t)return(await go(h,inv)).status;   /* sin sesión válida: se envía como invitado */
+ const r=await go(Object.assign({},h,{Authorization:'Bearer '+t}),o);
+ if(r.status===401||r.status===403)return(await go(h,inv)).status;   /* la cuenta falla: el récord no se pierde */
+ return r.status}
 async function rkReintenta(){const a=rkPend();if(!a.length)return;const rest=[];for(const o of a){try{const c=await rkPost(o);if(!rkOk(c)&&!rkDrop(c))rest.push(o)}catch(e){rest.push(o)}}rkGuardaPend(rest)}
 async function enviarRecord(){const st=$('rkSt');if(!st)return;st.textContent='';
  if(NET.modo==='guest'||G.round<1)return;
  if(G.cargada){st.textContent='Las partidas cargadas desde archivo no puntúan en el ranking global';return}
  let rows;try{rows=rkFilas()}catch(e){return}const o=rows[0],n=rows.length;
+ if(ACC.on&&rows[0]){rows[0].user_id=ACC.uid;rows[0].nick=ACC.nick}   /* solo la fila del jugador local lleva user_id */
  st.textContent='Enviando '+(n>1?n+' récords':'récord')+'… ('+o.puntuacion.toLocaleString('es-ES')+' puntos)';
  let ok=0,rech=0,fallo=0,cod=0;
  for(const r of rows){try{const c=await rkPost(r);if(rkOk(c))ok++;else if(rkDrop(c)){rech++;cod=c}else throw 0}
@@ -4529,7 +4764,7 @@ window.PZNET=NET;
  throwGrenade=function(){if(gj()){NET.evOut.push('g');return}return _tg()};
  cycleWeapon=function(d){if(gj()){NET.evOut.push('w'+d);return}return _cw(d)};
  setCur=function(i){if(gj()){NET.evOut.push('s'+i);return}return _sc(i)}}
-refreshMenu();requestAnimationFrame(loop);initData();restoreSave();
+refreshMenu();requestAnimationFrame(loop);initData();restoreSave();accInit();
 addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>{if(document.hidden)persist()});
 setTimeout(()=>{persist();setTimeout(()=>{if(!LS_OK&&!IDB_OK){const m=$('menu');if(m&&!$('mWarn')){const w=document.createElement('div');w.id='mWarn';w.style.cssText='color:#f88;font-size:12px;max-width:420px;margin-top:6px';w.textContent='⚠ Tu navegador está bloqueando el guardado (¿modo privado o vista previa dentro de otra página?). El progreso se perderá al cerrar. Abre el archivo directamente en el navegador.';$('mSub').after(w)}}},800)},400);
 </script>
