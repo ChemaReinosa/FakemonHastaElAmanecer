@@ -4245,7 +4245,7 @@ function rkPersonal(){const L=$('rkLista');let h='Récord: <b>ronda '+(save.reco
  h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+rkEsc(netClean(r.nick))+'</b> — ':'')+'Ronda '+(+r.ronda)+' — '+(+r.matados)+' bajas — '+rkEsc(r.cr)+' ('+rkEsc(r.f)+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';L.innerHTML=h}
 const RK_PAG=15;   /* filas por página del ranking global */
 async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pag:RK.pag|0;const P=$('rkPag');P.style.display='none';L.textContent='Cargando…';
- let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at,user_id&order=puntuacion.desc,ronda.desc,id.asc&limit='+(RK_PAG+1)+'&offset='+RK.pag*RK_PAG;
+ let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at,registrado&order=puntuacion.desc,ronda.desc,id.asc&limit='+(RK_PAG+1)+'&offset='+RK.pag*RK_PAG;
  for(const[k,id]of[['mapa','rkMapa'],['dificultad','rkDif'],['modo','rkModo']]){const v=$(id).value;if(v)q+='&'+k+'=eq.'+encodeURIComponent(v)}
  try{const r=await fetch(SB_URL+'/rest/v1/ranking'+q,{headers:rkH});if(!r.ok)throw 0;let d=await r.json();
   if(!d.length){L.textContent=RK.pag?'No hay más récords.':'Aún no hay récords con estos filtros.';if(RK.pag){P.style.display='flex';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=false;$('rkNext').disabled=true}return}
@@ -4253,7 +4253,7 @@ async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pa
   const T=s=>{s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},
   F=v=>{const t=new Date(v);if(!v||isNaN(t))return'—';const z=n=>String(n).padStart(2,'0');return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+String(t.getFullYear()).slice(2)+'<br>'+z(t.getHours())+':'+z(t.getMinutes())};
   L.innerHTML='<table><tr><th>#</th><th>Jugador</th><th>Mapa</th><th class="n">Puntos</th><th class="n">Ronda</th><th class="n">Bajas</th><th class="n">Tiempo</th><th>Criatura</th><th>Fecha</th></tr>'
-   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b>'+(x.user_id?'':' (Inv.)')+' ('+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+')</td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
+   +d.map((x,i)=>'<tr><td>'+(RK.pag*RK_PAG+i+1)+'</td><td class="t"><b>'+rkEsc(x.nick)+'</b>'+(x.registrado?'':' (Inv.)')+' ('+(x.modo==='coop'?1+(x.companero?String(x.companero).split(', ').length:1):1)+')</td><td class="t">'+rkEsc((MAPAS[x.mapa]&&MAPAS[x.mapa].nombre)||x.mapa||'—')+'</td><td class="n">'+(+x.puntuacion).toLocaleString('es-ES')+'</td><td class="n">'+(+x.ronda)+'</td><td class="n">'+(+x.zombies_matados)+'</td><td class="n">'+T(x.duracion_seg)+'</td><td class="t">'+rkEsc(x.criatura)+'</td><td class="f">'+F(x.created_at)+'</td></tr>').join('')+'</table>';
   P.style.display=(RK.pag||hay)?'flex':'none';$('rkPagN').textContent='Página '+(RK.pag+1);$('rkPrev').disabled=RK.pag===0;$('rkNext').disabled=!hay}
  catch(e){L.textContent='No se pudo cargar el ranking. Comprueba tu conexión.'}}
 $('mRank').onclick=()=>{audioInit();rkAbre('menu')};
