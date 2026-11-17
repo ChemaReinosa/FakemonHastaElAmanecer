@@ -380,7 +380,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <div style="font:bold 20px 'Courier New',monospace" id="cuNick"></div>
   <div style="opacity:.7;margin:4px 0 12px" id="cuMail"></div>
   <button class="btn" id="cuSalir">Cerrar sesión</button>
-  <div style="margin-top:10px"><button class="btn sm" id="cuBorrar">Eliminar cuenta</button></div>
+  <div style="margin-top:90px"><button class="btn sm" id="cuBorrar" style="background:#b3201a;border-color:#7a100c;color:#fff">Eliminar cuenta</button></div>
  </div>
  <div id="cuIn">
   <div class="cuTabs"><button class="btn sm main" id="cuTabE">Entrar</button><button class="btn sm" id="cuTabR">Crear cuenta</button></div>
@@ -1290,6 +1290,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.64   Mapas bloqueados: los 2 primeros de Mapas/index.json son libres, con cuenta todos menos el último, y el último pide cuenta + ronda 10; el botón Eliminar cuenta, más separado y en rojo
    1.63   Ranking: los invitados se marcan con (Inv.); solo las 6 primeras criaturas son libres, el resto requiere cuenta y haber llegado a la ronda 10; el Bestiario es solo para usuarios con cuenta; arreglado el botón Jugar que a veces necesitaba dos pulsaciones (no esperaba a que terminara la carga inicial)
    1.62   Cuentas opcionales con Supabase (email + contraseña): ajustes, bestiario, récords y estadísticas en la nube; el modo invitado no cambia y no hay migración de datos locales; el ranking global enlaza el récord con la cuenta (user_id)
    1.61   Evento de apagón (al acabar una ronda, con poca probabilidad y solo si la energía ya estaba activada: oscuridad casi total, máquinas apagadas, aviso en el HUD; se arregla pulsando de nuevo el interruptor) y apartado Accesibilidad en Ajustes (tamaño de letra del HUD, reducir partículas/destellos, modo sin flash, modo daltónico)
@@ -1323,7 +1324,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.63';
+const VERSION='1.64';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1776,15 +1777,19 @@ function addMapa(file,txt){const id=file.replace(/\.json$/i,'');try{const m=JSON
 function elegirMapa(id){if(G||!MAPAS[id])return;const d=MAPAS[id].data,esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));try{applyMap(d)}finally{MAPA_ID=id}save.cfg.mapa=id;persist();$('mSub').textContent='Supervivencia por oleadas'}
 const MAP_IMGS={};
 
-function buildMaps(){const box=$('mapCards');box.innerHTML='';const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+/* Mapas: los 2 primeros (orden de Mapas/index.json) son libres; con cuenta, todos menos el último; el último pide cuenta + ronda 10 */
+function mapaBloq(id){const ids=Object.keys(MAPAS),i=ids.indexOf(id),n=ids.length;if(i<2||n<=2)return false;if(!ACC.on)return true;return i===n-1&&(save.record|0)<CREA_RONDA}
+function mapaMotivo(id){return ACC.on?'🔒 Llega a la ronda '+CREA_RONDA+' en algún mapa':'🔒 Inicia sesión'+(Object.keys(MAPAS).indexOf(id)===Object.keys(MAPAS).length-1?' y llega a la ronda '+CREA_RONDA:'')}
+function mapaValido(){if(MAPA_ID&&mapaBloq(MAPA_ID)&&!G){const f=Object.keys(MAPAS).find(i=>!mapaBloq(i));if(f)elegirMapa(f)}}
+function buildMaps(){const box=$('mapCards');box.innerHTML='';mapaValido();const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
  for(const id of Object.keys(MAPAS)){const M=MAPAS[id],d=M.data,nb=(d.zonas||[]).reduce((n,z)=>n+(z.barricadas||[]).length,0);
-  const c=document.createElement('div');c.className='mapCard'+(MAPA_ID===id?' sel':'');
-  c.insertAdjacentHTML('beforeend','<div class="mapInfo"><b>'+esc(M.nombre)+'</b><p>'+esc(d.subtitulo||'Supervivencia por oleadas')+'</p></div>');
+  const bq=mapaBloq(id),c=document.createElement('div');c.className='mapCard'+(MAPA_ID===id?' sel':'')+(bq?' lock':'');
+  c.insertAdjacentHTML('beforeend','<div class="mapInfo"><b>'+esc(M.nombre)+'</b><p>'+esc(d.subtitulo||'Supervivencia por oleadas')+'</p>'+(bq?'<p style="color:#fc6">'+mapaMotivo(id)+'</p>':'')+'</div>');if(bq)c.style.opacity='.55';
   /* imagen opcional: Mapas/<nombre del mapa>.png|jpg|jpeg|webp (o archivo elegido con ese nombre); si no existe, solo título y descripción */
   {const cand=[];for(const n of[id,M.nombre])if(n&&!cand.includes(n))cand.push(n);const urls=[];for(const n of cand){if(MAP_IMGS[n])urls.push(MAP_IMGS[n]);if(MAP_IMGS[String(n).toLowerCase()])urls.push(MAP_IMGS[String(n).toLowerCase()])}
    for(const n of cand)for(const ext of['png','jpg','jpeg','webp'])urls.push('Mapas/'+encodeURIComponent(n)+'.'+ext);
    const tryImg=i=>{if(i>=urls.length)return;const im=new Image();im.className='mapImg';im.alt='';im.onload=()=>c.insertBefore(im,c.firstChild);im.onerror=()=>tryImg(i+1);im.src=urls[i]};tryImg(0)}
-  c.onclick=()=>{audioInit();elegirMapa(id);buildSel();refreshDif();show('sel')};box.appendChild(c)}
+  c.onclick=()=>{audioInit();if(bq){accAviso(mapaMotivo(id).slice(2)+' para desbloquear este mapa.',true);return}elegirMapa(id);buildSel();refreshDif();show('sel')};box.appendChild(c)}
  const nota=document.createElement('div');nota.style.cssText='width:100%;grid-column:1/-1;font-size:12px;opacity:.85;text-align:center';
  nota.innerHTML=(MAPA_ERR.length?'<div style="color:#f88;margin-bottom:6px">⚠ Mapas que no se han podido cargar:<br>'+MAPA_ERR.map(esc).join('<br>')+'</div>':'')+'<button class="btn sm" id="mapRecarga">↻ Buscar mapas de nuevo</button>';
  box.appendChild(nota);$('mapRecarga').onclick=async e=>{e.stopPropagation();const b=e.currentTarget;b.disabled=true;b.textContent='Buscando…';await mapasDeCarpeta();buildMaps()}}
@@ -3772,7 +3777,7 @@ $('oCrear').onclick=()=>{if(!netPideNick())return;NET.creando=true;buildMaps();s
 $('oUnir').onclick=()=>{if(!netPideNick())return;const c=$('oCod').value.trim().toUpperCase();if(c.length>=3)netUnirse(c)};$('oBack').onclick=()=>show('menu');
 $('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('salaCambia').onclick=()=>netCambiar();$('salaProbe').onclick=()=>netSondeo();$('salaCede').onclick=()=>netCede();$('netMsgOk').onclick=()=>{G=null;show('menu')};
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
-$('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;selValida();if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
+$('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;selValida();mapaValido();if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
 $('mBest').onclick=()=>{if(!ACC.on){accAviso('El Bestiario solo está disponible para usuarios con cuenta. Inicia sesión para usarlo.',true);accAbre();return}buildBest();show('bestiario')};$('bBack').onclick=()=>show('menu');
 function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
  CRIATURAS.forEach(c=>{const mx=save.bestiario[c.id],ok=mx!==undefined;if(ok)got++;const et=ok?Math.min(mx,c.stages.length-1):0,st=c.stages[et];
@@ -3813,6 +3818,7 @@ function guardarPartida(){if(!G||G.estado==='fin')return;
 function cargarPartida(d){
  if(!d||(d.juego!=='FakemonHastaElAmanecer'&&d.juego!=='PokeZombies')||!Array.isArray(d.slots)){alert('Este archivo no es una partida válida de Fakemon Hasta el Amanecer.');return}
  const cr=CRIATURAS.find(c=>c.id===d.cr);if(!cr){alert('La criatura de esta partida ('+d.cr+') no está en los datos cargados.');return}
+ if(d.mapa&&MAPAS[d.mapa]&&mapaBloq(d.mapa)){alert('El mapa de esta partida está bloqueado: requiere cuenta y/o haber llegado a la ronda '+CREA_RONDA+'.');return}
  if(d.mapa&&MAPAS[d.mapa]&&MAPA_ID!==d.mapa){G=null;elegirMapa(d.mapa)}
  if(DIFS[d.dif]){save.cfg.dif=d.dif;persist()}
  if(creaBloq(cr)){alert('Esta criatura está bloqueada: requiere cuenta y haber llegado a la ronda '+CREA_RONDA+'.');return}
