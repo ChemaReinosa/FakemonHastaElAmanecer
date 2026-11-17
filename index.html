@@ -1290,6 +1290,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.65   Mis récords: ahora se muestra el mapa de cada récord (los récords antiguos de invitado, guardados sin mapa, no lo muestran)
    1.64   Mapas bloqueados: los 2 primeros de Mapas/index.json son libres, con cuenta todos menos el último, y el último pide cuenta + ronda 10; el botón Eliminar cuenta, más separado y en rojo
    1.63   Ranking: los invitados se marcan con (Inv.); solo las 6 primeras criaturas son libres, el resto requiere cuenta y haber llegado a la ronda 10; el Bestiario es solo para usuarios con cuenta; arreglado el botón Jugar que a veces necesitaba dos pulsaciones (no esperaba a que terminara la carga inicial)
    1.62   Cuentas opcionales con Supabase (email + contraseña): ajustes, bestiario, récords y estadísticas en la nube; el modo invitado no cambia y no hay migración de datos locales; el ranking global enlaza el récord con la cuenta (user_id)
@@ -1324,7 +1325,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.64';
+const VERSION='1.65';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1507,7 +1508,7 @@ function accAplica(p,rc){
  for(const k of Object.keys(save))delete save[k];
  const D={sfx:true,musica:true,tema:'oscuro',opac:70,dif:'normal',volMus:80,volSfx:80},st=accLimpiaSt(p.stats);
  Object.assign(save,{record:st.record,matados:st.matados,cfg:Object.assign({},D,accLimpiaAj(p.ajustes)),bestiario:accLimpiaBe(p.bestiario),
-  records:rc.map(r=>({nick:p.nick,ronda:r.ronda|0,matados:r.matados|0,cr:String(r.criatura||''),f:new Date(r.fecha).toLocaleDateString('es-ES'),dif:r.dificultad}))});
+  records:rc.map(r=>({nick:p.nick,ronda:r.ronda|0,matados:r.matados|0,cr:String(r.criatura||''),f:new Date(r.fecha).toLocaleDateString('es-ES'),dif:r.dificultad,mapa:r.mapa||''}))});
  save.cfg.nick=p.nick;try{normalizeSave(save)}catch(e){}
  ACC.last={aj:JSON.stringify(accAj()),be:JSON.stringify(save.bestiario),st:JSON.stringify(accSt())};refreshMenu()}
 function accLimpiaSt(s){s=s&&typeof s==='object'?s:{};return{record:Math.max(0,Math.min(999,+s.record|0)),matados:Math.max(0,Math.min(1e7,+s.matados|0))}}
@@ -1547,7 +1548,7 @@ async function accRecord(){
 async function accReintenta(){if(!ACC.on)return;const a=accPend();if(!a.length)return;const rest=[];for(const r of a){if(!(await accEnvia(r)))rest.push(r);if(!ACC.on)return}accGuardaPend(rest.filter((x,i,arr)=>arr.findIndex(y=>y.partida_uid===x.partida_uid)===i))}
 /* ---- entrar / salir ---- */
 async function accEntra(){
- const [pf,rc]=await Promise.all([accRest('perfiles?select=nick,ajustes,bestiario,stats&limit=1'),accRest('records?select=criatura,ronda,matados,dificultad,fecha&order=ronda.desc,matados.desc&limit=8')]);
+ const [pf,rc]=await Promise.all([accRest('perfiles?select=nick,ajustes,bestiario,stats&limit=1'),accRest('records?select=criatura,ronda,matados,dificultad,fecha,mapa&order=ronda.desc,matados.desc&limit=8')]);
  const p=pf&&pf[0];if(!p)throw{status:404,code:'sin_perfil'};
  const aplica=()=>{ACC.on=true;ACC.mudo=false;ACC.nick=p.nick;accAplica(p,rc||[]);accPintaUI();accReintenta()};
  if(G&&G.estado!=='fin')accEspera(aplica);else aplica()}
@@ -3730,7 +3731,7 @@ function modal(t,ops,noCancel,onCancel){if(G.act){if(NET.modo==='host'&&G.player
  if(!noCancel){const c=document.createElement('button');c.className='btn sm';c.textContent=onCancel?'No, gracias':'Cancelar';c.onclick=()=>{close();if(onCancel)onCancel()};b.appendChild(c)}function close(){if(NET.modo==='local')G.pausa=false;G.modal=false;show(null)}show('modal')}
 function togglePause(){if(!G||G.estado==='fin'||G.modal)return;if(NET.modo!=='local'&&G.players.length>1){NET.ovl=!NET.ovl;if(NET.ovl){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(NET.ovl?'pausa':null);return}G.pausa=!G.pausa;if(G.pausa){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(G.pausa?'pausa':null)}
 function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(NET.modo==='host')netHostFin();save.record=Math.max(save.record,G.round);save.matados=(save.matados||0)+KT;
- save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey()});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();enviarRecord();accRecord();
+ save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey(),mapa:MAPA_ID||''});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();enviarRecord();accRecord();
  $('finTxt').style.cssText='display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:left';
  $('finTxt').innerHTML='<div class="finSp"></div><div>Jugador: <b>'+netClean((G.players[0]&&G.players[0].nombre)||save.cfg.nick||'')+'</b><br>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
 const cap=s=>s==='neutro'?'Normal':s.charAt(0).toUpperCase()+s.slice(1);
@@ -4242,7 +4243,7 @@ function rkAbre(from){RK.from=from;show('ranking');
  rkVista('global')}
 function rkVista(v){RK.vista=v;const g=v==='global';$('rkFiltros').style.display=g?'':'none';$('rkRec').style.display=g?'':'none';$('rkTit').textContent=g?'🌍 Ranking global':'🏆 Mis récords';$('rkTG').classList.toggle('main',g);$('rkTP').classList.toggle('main',!g);if(g)rkCarga(0);else rkPersonal()}
 function rkPersonal(){const L=$('rkLista');let h='Récord: <b>ronda '+(save.record|0)+'</b> · Bajas totales: '+(save.matados||0)+'<br><br>';
- h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+rkEsc(netClean(r.nick))+'</b> — ':'')+'Ronda '+(+r.ronda)+' — '+(+r.matados)+' bajas — '+rkEsc(r.cr)+' ('+rkEsc(r.f)+')'+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';L.innerHTML=h}
+ h+=save.records.length?save.records.map((r,i)=>(i+1)+'. '+(r.nick?'<b>'+rkEsc(netClean(r.nick))+'</b> — ':'')+'Ronda '+(+r.ronda)+' — '+(+r.matados)+' bajas — '+rkEsc(r.cr)+' ('+rkEsc(r.f)+')'+(r.mapa?' · '+rkEsc((MAPAS[r.mapa]&&MAPAS[r.mapa].nombre)||r.mapa):'')+(r.dif&&DIFS[r.dif]?' · '+DIFS[r.dif].n:'')).join('<br>'):'Aún no hay partidas.';L.innerHTML=h}
 const RK_PAG=15;   /* filas por página del ranking global */
 async function rkCarga(pag){const L=$('rkLista');RK.pag=typeof pag==='number'?pag:RK.pag|0;const P=$('rkPag');P.style.display='none';L.textContent='Cargando…';
  let q='?select=nick,puntuacion,ronda,zombies_matados,duracion_seg,criatura,mapa,dificultad,modo,companero,created_at,registrado&order=puntuacion.desc,ronda.desc,id.asc&limit='+(RK_PAG+1)+'&offset='+RK.pag*RK_PAG;
