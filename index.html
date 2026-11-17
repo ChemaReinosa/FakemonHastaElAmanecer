@@ -132,6 +132,18 @@ body.netGuest #difBox{display:none}
 #online .oCaja{display:flex;flex-direction:column;gap:8px;align-items:center;border:2px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 16px;background:rgba(255,255,255,.04);min-width:min(340px,88vw)}
 #online .oTit{font-weight:bold;font-size:14px}#online .oSub{font-size:12px;opacity:.7;margin-top:-4px}#online .oO{font-size:12px;opacity:.6;margin:6px 0}
 #oCod{font:bold 26px monospace;letter-spacing:6px;text-transform:uppercase;text-align:center;width:9em;padding:6px;border-radius:8px;border:2px solid #ffd24a;background:#10131a;color:#fff}
+#ayBox{width:min(560px,100%);display:flex;flex-direction:column;gap:8px;text-align:left;font-size:13.5px;line-height:1.45}
+#ayBox .ayObj{margin:0 0 2px;text-align:center;font-size:14px}
+#ayBox details{border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:8px 12px;background:rgba(255,255,255,.04)}
+#ayBox summary{cursor:pointer;font-weight:bold;font-size:15px;color:#ffd24a;list-style-position:inside}
+#ayBox details[open] summary{margin-bottom:6px}
+#ayBox ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+#ayBox .ayK{display:flex;flex-direction:column;gap:3px;margin-bottom:6px}
+#ayBox .ayK>b{color:#9f6}
+#ayBox kbd{font:inherit;font-size:.9em;padding:0 5px;border:1px solid rgba(255,255,255,.35);border-bottom-width:2px;border-radius:4px;background:rgba(255,255,255,.08)}
+body[data-tema=claro] #ayBox details{border-color:rgba(0,0,0,.25);background:rgba(0,0,0,.03)}
+body[data-tema=claro] #ayBox summary{color:#850}body[data-tema=claro] #ayBox .ayK>b{color:#264}
+body[data-tema=claro] #ayBox kbd{border-color:rgba(0,0,0,.4);background:rgba(0,0,0,.06)}
 .screen h1{margin:0;font-size:clamp(24px,6vw,44px);color:#9f6;letter-spacing:2px;text-shadow:3px 3px 0 #264}
 .screen h2{margin:0;color:#ffd24a}
 .btn{font:bold 17px "Courier New",monospace;padding:10px 22px;min-width:220px;background:#2a3a2a;color:#fff;border:2px solid #7c7;border-radius:6px;cursor:pointer}
@@ -208,6 +220,8 @@ body.touch #iFull{display:block}#iFull.nofs{display:none!important}#iFull:active
 .mB{font:bold 16px "Courier New",monospace;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 16px;color:#f2f2e6;cursor:pointer;border-radius:10px;border:2px solid #3f5a3b;background:linear-gradient(#26331f,#161d13);box-shadow:0 3px 0 #0a0f08,0 6px 14px rgba(0,0,0,.5);transition:transform .08s,filter .15s}
 .mB span{font-size:1.1em;width:1.4em;text-align:center}
 .mB:hover{filter:brightness(1.25)}.mB:active{transform:translateY(2px);box-shadow:0 1px 0 #0a0f08}
+#mJugar{font-size:clamp(17px,5.4vw,22px)}
+.mB.lock{opacity:.55;filter:grayscale(.65);cursor:not-allowed}.mB.lock:hover{filter:grayscale(.65)}.mB.lock:active{transform:none;box-shadow:0 3px 0 #0a0f08,0 6px 14px rgba(0,0,0,.5)}
 .mB.main{font-size:22px;padding:15px 16px;border-color:#ffd24a;background:linear-gradient(#5f8a2e,#2f5a1c);box-shadow:0 4px 0 #1a3010,0 0 22px rgba(120,220,80,.3),0 8px 18px rgba(0,0,0,.55)}
 #mGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 #conSig{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));z-index:60;display:flex;align-items:flex-end;gap:6px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,.45);color:#fff;font:bold 11px "Courier New",monospace;pointer-events:none}
@@ -405,7 +419,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
  <div id="mTop"><h1 id="mT"><span class="pk">Fakem<span class="ball"></span>n</span><span class="zb">Hasta el Amanecer<i></i><i></i><i></i><i></i><i></i></span></h1>
  <div id="mSub">Supervivencia por oleadas</div></div>
  <div id="mCol">
-  <button class="mB main" id="mJugar"><span>▶</span>Jugar</button>
+  <button class="mB main" id="mJugar"><span>▶</span>Jugar en solitario</button>
   <button class="mB" id="mOnline"><span>🌐</span>Cooperativo online</button>
   <div id="mGrid">
    <button class="mB sec" id="mBest"><span>📖</span>Bestiario</button>
@@ -484,11 +498,48 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn sm" id="ceReset">Restablecer</button><button class="btn sm" id="ceCancel">Cancelar</button><button class="btn sm" id="ceOk" style="border-color:#ffd24a">✔ Guardar</button></div></div></div>
 <div class="screen" id="bestiario"><h2>Bestiario</h2><div id="bestCnt" style="font-size:13px;opacity:.85"></div><div id="bestCards" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:760px;max-height:62vh;overflow:auto"></div><button class="btn" id="bBack">Volver</button></div>
 <div class="screen" id="tienda"><h2>Mejoras permanentes</h2><div id="tiendaCand" style="font-size:16px"></div><div class="txt" style="text-align:center;font-size:12px;opacity:.8">Se pagan con los caramelos que consigues en las partidas y valen para todas tus criaturas. Gastarlos aquí <b>no resta</b> progreso de evolución.</div><div id="tiendaL" style="display:flex;flex-direction:column;gap:8px;width:min(560px,100%)"></div><button class="btn" id="tBack">Volver</button></div>
-<div class="screen" id="ayuda"><h2>Cómo se juega</h2><div class="txt">
-<b>PC:</b> WASD/flechas mover · ratón apuntar · clic atacar · 1-5, rueda del ratón o X/Z cambiar movimiento · G lanzar granada · R recargar · E interactuar (mantén E para reparar barricadas) · Q habilidad especial · P/Esc pausa.<br>
-<b>Móvil:</b> joystick izquierdo = mover; joystick derecho = apuntar y atacar. Botones E, R, Q, G (granada) y ARMA (cambiar de movimiento); también puedes <b>tocar directamente el movimiento</b> que quieras en la barra de movimientos. En Ajustes (o en la pausa) puedes <b>colocar cada botón donde quieras</b> y activar la <b>pantalla completa</b>.<br><br>
-Los enemigos entran por las barricadas: repáralas manteniendo E (cada barricada tiene 5 tablones y cada uno te da +5 ₽). Gana ₽ golpeando (+5), matando (+40) y con golpes críticos (+60). Abre puertas, compra movimientos en los paneles de pared, bebidas (máx. 4) en las máquinas, prueba la Caja Misteriosa y activa la energía (interruptores) para usar las máquinas que la necesiten. Si el mapa tiene teleportador, debes activar antes su <b>base de vuelta</b> (la plataforma azul del minimapa, donde regresas); se gasta en cada viaje. Al volver, el teleportador y la base necesitan un tiempo de recarga (lo verás al acercarte), y no puedes ir a la sala de mejoras mientras un <b>jefe</b> siga vivo. Cada mapa tiene su propia distribución, objetos y máquinas.<br>
-<b>Tipos de zombi:</b> cada zombi tiene un tipo (lo ves por el borde de color y el símbolo sobre su cabeza). Tus ataques hacen el doble de daño si son súper eficaces contra él, la mitad si son poco eficaces y casi nada si es inmune, con la tabla de elementos (agua apaga a fuego, eléctrico no afecta a tierra...). Los movimientos de tipo Normal son neutros, salvo contra roca y acero (poco eficaces) y fantasma (poco eficaces). A medida que avanzan las rondas aparecen más tipos.<br><br>Cada criatura puede usar movimientos de los tipos de su línea evolutiva (un planta que evoluciona a volador ya aprende movimientos de volador de pequeño), los normales y unos pocos de tipos afines (lucha, bicho, veneno...): las paredes y la Caja solo te ofrecen los compatibles, así que puedes variar tu repertorio. Cada ronda recibes 2 granadas (máx. 4) del elemento de tu criatura. Tienes 3 vidas. Los enemigos sueltan Caramelos Raros (5%; los jefes 10): con 50 y 100 (o los que fije cada criatura en criaturas.txt) tu criatura evoluciona durante esa partida, <b>al terminar la ronda</b>. Cada partida empieza de cero: solo se guardan los récords y el bestiario.<br><br><b>Movimientos:</b> tienes 4 huecos; la bebida Patada de Mula (en las máquinas de bebidas, no ocupa hueco de bebida) desbloquea un 5.º. La tecla <b>2</b> es siempre el Placaje de emergencia; si compras un ataque con todos los huecos ocupados, eliges cuál sustituir. En móvil, toca E para reparar sin mantener el dedo. <b>M</b> muestra/oculta el minimapa (requiere la bebida Radar; solo se ven las salas que ya has abierto). En el menú, el <b>Bestiario</b> recoge las criaturas que has jugado y sus evoluciones, y al elegir criatura puedes escoger la dificultad.</div>
+<div class="screen" id="ayuda"><h2>Cómo se juega</h2>
+<div id="ayBox">
+<p class="ayObj"><b>Objetivo:</b> aguanta el mayor número de rondas. Cada oleada trae más zombis y más duros, y tienes <b>3 vidas</b>.</p>
+<details open><summary>🎮 Controles</summary>
+<div class="ayK"><b>PC</b><span><kbd>WASD</kbd> mover · <kbd>Ratón</kbd> apuntar · <kbd>Clic</kbd> atacar</span>
+<span><kbd>1-5</kbd> / <kbd>rueda</kbd> / <kbd>X</kbd><kbd>Z</kbd> cambiar movimiento</span>
+<span><kbd>G</kbd> granada · <kbd>R</kbd> recargar · <kbd>Q</kbd> habilidad · <kbd>M</kbd> minimapa · <kbd>P</kbd> pausa</span>
+<span><kbd>E</kbd> interactuar (mantenla para reparar barricadas o revivir)</span></div>
+<div class="ayK"><b>Móvil</b><span>Joystick izquierdo: mover. Derecho: apuntar y atacar.</span>
+<span>Botones E, R, Q, G y ARMA. También puedes tocar un movimiento de la barra para elegirlo.</span>
+<span>En Ajustes puedes colocar cada botón donde quieras.</span></div>
+</details>
+<details><summary>🧟 Sobrevivir a la oleada</summary>
+<ul><li>Los zombis entran por las <b>barricadas</b>: repáralas manteniendo <kbd>E</kbd> (5 tablones, +5 ₽ cada uno).</li>
+<li>Cada zombi tiene un <b>tipo</b> (borde de color y símbolo sobre su cabeza). Tus ataques hacen el <b>doble</b> si son súper eficaces, la <b>mitad</b> si son poco eficaces y casi nada si es inmune.</li>
+<li>Cada ronda recibes <b>2 granadas</b> (máx. 4) del elemento de tu criatura.</li>
+<li>Algunos zombis sueltan <b>premios temporales</b>: Munición máxima, Carpintero, Muerte instantánea, Bomba, Dinero sangriento y Puntos dobles.</li></ul>
+</details>
+<details><summary>💰 Dinero (₽) y compras</summary>
+<ul><li><b>Ganas:</b> golpear +5 · matar +40 (jefe +500) · crítico +60 · pasar de ronda +50 × nº de ronda.</li>
+<li><b>Gastas en:</b> puertas, paneles de pared (movimientos), máquinas de bebidas (máx. 4), Caja Misteriosa y granadas extra.</li>
+<li>Activa la <b>energía</b> (interruptores) para usar las máquinas que la necesiten.</li>
+<li>Si el mapa tiene <b>teleportador</b>, activa antes su base de vuelta. Tarda en recargarse y no puedes ir a la sala de mejoras con un jefe vivo.</li></ul>
+</details>
+<details><summary>⚔ Movimientos</summary>
+<ul><li>Tienes <b>4 huecos</b>; la bebida <b>Patada de Mula</b> desbloquea un 5.º.</li>
+<li>La tecla <kbd>2</kbd> es siempre el <b>Placaje</b> de emergencia.</li>
+<li>Si compras un ataque con los huecos llenos, eliges cuál sustituir.</li>
+<li>Puedes aprender movimientos de los tipos de tu línea evolutiva, los Normales y algunos afines.</li>
+<li>La bebida <b>Radar</b> muestra cuántos zombis quedan y activa el minimapa (<kbd>M</kbd>).</li></ul>
+</details>
+<details><summary>🍬 Evolución y progreso</summary>
+<ul><li>Los zombis sueltan <b>Caramelos Raros</b> (los jefes, bastantes más). Con 50 y 100 (o los que fije cada criatura) tu criatura <b>evoluciona al terminar la ronda</b>.</li>
+<li>Cada partida empieza de cero: solo se guardan tus <b>récords</b> y el <b>Bestiario</b>.</li>
+<li>Al elegir criatura puedes escoger la <b>dificultad</b>.</li>
+<li>El Bestiario y la mayoría de criaturas y mapas requieren una cuenta (es gratis y opcional).</li></ul>
+</details>
+<details><summary>👥 Cooperativo online</summary>
+<ul><li>Hasta varios jugadores en la misma partida: los zombis aumentan con cada jugador.</li>
+<li>Si un compañero cae, mantén <kbd>E</kbd> junto a él unos segundos para <b>revivirle</b>.</li></ul>
+</details>
+</div>
 <button class="btn" id="aBack">Volver</button></div>
 <div class="screen" id="pausa"><h2>Pausa</h2><button class="btn" id="pCont">Continuar</button><button class="btn" id="pAjBtn">⚙ Ajustes</button><button class="btn sm" id="pVerCtrl">Ver controles</button><button class="btn sm" id="pGuardar">💾 Guardar partida (JSON)</button><div id="pCtrl" style="display:none"><b>Controles</b><br>WASD / flechas: mover · Ratón: apuntar · Clic o Espacio: atacar<br>1-5, rueda del ratón o Z/X: cambiar de movimiento · R: recargar · G: granada<br>E: interactuar (mantén E para reparar barricadas) · Q: habilidad especial<br>M: minimapa (con bebida Radar) · P / Esc: pausa<br>Minimapa: amarillo = puerta de pago · rojo = puerta de energía / interruptor · verde = abierta · rosa = Caja · turquesa = Máquina de MT · azul claro = teleportador · azul = base de vuelta (verde si está activada)</div><button class="btn" id="pMenu">Abandonar partida</button></div>
 <div class="screen" id="pAjustes"><h2>⚙ Ajustes</h2>
@@ -1290,6 +1341,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.66   Menú: 'Jugar' pasa a 'Jugar en solitario'; el Bestiario aparece bloqueado (candado) para invitados y solo avisa en lugar de llevar al login; 'Cómo se juega' reescrito en secciones desplegables y actualizado
    1.65   Mis récords: ahora se muestra el mapa de cada récord (los récords antiguos de invitado, guardados sin mapa, no lo muestran)
    1.64   Mapas bloqueados: los 2 primeros de Mapas/index.json son libres, con cuenta todos menos el último, y el último pide cuenta + ronda 10; el botón Eliminar cuenta, más separado y en rojo
    1.63   Ranking: los invitados se marcan con (Inv.); solo las 6 primeras criaturas son libres, el resto requiere cuenta y haber llegado a la ronda 10; el Bestiario es solo para usuarios con cuenta; arreglado el botón Jugar que a veces necesitaba dos pulsaciones (no esperaba a que terminara la carga inicial)
@@ -1325,7 +1377,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.65';
+const VERSION='1.66';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1571,7 +1623,8 @@ async function accBorrar(){
 const accVerde='#9f6',accRojo='#f88';
 function accMsg(t,ok){const m=$('cuMsg');m.textContent=t||'';m.style.color=ok?accVerde:accRojo}
 function accOcupado(v){['cuGo','cuOlv','cuTabE','cuTabR','cuSalir','cuBorrar','cuRecGo'].forEach(i=>{const b=$(i);if(b)b.disabled=v})}
-function accPintaBtn(t){const b=$('mCuenta');if(!b)return;b.textContent=t||(ACC.on?'👤 '+ACC.nick:'👤 Iniciar sesión');b.title=ACC.on?'Tu cuenta':'Iniciar sesión o crear cuenta (opcional)'}
+function accPintaBest(){const b=$('mBest');if(!b)return;const lk=!ACC.on;b.classList.toggle('lock',lk);b.setAttribute('aria-disabled',lk?'true':'false');b.title=lk?'Solo para usuarios registrados':'';const i=b.querySelector('span');if(i)i.textContent=lk?'🔒':'📖'}
+function accPintaBtn(t){accPintaBest();const b=$('mCuenta');if(!b)return;b.textContent=t||(ACC.on?'👤 '+ACC.nick:'👤 Iniciar sesión');b.title=ACC.on?'Tu cuenta':'Iniciar sesión o crear cuenta (opcional)'}
 function accPintaUI(){
  accPintaBtn();const sn=$('sNick'),on=$('oNick');
  if(ACC.on){sn.value=ACC.nick;on.value=ACC.nick;sn.readOnly=on.readOnly=true}
@@ -3779,7 +3832,7 @@ $('oUnir').onclick=()=>{if(!netPideNick())return;const c=$('oCod').value.trim().
 $('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();$('salaCambia').onclick=()=>netCambiar();$('salaProbe').onclick=()=>netSondeo();$('salaCede').onclick=()=>netCede();$('netMsgOk').onclick=()=>{G=null;show('menu')};
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
 $('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;selValida();mapaValido();if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
-$('mBest').onclick=()=>{if(!ACC.on){accAviso('El Bestiario solo está disponible para usuarios con cuenta. Inicia sesión para usarlo.',true);accAbre();return}buildBest();show('bestiario')};$('bBack').onclick=()=>show('menu');
+$('mBest').onclick=()=>{if(!ACC.on){accAviso('🔒 El Bestiario solo está disponible para usuarios registrados.',true);return}buildBest();show('bestiario')};accPintaBest();$('bBack').onclick=()=>show('menu');
 function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
  CRIATURAS.forEach(c=>{const mx=save.bestiario[c.id],ok=mx!==undefined;if(ok)got++;const et=ok?Math.min(mx,c.stages.length-1):0,st=c.stages[et];
   const d=document.createElement('div');d.className='card'+(ok?'':' lock');d.style.cursor='default';
