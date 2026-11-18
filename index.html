@@ -1341,6 +1341,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.67   Nuevos props para los mapas: pilar, estatua, brasero (con llama), amfora, barril, armero (estantería de armas), trono y sillar (gradas de piedra)
    1.66   Menú: 'Jugar' pasa a 'Jugar en solitario'; el Bestiario aparece bloqueado (candado) para invitados y solo avisa en lugar de llevar al login; 'Cómo se juega' reescrito en secciones desplegables y actualizado
    1.65   Mis récords: ahora se muestra el mapa de cada récord (los récords antiguos de invitado, guardados sin mapa, no lo muestran)
    1.64   Mapas bloqueados: los 2 primeros de Mapas/index.json son libres, con cuenta todos menos el último, y el último pide cuenta + ronda 10; el botón Eliminar cuenta, más separado y en rojo
@@ -1377,7 +1378,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.66';
+const VERSION='1.67';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -2567,6 +2568,49 @@ P3.cono={h:24,paint(c,x,y,w,d,col){const cx=x+w/2,cy=y+d/2,[X,Y]=pj(cx,cy,0),hh=
  c.fillStyle='#e8742a';c.beginPath();c.ellipse(tx,ty,1.4,.8,0,0,6.283);c.fill()}};
 P3.columna={h:HW,paint(c,x,y,w,d,col){boxF(c,x,y,0,w,d,5,'#3a3024');boxF(c,x+2,y+2,5,w-4,d-4,HW-10,'#6a5c4a');boxF(c,x,y,HW-5,w,d,5,'#3a3024');
  faceS(c,x+2,y+d-2,5,w-4,HW-10,(m,ww,hh)=>{const R=Rr_(m);R('#8a7a64',2,0,3,hh);R('rgba(0,0,0,.3)',0,0,ww,hh);for(let j=4;j<hh;j+=6)R('rgba(0,0,0,.18)',0,j,ww,1)})}};
+/* ---------- Props romanos: pilar, estatua, brasero, ánfora, barril, armero, trono, sillar (gradas) ---------- */
+P3.pilar={h:44,paint(c,x,y,w,d,col){col=col||'#c9b994';const k=Math.min(2,(w-6)/2);
+ boxF(c,x,y,0,w,d,4,adj(col,-.25));boxF(c,x+1,y+1,4,w-2,d-2,2,adj(col,-.1));
+ boxF(c,x+3,y+3,6,w-6,d-6,31,col);
+ faceS(c,x+3,y+d-3,6,w-6,31,(m,ww,hh)=>{const R=Rr_(m);for(let i=1;i<ww;i+=3){R('rgba(0,0,0,.18)',i,0,1,hh);R('rgba(255,255,255,.10)',i+1,0,1,hh)}R('rgba(0,0,0,.18)',0,0,ww,2)});
+ boxF(c,x+1,y+1,37,w-2,d-2,2,adj(col,-.1));boxF(c,x,y,39,w,d,5,adj(col,.05))}};
+P3.estatua={h:56,paint(c,x,y,w,d,col){col=col||'#e2ddd0';const cx=x+w/2,cy=y+d/2;
+ boxF(c,x,y,0,w,d,5,'#7a7264');boxF(c,x+2,y+2,5,w-4,d-4,7,'#9a9282');
+ faceS(c,x+2,y+d-2,5,w-4,7,(m,ww,hh)=>{const R=Rr_(m);R('rgba(255,255,255,.1)',0,0,ww,1);R('rgba(0,0,0,.2)',0,hh-2,ww,2)});
+ boxF(c,cx-4,cy-2,12,3,4,12,adj(col,-.1));boxF(c,cx+1,cy-2,12,3,4,12,adj(col,-.1));   // piernas
+ boxF(c,cx-5,cy-3,24,10,6,13,col);boxF(c,cx-7,cy-2,29,2,4,8,adj(col,-.05));boxF(c,cx+5,cy-2,29,2,4,8,adj(col,-.05));   // torso y brazos
+ boxF(c,cx+7,cy-1,12,1.5,1.5,40,'#8a7a5a',{hi:false});   // lanza
+ const[X,Y]=pj(cx,cy,42);blobC(c,X,Y,4.5,col);c.fillStyle='rgba(60,40,20,.5)';c.fillRect(X-4,Y-3,8,2);   // cabeza con casco
+ const[Lx,Ly]=pj(cx+7,cy,53);c.fillStyle='#dde4ea';c.fillRect(Lx-1,Ly-3,2,4)}};
+P3.brasero={h:30,paint(c,x,y,w,d,col){const cx=x+w/2,cy=y+d/2,r=Math.max(5,w*.55);
+ for(const[a,b]of[[-3,-3],[3,-3],[-3,3],[3,3]])boxF(c,cx+a-1,cy+b-1,0,2,2,12,'#2a221a',{hi:false});
+ cyl(c,cx,cy,r,12,4,'#3a2e22','#14100c');const[X,Y]=pj(cx,cy,16);
+ c.save();c.globalAlpha=.22;c.fillStyle='#ff9a30';c.beginPath();c.arc(X,Y-5,13,0,6.283);c.fill();c.restore();
+ blobC(c,X,Y-2,r*.8,'#e0521a');blobC(c,X+1,Y-6,r*.55,'#ff9a30');blobC(c,X,Y-10,r*.32,'#ffe08a')}};
+P3.amfora={h:22,paint(c,x,y,w,d,col){col=col||'#b8602a';const cx=x+w/2,cy=y+d/2,[X,Y]=pj(cx,cy,0);
+ c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(X+1,Y+1,5,2.5,0,0,6.283);c.fill();
+ cyl(c,cx,cy,2.5,0,3,adj(col,-.3),adj(col,-.1));blobC(c,X,Y-8,5.5,col);cyl(c,cx,cy,1.6,13,6,adj(col,-.1),adj(col,.1));cyl(c,cx,cy,3,19,2,adj(col,.1),adj(col,.25));
+ c.strokeStyle=adj(col,-.35);c.lineWidth=1.3;c.beginPath();c.arc(X-4.5,Y-14,3.5,Math.PI*.5,Math.PI*1.5);c.stroke();c.beginPath();c.arc(X+4.5,Y-14,3.5,-Math.PI*.5,Math.PI*.5);c.stroke();
+ c.fillStyle='rgba(0,0,0,.28)';c.fillRect(X-5,Y-9,10,1);c.fillStyle='rgba(255,230,190,.2)';c.fillRect(X-3,Y-12,1,5)}};
+P3.barril={h:18,paint(c,x,y,w,d,col){col=col||'#7a5230';const r=Math.min(w,d)/2+.5,cx=x+w/2,cy=y+d/2;
+ const[X,Y]=cyl(c,cx,cy,r,0,16,col,adj(col,-.1));
+ c.strokeStyle='rgba(30,20,10,.55)';c.lineWidth=1.4;for(const hz of[3,8,13]){const[a,b]=pj(cx,cy,hz),rx=r*1.4142*KX,ry=r*1.4142*KY;c.beginPath();c.ellipse(a,b,rx,ry,0,0,Math.PI);c.stroke()}
+ c.strokeStyle='rgba(255,255,255,.12)';c.lineWidth=1;const[ta,tb]=pj(cx,cy,16),rx2=r*1.4142*KX,ry2=r*1.4142*KY;c.beginPath();c.ellipse(ta,tb,rx2*.55,ry2*.55,0,0,6.283);c.stroke()}};
+P3.armero={h:28,paint(c,x,y,w,d,col){col=col||'#5a4a38';const lg=w>=d,L=lg?w:d,T=Math.max(d,w)&&Math.min(w,d),th=Math.max(4,Math.min(w,d));
+ const bx=(a,b,z,aw,bd,hh,co,o)=>lg?boxF(c,x+a,y+b,z,aw,bd,hh,co,o):boxF(c,x+b,y+a,z,bd,aw,hh,co,o);
+ bx(0,0,0,L,th,3,adj(col,-.2));bx(0,0,3,2.5,th,22,col);bx(L-2.5,0,3,2.5,th,22,col);bx(0,0,13,L,th,2.5,adj(col,-.05));bx(0,0,22,L,th,2.5,col);
+ const n=Math.max(2,Math.floor(L/7));for(let i=0;i<n;i++){const o=4+(L-8)*(i+.5)/n,z=i%3===0?[3,28,'#aab4be']:i%3===1?[3,24,'#8a96a2']:[3,20,'#c0a050'];
+  bx(o-.8,th/2-.8,z[0],1.6,1.6,z[1],z[2],{hi:false})}}};
+P3.trono={h:34,paint(c,x,y,w,d,col){col=col||'#c9a03a';
+ boxF(c,x,y,0,w,d,4,adj(col,-.35));boxF(c,x+2,y+3,4,w-4,d-5,3,adj(col,-.2));
+ boxF(c,x+4,y+1,7,w-8,5,26,col);boxF(c,x+3,y,31,w-6,7,3,adj(col,.15));                    // respaldo alto con remate
+ boxF(c,x+4,y+6,7,w-8,d-9,6,adj(col,-.1));boxF(c,x+6,y+8,13,w-12,d-13,2,'#8a1a2a');        // asiento y cojín rojo
+ boxF(c,x+2,y+6,7,3,d-9,10,adj(col,-.05));boxF(c,x+w-5,y+6,7,3,d-9,10,adj(col,-.05));       // reposabrazos
+ faceS(c,x+4,y+6,7,w-8,26,(m,ww,hh)=>{const R=Rr_(m);R('rgba(110,20,30,.5)',3,3,ww-6,hh-8);R('rgba(255,230,150,.25)',3,3,ww-6,1)})}};
+P3.sillar={h:16,paint(c,x,y,w,d,col){col=col||'#9a8a68';
+ boxF(c,x,y,0,w,d,16,col);
+ faceS(c,x,y+d,0,w,16,(m,ww,hh)=>{const R=Rr_(m);for(let i=0;i<ww;i+=22){R('rgba(0,0,0,.28)',i,0,1,hh)}R('rgba(0,0,0,.25)',0,hh/2,ww,1);R('rgba(255,255,255,.12)',0,0,ww,1);R('rgba(0,0,0,.18)',0,0,ww,hh)});
+ faceT(c,x,y,16,w,d,m=>{const R=Rr_(m);for(let i=0;i<w;i+=20)R('rgba(0,0,0,.14)',x+i,y,1,d);R('rgba(255,255,255,.1)',x,y,w,1)})}};
 P3.mostrador={h:20,paint(c,x,y,w,d,col){const base=col||'#7a6246';
  boxF(c,x,y,0,w,d,14,adj(base,-.3));boxF(c,x-1,y-1,14,w+2,d+2,3,base);
  faceS(c,x,y+d,0,w,14,(m,ww,hh)=>{const R=Rr_(m);for(let i=3;i<ww-3;i+=14){R('rgba(0,0,0,.3)',i,2,12,hh-4);R('rgba(255,255,255,.07)',i,2,12,1)}R('rgba(0,0,0,.2)',0,0,ww,hh)});
