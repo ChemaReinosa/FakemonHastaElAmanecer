@@ -1517,14 +1517,6 @@
      14,
      "#c9b994",
      "pilar"
-    ],
-    [
-     1030,
-     110,
-     14,
-     14,
-     "#4a3a2c",
-     "brasero"
     ]
    ]
   },
@@ -1747,7 +1739,7 @@
      "cajas"
     ],
     [
-     700,
+     740,
      690,
      14,
      14,
@@ -2148,6 +2140,50 @@
    "y": 872,
    "lado": "B",
    "baya": "ziuela"
+  },
+  {
+   "tipo": "panel",
+   "zona": "zona10",
+   "x": 700,
+   "y": 682,
+   "lado": "T",
+   "tier": 4
+  },
+  {
+   "tipo": "frag",
+   "zona": "zona10",
+   "x": 650,
+   "y": 878,
+   "lado": "B"
+  },
+  {
+   "tipo": "panel",
+   "zona": "zona2",
+   "x": 800,
+   "y": 484,
+   "lado": "T",
+   "tier": 3
+  },
+  {
+   "tipo": "caja",
+   "zona": "zona6",
+   "x": 450,
+   "y": 470
+  },
+  {
+   "tipo": "panel",
+   "zona": "zona5",
+   "x": 1040,
+   "y": 102,
+   "lado": "T",
+   "tier": 4
+  },
+  {
+   "tipo": "frag",
+   "zona": "zona9",
+   "x": 1190,
+   "y": 650,
+   "lado": "B"
   }
  ],
  "escaleras": [
