@@ -116,6 +116,20 @@ body[data-tema=claro] .mj{background:#f4f4ea;border-color:#999}body[data-tema=cl
 @media (orientation:portrait) and (pointer:coarse){#rot{display:block}}
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(8,8,14,.93);z-index:50;padding:44px 16px 16px;overflow:auto;text-align:center;touch-action:pan-y}
 .screen.on{display:flex}
+#logros *{touch-action:pan-y}#lgCnt{font-size:13px;opacity:.85}
+#lgGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;width:min(860px,94vw);max-height:64vh;overflow:auto;padding:2px}
+.lgC{display:flex;gap:10px;align-items:center;text-align:left;padding:9px 10px;border:2px solid #444;border-radius:10px;background:#1a1a22;opacity:.62}
+.lgC .ic{font-size:28px;line-height:1;width:34px;text-align:center;flex:none;filter:grayscale(1)}
+.lgC b{display:block;font-size:14px}.lgC small{display:block;font-size:11.5px;opacity:.8;line-height:1.25}
+.lgC .pr{height:6px;border-radius:3px;background:rgba(255,255,255,.15);margin-top:5px;overflow:hidden}.lgC .pr i{display:block;height:100%;background:#7c7}
+.lgC.ok{opacity:1;border-color:#ffd24a;background:linear-gradient(#2d2a18,#1d1b10)}.lgC.ok .ic{filter:none}.lgC.ok small.f{color:#9f6;opacity:1}
+body[data-tema=claro] .lgC{background:#f4f4ea;border-color:#999}body[data-tema=claro] .lgC.ok{background:#fff6d6;border-color:#c80}
+#lgToasts{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:max-content;max-width:94vw}
+.lgT{display:flex;align-items:center;gap:10px;padding:8px 14px;border:2px solid #ffd24a;border-radius:12px;background:rgba(24,22,10,.95);color:#fff;font-family:"Courier New",monospace;box-shadow:0 4px 16px rgba(0,0,0,.6);animation:lgIn .35s ease-out;transition:opacity .4s,transform .4s;text-align:left}
+.lgT.out{opacity:0;transform:translateY(-14px)}.lgT small{display:block;font-size:11px;color:#ffd24a}.lgT b{font-size:14px}
+.lgT .bell{font-size:24px;display:inline-block;transform-origin:50% 0;animation:lgBell .9s ease-in-out 2}
+@keyframes lgIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+@keyframes lgBell{0%,100%{transform:rotate(0)}20%{transform:rotate(22deg)}40%{transform:rotate(-18deg)}60%{transform:rotate(12deg)}80%{transform:rotate(-6deg)}}
 #netSt{position:absolute;right:6px;top:18px;white-space:pre;text-align:right;line-height:1.25;font:bold 9px/1.25 monospace;text-shadow:1px 1px #000;pointer-events:none;display:none;z-index:6}
 #salaRes{display:flex;flex-direction:column;gap:6px;min-width:min(420px,92vw);margin:4px 0}
 #salaCod{font:bold 52px monospace;letter-spacing:10px;color:#ffd24a;text-shadow:3px 3px 0 #000;user-select:all}
@@ -387,7 +401,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
  </div>
 </div>
 <div id="conSig" title="Calidad de la conexión"><span class="cb"><i></i><i></i><i></i><i></i></span><span id="conTxt">Midiendo…</span></div>
-<div id="avisoCon" class="avRed" role="alert"></div><div id="avisoGfx" class="avRed" role="alert"></div><div id="avisoCta" class="avRed" role="alert"></div>
+<div id="avisoCon" class="avRed" role="alert"></div><div id="avisoGfx" class="avRed" role="alert"></div><div id="avisoCta" class="avRed" role="alert"></div><div id="lgToasts" aria-live="polite"></div>
 <div class="screen" id="cuenta">
  <h2 id="cuT">Cuenta</h2>
  <div id="cuOut" style="display:none">
@@ -423,6 +437,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
   <button class="mB" id="mOnline"><span>🌐</span>Cooperativo online</button>
   <div id="mGrid">
    <button class="mB sec" id="mBest"><span>📖</span>Bestiario</button>
+   <button class="mB sec" id="mLogros"><span>🏆</span>Logros</button>
    <button class="mB sec" id="mAyuda"><span>❓</span>Cómo se juega</button>
   </div>
   <button class="mB sec" id="mRank"><span>🌍</span>Ranking global</button>
@@ -497,6 +512,7 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <div class="screen" id="ctrlEdit"><div class="ceBox"><b>🎛 Colocar botones</b><span>Arrastra cada botón al sitio que prefieras y pulsa Guardar.</span>
  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn sm" id="ceReset">Restablecer</button><button class="btn sm" id="ceCancel">Cancelar</button><button class="btn sm" id="ceOk" style="border-color:#ffd24a">✔ Guardar</button></div></div></div>
 <div class="screen" id="bestiario"><h2>Bestiario</h2><div id="bestCnt" style="font-size:13px;opacity:.85"></div><div id="bestCards" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:760px;max-height:62vh;overflow:auto"></div><button class="btn" id="bBack">Volver</button></div>
+<div class="screen" id="logros"><h2>🏆 Logros</h2><div id="lgCnt"></div><div id="lgGrid"></div><button class="btn" id="lgBack">Volver</button></div>
 <div class="screen" id="tienda"><h2>Mejoras permanentes</h2><div id="tiendaCand" style="font-size:16px"></div><div class="txt" style="text-align:center;font-size:12px;opacity:.8">Se pagan con los caramelos que consigues en las partidas y valen para todas tus criaturas. Gastarlos aquí <b>no resta</b> progreso de evolución.</div><div id="tiendaL" style="display:flex;flex-direction:column;gap:8px;width:min(560px,100%)"></div><button class="btn" id="tBack">Volver</button></div>
 <div class="screen" id="ayuda"><h2>Cómo se juega</h2>
 <div id="ayBox">
@@ -1341,6 +1357,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.68   Logros: nueva sección en el menú (solo con cuenta, guardados en perfiles.logros) con 18 logros, aviso con campanita y sonido al conseguirlos durante la partida
    1.67   Nuevos props para los mapas: pilar, estatua, brasero (con llama), amfora, barril, armero (estantería de armas), trono y sillar (gradas de piedra)
    1.66   Menú: 'Jugar' pasa a 'Jugar en solitario'; el Bestiario aparece bloqueado (candado) para invitados y solo avisa en lugar de llevar al login; 'Cómo se juega' reescrito en secciones desplegables y actualizado
    1.65   Mis récords: ahora se muestra el mapa de cada récord (los récords antiguos de invitado, guardados sin mapa, no lo muestran)
@@ -1378,7 +1395,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.67';
+const VERSION='1.68';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -1560,10 +1577,10 @@ const accSt=()=>({record:Math.max(0,Math.min(999,save.record|0)),matados:Math.ma
 function accAplica(p,rc){
  for(const k of Object.keys(save))delete save[k];
  const D={sfx:true,musica:true,tema:'oscuro',opac:70,dif:'normal',volMus:80,volSfx:80},st=accLimpiaSt(p.stats);
- Object.assign(save,{record:st.record,matados:st.matados,cfg:Object.assign({},D,accLimpiaAj(p.ajustes)),bestiario:accLimpiaBe(p.bestiario),
+ Object.assign(save,{record:st.record,matados:st.matados,cfg:Object.assign({},D,accLimpiaAj(p.ajustes)),bestiario:accLimpiaBe(p.bestiario),logros:ACC.lgOk===true?lgLimpia(p.logros):null,
   records:rc.map(r=>({nick:p.nick,ronda:r.ronda|0,matados:r.matados|0,cr:String(r.criatura||''),f:new Date(r.fecha).toLocaleDateString('es-ES'),dif:r.dificultad,mapa:r.mapa||''}))});
  save.cfg.nick=p.nick;try{normalizeSave(save)}catch(e){}
- ACC.last={aj:JSON.stringify(accAj()),be:JSON.stringify(save.bestiario),st:JSON.stringify(accSt())};refreshMenu()}
+ ACC.last={aj:JSON.stringify(accAj()),be:JSON.stringify(save.bestiario),st:JSON.stringify(accSt()),lg:JSON.stringify(save.logros||null)};refreshMenu();try{lgRetro()}catch(e){}}
 function accLimpiaSt(s){s=s&&typeof s==='object'?s:{};return{record:Math.max(0,Math.min(999,+s.record|0)),matados:Math.max(0,Math.min(1e7,+s.matados|0))}}
 function cargaInvitado(){   /* vuelve al save de invitado tal como estaba en el navegador */
  for(const k of Object.keys(save))delete save[k];
@@ -1577,7 +1594,8 @@ async function accSubir(){
  if(!ACC.on)return;if(ACC.sub){ACC.again=true;return}ACC.sub=true;
  try{
   const aj=accAj(),ajS=JSON.stringify(aj),st=accSt(),stS=JSON.stringify(st),be=save.bestiario;let beS=JSON.stringify(be);
-  if(ajS===ACC.last.aj&&stS===ACC.last.st&&beS===ACC.last.be)return;
+  let lgS=JSON.stringify(save.logros||null);const lgUp=ACC.lgOk===true&&!!save.logros;
+  if(ajS===ACC.last.aj&&stS===ACC.last.st&&beS===ACC.last.be&&(!lgUp||lgS===ACC.last.lg))return;
   const body={updated_at:new Date().toISOString()};
   if(beS!==ACC.last.be){   /* el bestiario solo sube: se combina con la nube por si otro dispositivo avanzó */
    const r=await accRest('perfiles?select=bestiario&limit=1'),rem=accLimpiaBe(r&&r[0]&&r[0].bestiario);
@@ -1585,8 +1603,9 @@ async function accSubir(){
    beS=JSON.stringify(be);body.bestiario=be}
   if(ajS!==ACC.last.aj)body.ajustes=aj;
   if(stS!==ACC.last.st)body.stats=st;
+  if(lgUp&&lgS!==ACC.last.lg){const r=await accRest('perfiles?select=logros&limit=1');save.logros=lgMerge(save.logros,lgLimpia(r&&r[0]&&r[0].logros));lgS=JSON.stringify(save.logros);body.logros=save.logros}
   await accRest('perfiles?user_id=eq.'+ACC.uid,{method:'PATCH',body,prefer:'return=minimal'});
-  ACC.last={aj:ajS,be:beS,st:stS};accReintenta()
+  ACC.last={aj:ajS,be:beS,st:stS,lg:lgS};accReintenta()
  }catch(e){accFallo(e);if(ACC.on&&(e.red||e.status>=500||e.status===429)){clearTimeout(ACC.t);ACC.t=setTimeout(()=>accSubir(),20000)}}
  finally{ACC.sub=false;if(ACC.again){ACC.again=false;accSync()}}}
 /* ---- récords de la cuenta (historial personal) ---- */
@@ -1601,7 +1620,8 @@ async function accRecord(){
 async function accReintenta(){if(!ACC.on)return;const a=accPend();if(!a.length)return;const rest=[];for(const r of a){if(!(await accEnvia(r)))rest.push(r);if(!ACC.on)return}accGuardaPend(rest.filter((x,i,arr)=>arr.findIndex(y=>y.partida_uid===x.partida_uid)===i))}
 /* ---- entrar / salir ---- */
 async function accEntra(){
- const [pf,rc]=await Promise.all([accRest('perfiles?select=nick,ajustes,bestiario,stats&limit=1'),accRest('records?select=criatura,ronda,matados,dificultad,fecha,mapa&order=ronda.desc,matados.desc&limit=8')]);
+ const pfq=accRest('perfiles?select=nick,ajustes,bestiario,stats,logros&limit=1').then(r=>{ACC.lgOk=true;return r},e=>{if(e&&e.status===400){ACC.lgOk=false;return accRest('perfiles?select=nick,ajustes,bestiario,stats&limit=1')}throw e});
+ const [pf,rc]=await Promise.all([pfq,accRest('records?select=criatura,ronda,matados,dificultad,fecha,mapa&order=ronda.desc,matados.desc&limit=8')]);
  const p=pf&&pf[0];if(!p)throw{status:404,code:'sin_perfil'};
  const aplica=()=>{ACC.on=true;ACC.mudo=false;ACC.nick=p.nick;accAplica(p,rc||[]);accPintaUI();accReintenta()};
  if(G&&G.estado!=='fin')accEspera(aplica);else aplica()}
@@ -1624,7 +1644,7 @@ async function accBorrar(){
 const accVerde='#9f6',accRojo='#f88';
 function accMsg(t,ok){const m=$('cuMsg');m.textContent=t||'';m.style.color=ok?accVerde:accRojo}
 function accOcupado(v){['cuGo','cuOlv','cuTabE','cuTabR','cuSalir','cuBorrar','cuRecGo'].forEach(i=>{const b=$(i);if(b)b.disabled=v})}
-function accPintaBest(){const b=$('mBest');if(!b)return;const lk=!ACC.on;b.classList.toggle('lock',lk);b.setAttribute('aria-disabled',lk?'true':'false');b.title=lk?'Solo para usuarios registrados':'';const i=b.querySelector('span');if(i)i.textContent=lk?'🔒':'📖'}
+function accPintaBest(){{const l=$('mLogros');if(l){const k=!ACC.on;l.classList.toggle('lock',k);l.setAttribute('aria-disabled',k?'true':'false');l.title=k?'Solo para usuarios registrados':'';const i=l.querySelector('span');if(i)i.textContent=k?'🔒':'🏆'}}const b=$('mBest');if(!b)return;const lk=!ACC.on;b.classList.toggle('lock',lk);b.setAttribute('aria-disabled',lk?'true':'false');b.title=lk?'Solo para usuarios registrados':'';const i=b.querySelector('span');if(i)i.textContent=lk?'🔒':'📖'}
 function accPintaBtn(t){accPintaBest();const b=$('mCuenta');if(!b)return;b.textContent=t||(ACC.on?'👤 '+ACC.nick:'👤 Iniciar sesión');b.title=ACC.on?'Tu cuenta':'Iniciar sesión o crear cuenta (opcional)'}
 function accPintaUI(){
  accPintaBtn();const sn=$('sNick'),on=$('oNick');
@@ -1687,6 +1707,86 @@ async function accInit(){
   if(e&&e.auth&&e.status>=400&&e.status<500&&e.status!==429){accReset();accPintaBtn();accAviso('Tu sesión ha caducado. Juegas como invitado: puedes volver a iniciar sesión desde el menú.',true)}
   else{ACC.ref=ACC.tok=null;accPintaBtn();accAviso(e&&e.status===404?accErr(e):'No se pudo conectar con tu cuenta. Juegas como invitado y se reintentará la próxima vez.')}}}
 
+/* ---------- LOGROS ----------
+   Solo con cuenta. Se guardan en perfiles.logros (jsonb): {ok:{id:fecha}, k:zombis, j:jefes, mp:[mapas jugados], cr:[criaturas jugadas], fin:[criaturas en su última evolución]}.
+   Las condiciones se evalúan en quien simula la partida (solo/anfitrión); al invitado online le llegan solo los avisos ('lg') y cada cuenta guarda lo suyo.
+   Estado por jugador durante la partida: G.players[i].lg = {dano, beb, caja, leg, solo, kp}. Las partidas cargadas desde archivo no cuentan. */
+const LG_DEF=[
+ {id:'primera_noche',i:'🌙',n:'Primera noche',d:'Sobrevive a la ronda 1.'},
+ {id:'diez_de_diez',i:'🔟',n:'Diez de diez',d:'Llega a la ronda 10.'},
+ {id:'casi_amanece',i:'🌅',n:'Casi amanece',d:'Llega a la ronda 25.'},
+ {id:'mil_bajas',i:'🧟',n:'Mil bajas',d:'Elimina 1.000 zombis en total (acumulado entre partidas).',p:s=>[s.k,1000]},
+ {id:'primera_evolucion',i:'✨',n:'Primera evolución',d:'Evoluciona una criatura por primera vez.'},
+ {id:'forma_final',i:'🌟',n:'Forma final',d:'Llega a la última evolución de una criatura.'},
+ {id:'cazador_jefes',i:'🎯',n:'Cazador de jefes',d:'Derrota a un jefe por primera vez.'},
+ {id:'verdugo',i:'⚔️',n:'Verdugo',d:'Derrota a 10 jefes en total (acumulado entre partidas).',p:s=>[s.j,10]},
+ {id:'a_punetazos',i:'👊',n:'A puñetazos',d:'Mata a un jefe usando solo Placaje (sin usar otros ataques en toda la partida).'},
+ {id:'sobrio',i:'🚫',n:'Sobrio',d:'Llega a la ronda 15 sin comprar ninguna bebida.'},
+ {id:'sin_caja',i:'📦',n:'Sin caja',d:'Llega a la ronda 20 sin abrir la Caja Misteriosa.'},
+ {id:'suerte',i:'🍀',n:'Suerte',d:'Saca 3 movimientos legendarios de la Caja Misteriosa en una misma partida.'},
+ {id:'en_las_duras',i:'🔥',n:'En las duras',d:'Llega a la ronda 15 en dificultad Difícil.'},
+ {id:'trotamundos',i:'🗺️',n:'Trotamundos',d:'Juega al menos una partida en cada mapa disponible.',p:s=>[Object.keys(MAPAS).filter(i=>s.mp.includes(i)).length,Object.keys(MAPAS).length]},
+ {id:'cuatro_contra_el_mundo',i:'👥',n:'Cuatro contra el mundo',d:'Termina una partida cooperativa de 4 jugadores llegando a la ronda 10 con los 4 vivos.'},
+ {id:'todas_criaturas',i:'🐾',n:'Todas las criaturas',d:'Juega al menos una partida con cada criatura base del juego.',p:s=>[CRIATURAS.filter(c=>s.cr.includes(c.id)).length,CRIATURAS.length]},
+ {id:'evolucion_total',i:'👑',n:'Evolución total',d:'Consigue la última evolución de todas las criaturas que puedan evolucionar.',p:s=>{const e=CRIATURAS.filter(c=>c.stages.length>1);return[e.filter(c=>s.fin.includes(c.id)).length,e.length]}},
+ {id:'sin_sudar',i:'😎',n:'Sin sudar',d:'Llega a la ronda 10 sin recibir daño.'}];
+const LG_BY={};LG_DEF.forEach(l=>LG_BY[l.id]=l);
+const lgSt=()=>ACC.on&&ACC.lgOk===true&&save.logros?save.logros:null;
+function lgArr(a){const o=[];if(Array.isArray(a))for(const x of a){const s=String(x).slice(0,60);if(!o.includes(s)&&o.length<100)o.push(s)}return o}
+function lgLimpia(l){l=l&&typeof l==='object'?l:{};const ok={};if(l.ok&&typeof l.ok==='object')for(const id in l.ok)if(LG_BY[id])ok[id]=Math.max(0,+l.ok[id]|0);
+ return{ok,k:Math.max(0,Math.min(1e8,+l.k|0)),j:Math.max(0,Math.min(1e6,+l.j|0)),mp:lgArr(l.mp),cr:lgArr(l.cr),fin:lgArr(l.fin)}}
+function lgMerge(a,b){a=lgLimpia(a);b=lgLimpia(b);const ok=Object.assign({},b.ok);for(const id in a.ok)ok[id]=ok[id]?Math.min(ok[id],a.ok[id]):a.ok[id];
+ return{ok,k:Math.max(a.k,b.k),j:Math.max(a.j,b.j),mp:lgArr([...a.mp,...b.mp]),cr:lgArr([...a.cr,...b.cr]),fin:lgArr([...a.fin,...b.fin])}}
+function lgToast(l){const box=$('lgToasts');if(!box)return;const d=document.createElement('div');d.className='lgT';
+ d.innerHTML='<span class="bell">🔔</span><div><small>¡Logro desbloqueado!</small><b>'+l.i+' '+l.n+'</b></div>';box.appendChild(d);while(box.children.length>4)box.firstChild.remove();
+ setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),450)},5200);try{if(AC&&save.cfg.sfx)SFX.logro()}catch(e){}}
+function lgConcede(id){const s=lgSt();if(!s||!LG_BY[id]||s.ok[id])return;s.ok[id]=Math.floor(Date.now()/1000);lgToast(LG_BY[id]);accSync(true)}
+/* Aplica un aviso al estado de ESTA cuenta (en solo/anfitrión directamente; en el invitado llega por red) */
+function lgProc(t,a){const s=lgSt();if(!s)return;
+ if(t==='ok'){if(typeof a==='string')lgConcede(a)}
+ else if(t==='k'){const n=Math.max(0,Math.min(500,+a|0));if(!n)return;s.k+=n;if(s.k>=1000)lgConcede('mil_bajas');accSync()}
+ else if(t==='j'){s.j++;lgConcede('cazador_jefes');if(s.j>=10)lgConcede('verdugo');accSync()}
+ else if(t==='i'&&a&&typeof a==='object'){const m=String(a.m||'').slice(0,60),c=String(a.c||'').slice(0,60);let ch=false;
+  if(m&&!s.mp.includes(m)){s.mp.push(m);ch=true}if(c&&!s.cr.includes(c)){s.cr.push(c);ch=true}
+  if(Object.keys(MAPAS).length&&Object.keys(MAPAS).every(i=>s.mp.includes(i)))lgConcede('trotamundos');
+  if(CRIATURAS.length&&CRIATURAS.every(x=>s.cr.includes(x.id)))lgConcede('todas_criaturas');if(ch)accSync()}
+ else if(t==='e'&&a&&typeof a==='object')lgEvoCta(String(a.c||''),+a.e|0)}
+function lgEvoCta(id,et){const s=lgSt(),c=CRIATURAS.find(x=>x.id===id);if(!s||!c)return;
+ if(et>=1)lgConcede('primera_evolucion');
+ if(c.stages.length>1&&et>=c.stages.length-1){lgConcede('forma_final');if(!s.fin.includes(id)){s.fin.push(id);accSync()}}
+ const ev=CRIATURAS.filter(x=>x.stages.length>1);if(ev.length&&ev.every(x=>s.fin.includes(x.id)))lgConcede('evolucion_total')}
+/* Al entrar con la cuenta: lo que ya constaba en el bestiario cuenta para las evoluciones */
+function lgRetro(){const s=lgSt();if(!s||!save.bestiario)return;for(const c of CRIATURAS){const m=+save.bestiario[c.id];if(Number.isFinite(m)&&m>=1)lgEvoCta(c.id,Math.min(m,c.stages.length-1))}}
+/* Envía un aviso al jugador i (por defecto, el activo): local -> directo; remoto -> por red; invitado -> no simula nada */
+function lgEnvia(t,a,i){if(i===undefined)i=G.act;const p=G&&G.players[i];if(!p||p.bot||G.cargada||NET.modo==='guest')return;if(p.remote){netTo(i,'lg',[t,a]);return}lgProc(t,a)}
+const lgP=()=>{const p=G.players[G.act];return p.lg||(p.lg={dano:false,beb:0,caja:0,leg:0,solo:true,kp:0,sent:{}})};
+function lgOkP(id,i){const p=G.players[i===undefined?G.act:i];if(!p||p.bot)return;const L=p.lg||(p.lg={dano:false,beb:0,caja:0,leg:0,solo:true,kp:0,sent:{}});if(L.sent[id])return;L.sent[id]=1;lgEnvia('ok',id,i)}
+const lgOn=()=>G&&!G.cargada&&NET.modo!=='guest';
+function lgKill(){if(lgOn())lgP().kp++}
+function lgDano(d){if(lgOn()&&d>0)lgP().dano=true}
+function lgMov(){if(lgOn())lgP().solo=false}
+function lgBeb(){if(lgOn())lgP().beb++}
+function lgCaja(){if(lgOn())lgP().caja++}
+function lgLeg(it){if(!lgOn()||it.por==null||!MOV[it.res]||MOV[it.res].rareza!=='legendaria')return;const p=G.players[it.por];if(!p||p.bot)return;
+ const L=p.lg||(p.lg={dano:false,beb:0,caja:0,leg:0,solo:true,kp:0,sent:{}});L.leg++;if(L.leg>=3)lgOkP('suerte',it.por)}
+function lgEvo(){if(lgOn())lgEnvia('e',{c:G.cr.id,e:G.et})}
+function lgJefe(){if(!lgOn())return;G.players.forEach((p,i)=>{if(!p.bot&&!p.out&&!p.ausente)lgEnvia('j',1,i)});if(lgP().solo)lgOkP('a_punetazos')}
+function lgFlushAll(){if(!lgOn())return;G.players.forEach((p,i)=>{const L=p.lg;if(L&&L.kp>0&&!p.bot){const n=L.kp;L.kp=0;lgEnvia('k',n,i)}})}
+function lgRonda(){if(!lgOn())return;lgFlushAll();const r=G.round,dk=Object.keys(DIFS).find(k=>DIFS[k]===G.D)||'normal';
+ const c4=G.players.length===4&&G.players.every(p=>!p.bot&&!p.deb&&!p.out&&!p.ausente);
+ G.players.forEach((p,i)=>{if(p.bot||p.out||p.ausente)return;const L=p.lg||(p.lg={dano:false,beb:0,caja:0,leg:0,solo:true,kp:0,sent:{}});
+  if(r===1&&!L.ini){L.ini=1;lgEnvia('i',{m:G.mapa||MAPA_ID,c:p.s&&G.act!==i?p.s.cr.id:(G.act===i?G.cr.id:p.s.cr.id)},i)}
+  if(r>=2)lgOkP('primera_noche',i);if(r>=10)lgOkP('diez_de_diez',i);if(r>=25)lgOkP('casi_amanece',i);
+  if(r>=15&&!L.beb)lgOkP('sobrio',i);if(r>=20&&!L.caja)lgOkP('sin_caja',i);if(r>=15&&dk==='dificil')lgOkP('en_las_duras',i);
+  if(r>=10&&!L.dano)lgOkP('sin_sudar',i);if(r>=10&&c4)lgOkP('cuatro_contra_el_mundo',i)})}
+setInterval(()=>{try{lgFlushAll()}catch(e){}},4000);
+function buildLogros(){const s=lgSt(),g=$('lgGrid');g.innerHTML='';
+ if(!s){$('lgCnt').textContent=ACC.on?'Los logros no están disponibles en tu cuenta todavía (falta la columna "logros" en la tabla perfiles).':'';return}
+ let n=0;for(const l of LG_DEF){const ok=!!s.ok[l.id];if(ok)n++;const c=document.createElement('div');c.className='lgC'+(ok?' ok':'');
+  let ex='';if(ok)ex='<small class="f">✔ '+new Date(s.ok[l.id]*1000).toLocaleDateString('es-ES')+'</small>';
+  else if(l.p){const[a,b]=l.p(s);ex='<small>'+Math.min(a,b).toLocaleString('es-ES')+' / '+b.toLocaleString('es-ES')+'</small><div class="pr"><i style="width:'+Math.round(100*Math.min(a,b)/Math.max(1,b))+'%"></i></div>'}
+  c.innerHTML='<span class="ic">'+l.i+'</span><div><b>'+l.n+'</b><small>'+l.d+'</small>'+ex+'</div>';g.appendChild(c)}
+ $('lgCnt').textContent='Desbloqueados: '+n+' / '+LG_DEF.length}
 function persist(){save._ts=Date.now();if(ACC.on){accSync(document.hidden);return}const s=JSON.stringify(save);
  try{localStorage.setItem(SAVE_KEY,s);LS_OK=true}catch(e){LS_OK=false}
  try{idbPut('save',s).then(()=>{IDB_OK=true},()=>{IDB_OK=false})}catch(e){IDB_OK=false}}
@@ -1910,6 +2010,7 @@ const SFX={
  explosion(){noise(.4,.25,300);tone(70,.3,'sawtooth',.2,-40)},recarga(){noise(.05,.22,2600);tone(150,.07,'square',.16,-70);tone(330,.05,'square',.09,0,null,.1)},
  recargaFin(){tone(240,.05,'square',.14,120);noise(.04,.2,3800,.01);tone(520,.1,'triangle',.16,260,null,.07)},
  hab(){tone(200,.3,'sawtooth',.2,400);noise(.2,.15,1200)},
+ logro(){tone(1568,.7,'sine',.2);tone(3136,.5,'sine',.06);tone(2093,.9,'sine',.17,0,null,.16);tone(4186,.6,'sine',.05,0,null,.16);tone(2637,1,'sine',.14,0,null,.34)},
  groan2(){zVoz(1)},groan(){zVoz(.45)},
  trueno(){noise(.9,.34,260);noise(.25,.3,2500);tone(52,.8,'sawtooth',.22,-22);tone(38,1.1,'sine',.25,-10,null,.05)},
  lanzar(){tone(300,.15,'triangle',.12,500)},
@@ -3285,9 +3386,9 @@ function applyEfx(e,f,k){k=k||1;if(f==='quema')e.quema=3*k;else if(f==='lento')e
 function efecto(e,el){applyEfx(e,EFX[el]||'stun',1)}
 function killAs(e){const o=e.lastP|0;if(o===G.act)kill(e);else withPlayer(o,()=>kill(e))}
 function hitAs(o,e,d,m,a,k){if((o|0)===G.act)hit(e,d,m,a,k);else withPlayer(o,()=>hit(e,d,m,a,k))}
-function kill(e){if(e.muerto)return;e.muerto=true;G.kills++;if(e.def.bestia)bestiaSfx(e,'muerte',true);if(G.perros&&e.def.ladra&&rondaOn())G.spawnT=Math.max(G.spawnT,rnd(.8,1.6));if(!e.suicida)earn(e.boss?500:40,e.x,e.y-20,'#ffd24a');
+function kill(e){if(e.muerto)return;e.muerto=true;G.kills++;lgKill();if(e.def.bestia)bestiaSfx(e,'muerte',true);if(G.perros&&e.def.ladra&&rondaOn())G.spawnT=Math.max(G.spawnT,rnd(.8,1.6));if(!e.suicida)earn(e.boss?500:40,e.x,e.y-20,'#ffd24a');
  {G.candyAcc=(G.candyAcc||0)+Math.min(.95,((G.candyP||.3)+.01*mj('olfato'))*G.D.cand)*rnd(.2,1.8);if(G.candyAcc>=1){G.candyAcc-=1;addCandy(1)}}
- if(e.grupo){e.grupo.n--;if(e.grupo.n<=0){G.st.jefes++;const n=Math.max(1,Math.round(10*G.D.cand));addCandy(n);msg('¡Jefe derrotado! +'+n+' caramelos',3)}}
+ if(e.grupo){e.grupo.n--;if(e.grupo.n<=0){G.st.jefes++;lgJefe();const n=Math.max(1,Math.round(10*G.D.cand));addCandy(n);msg('¡Jefe derrotado! +'+n+' caramelos',3)}}
  if(e.def.explota&&!e.sinExp){const kz=e.def.kamikaze;ring(e.x,e.y,kz?52:44,kz?'#fa4':'#7df',.4);if(kz)partic(e.x,e.y,'#f84',16,90,.5,2);sfx('explosion');for(let i=0;i<G.players.length;i++)if(dist(e.x,e.y,G.players[i].P.x,G.players[i].P.y)<(kz?54:46))withPlayer(i,()=>hurt(kz?Math.round(e.dano*2):15))}
  {const dentro=e.state!=='out';
  const ultimoPerro=G.perros&&rondaOn()&&G.porSpawn<=0&&!G.bossPend&&!e.jauria&&G.enemies.every(o=>o===e||o.muerto);
@@ -3317,7 +3418,7 @@ function registrarBest(id,et){if(!save.bestiario)save.bestiario={};if((save.best
 function addCandy(n){const id=G.cr.id;G.candy+=n;txtL(G.P.x,G.P.y,14,'+'+n+' Caramelo'+(n>1?'s':''),'#ff9bd2');
  /* la evolución NO ocurre en caliente: se anota y se hace al terminar la ronda (finishRound) */
  if(etapaDe(id)>G.et&&!G.evoPend){G.evoPend=true;msg('¡Tu criatura evolucionará al terminar la ronda!',3.5);sfx('evo')}}
-function hurt(d){if(G.telep||G.inv>0||G.shield>0||debil()||G.estado==='fin')return;const P=G.P;P.hp-=d*(G.defMul||1);G.lastHit=G.t;G.shake=.15;sfx('dano');
+function hurt(d){if(G.telep||G.inv>0||G.shield>0||debil()||G.estado==='fin')return;const P=G.P;P.hp-=d*(G.defMul||1);lgDano(d);G.lastHit=G.t;G.shake=.15;sfx('dano');
  if(P.hp<=0)faint()}
 /* segundos de cuenta atrás hasta reaparecer tras morir (con 1 jugador) */
 const DEBIL_REAPARECER=5;
@@ -3385,7 +3486,7 @@ function autoApunta(P){if(save.cfg.autoDisparo!==true||!G)return null;const g=G,
 function fire(){const id=G.slots[G.cur];if(!id||debil()||G.evo||G.telep)return;const m=MOV[id],s=G.ms[id],E=eff(id),now=G.t*1000;
  if(s.rel>0||now-s.last<E.cad)return;
  if(m.pp){if(s.pp<=0){if(s.res>0)startReload(id);else{sinMuni(m);fallbackWeapon()}return}}else if(!sinLimite(m)&&s.res<=0){sinMuni(m);fallbackWeapon();return}
- s.last=now;if(m.pp)s.pp--;else if(!sinLimite(m))s.res--;const P=G.P,a=G.aim,ca=Math.cos(a),sa=Math.sin(a),ox=P.x+ca*9,oy=P.y+sa*9,cl=elc(m),Z=zoneP();
+ s.last=now;if(id!=='placaje')lgMov();if(m.pp)s.pp--;else if(!sinLimite(m))s.res--;const P=G.P,a=G.aim,ca=Math.cos(a),sa=Math.sin(a),ox=P.x+ca*9,oy=P.y+sa*9,cl=elc(m),Z=zoneP();
  const lunge=m.modo==='cono'&&!m.vis;const kd=lunge?4.5:(m.modo==='aoe'||m.modo==='cura'?0:-1.8);P.lx=ca*kd;P.ly=sa*kd;
  if(m.modo==='cono'){sfx(m.vis?'fuego':'golpe');
   for(const e of G.enemies){if(e.muerto)continue;const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)-e.r;if(d>E.rango||!los(P.x,P.y,e.x,e.y,Z))continue;const ang=Math.atan2(dy,dx);if(Math.abs(angd(ang,a))>(Math.hypot(dx,dy)<e.r+P.r+6?1.5:m.arco/2+e.r/Math.max(8,d+e.r)))continue;hit(e,E.dano,m,ang,m.knock||0)}
@@ -3605,7 +3706,7 @@ function spawnBoss(){const j=JEFES.find(x=>x.ronda===G.round)||JEFES[Math.random
  if(j.ia==='jauria'){const n=Math.min(MAX_PERROS,3+Math.floor(G.round/10)),grupo={n};for(let i=0;i<n;i++){const bb=pickBar();mk(ENE.perroJ,bb.ix,bb.iy,'in',bb,{grupo,jauria:true})}return}
  const hm=hpRonda(G.round);const def={id:'jefe',nombre:j.nombre,hp:j.hp,vel:j.vel,dano:j.dano,r:j.r,z:j.z,bestia:j.bestia};
  const e=mk(def,b.ix,b.iy,'in',b,{boss:true,tipo:j.tipo,grupo:{n:1},ia:j.ia,bt:3,bt2:1.5,bs:'chase',cdb:3});e.hp=e.maxhp=j.hp*hm*G.D.hp;e.vel=j.vel*G.D.vel;e.dano=j.dano*(1+.03*(G.round-1))*G.D.dano;if(j.bestia){setTimeout(()=>{if(G&&!e.muerto)bestiaSfx(e,'rugido',true)},450)}}
-function startRound(){G.round++;forPl(()=>{if(G.round===2&&G.smPend){const id=G.smPend;G.smPend=null;if(!G.own.has(id)){msg('¡Tu criatura ha aprendido '+MOV[id].nombre+'!',3.5);sfx('evo');learn(id,0,null,true)}}{const n=Math.min(GRAN_MAX,G.granadas+2)-G.granadas;if(n>0){G.granadas+=n;txtL(G.P.x,G.P.y,22,'+'+n+' granadas','#ffb070')}}});const fxN=1+ZOMBIS_EXTRA_POR_JUGADOR*(G.players.filter(p=>!p.ausente).length-1);G.porSpawn=Math.max(3,Math.round((6+2*(G.round-1))*G.D.cant*fxN));G.spawnT=2;G.estado='ronda';G.cap=Math.min(Math.round(30*fxN),Math.round((10+G.round*2)*fxN));
+function startRound(){G.round++;lgRonda();forPl(()=>{if(G.round===2&&G.smPend){const id=G.smPend;G.smPend=null;if(!G.own.has(id)){msg('¡Tu criatura ha aprendido '+MOV[id].nombre+'!',3.5);sfx('evo');learn(id,0,null,true)}}{const n=Math.min(GRAN_MAX,G.granadas+2)-G.granadas;if(n>0){G.granadas+=n;txtL(G.P.x,G.P.y,22,'+'+n+' granadas','#ffb070')}}});const fxN=1+ZOMBIS_EXTRA_POR_JUGADOR*(G.players.filter(p=>!p.ausente).length-1);G.porSpawn=Math.max(3,Math.round((6+2*(G.round-1))*G.D.cant*fxN));G.spawnT=2;G.estado='ronda';G.cap=Math.min(Math.round(30*fxN),Math.round((10+G.round*2)*fxN));
  G.candyP=Math.min(.9,(G.round<=10?CANDY_R1:CANDY_R2)/Math.max(1,G.porSpawn));G.perros=RONDAS_PERROS.includes(G.round);G.rKills=0;G.dropDone=Math.random()>=PREMIO_PROB;G.dropN=Math.max(2,Math.round(G.porSpawn*rnd(.25,.85)));if(esRondaJefe(G.round)){G.bossPend=true;G.bossT=3}if(G.perros){G.spawnT=3.5}banner(roman(G.round));sfx('ronda');
  for(const q of G.players)if(q.deb&&!q.out)withPlayer(q.idx,()=>{const sp=posInicio(q.idx);reviveAt(q,sp.x,sp.y,1)})}
 const APAGON_PROB=.07;   /* probabilidad (0-1) de apagón al terminar una ronda (solo si la energía ya estaba activada) */
@@ -3630,7 +3731,7 @@ function startEvo(){G.evo={t:0,ne:etapaDe(G.cr.id),sw:false,prev:G.cr.stages[G.e
 function updEvo(dt){const E=G.evo,P=G.P;E.t+=dt;
  if(Math.random()<dt*45){const a=rnd(0,6.283),r=rnd(28,52);pfx(P.x+Math.cos(a)*r,P.y+Math.sin(a)*r,-Math.cos(a)*r*1.6,-Math.sin(a)*r*1.6,Math.random()<.5?'#fff':'#9ef',.5,2,0)}
  if(E.t>.4&&E.t<1.8&&Math.random()<dt*2.2)ring(P.x,P.y,20+E.t*22,'#fff',.5);
- if(!E.sw&&E.t>=1.8){E.sw=true;G.et=E.ne;registrarBest(G.cr.id,E.ne);applyStats();setHab();P.hp=G.maxHp;ring(P.x,P.y,70,'#fff',.8);ring(P.x,P.y,45,'#9ef',.6);partic(P.x,P.y,'#fff',36,140,.9,2);G.shake=.3;sfx('evo');msg('¡'+E.prev+' evolucionó a '+G.cr.stages[E.ne].nombre+'! PV restaurados',4.5)}
+ if(!E.sw&&E.t>=1.8){E.sw=true;G.et=E.ne;registrarBest(G.cr.id,E.ne);lgEvo();applyStats();setHab();P.hp=G.maxHp;ring(P.x,P.y,70,'#fff',.8);ring(P.x,P.y,45,'#9ef',.6);partic(P.x,P.y,'#fff',36,140,.9,2);G.shake=.3;sfx('evo');msg('¡'+E.prev+' evolucionó a '+G.cr.stages[E.ne].nombre+'! PV restaurados',4.5)}
  if(E.t>=3.8){if(!G.act)musMode=E.mus||'tenso';G.evo=null;const last=G.cr.stages.length-1;if(G.et===last&&G.et>=1)learn(G.cr.exclusivo,0,null,true)}}
 /* Siguiente punto del camino: los grandes (r>=8: bruto, jefes) usan un mapa con más margen para no encajarse en huecos estrechos */
 function pathNext(e){const fly=e.def.vuela;if(!fly&&e.r>=8){const n=nextCell(e,fW);if(n)return n}return nextCell(e,fly?fF:fG)}
@@ -3740,11 +3841,11 @@ function interact(it){switch(it.tipo){
  case'puerta':if(pay(it.d.coste)){const n=abrirPuerta(it.d);msg(n.length?'Zona abierta: '+n.map(z=>z.nombre).join(' + '):VERBO_BLOQ(it.d,1)+' (atajo)',2.5);sfx('energia')}break;
  case'panel':{const m=MOV[panelMov(it)];if(!permitido(m.id)){msg('Tu criatura no puede usar '+m.nombre);sfx('error');return}if(G.own.has(m.id)){if(m.energia&&!G.power){msg('Necesitas activar la energía');sfx('error');return}comprarMuni(m.id);return}if(m.energia&&!G.power){msg('Necesitas activar la energía');sfx('error');return}learn(m.id,m.coste)}break;
  case'baya':{const b=BAYA[it.baya];if(bayaTiene(b)){msg(b.slot?'Ya tienes el 5.º hueco de ataque':'Ya la llevas');return}if(!G.power){msg('La máquina no tiene energía: activa la luz primero',2.4,true);sfx('error');return}
-  if(b.slot){if(pay(b.coste)){G.slot5=true;applyStats();msg('Bebida '+b.nombre+': ¡5.º hueco de ataque desbloqueado! (tecla 5)',4);sfx('evo')}return}
-  if(G.perks.length<4){if(pay(b.coste)){G.perks.push(b.id);applyStats();msg('Bebida '+b.nombre+': '+b.desc)}}
+  if(b.slot){if(pay(b.coste)){G.slot5=true;lgBeb();applyStats();msg('Bebida '+b.nombre+': ¡5.º hueco de ataque desbloqueado! (tecla 5)',4);sfx('evo')}return}
+  if(G.perks.length<4){if(pay(b.coste)){G.perks.push(b.id);lgBeb();applyStats();msg('Bebida '+b.nombre+': '+b.desc)}}
   else{if(G.money<b.coste){msg('Te faltan '+(b.coste-G.money)+' ₽',2.2,true);sfx('error');return}
-   modal('Ya llevas 4 bebidas. ¿Cuál descartas para '+b.nombre+'?',G.perks.map(p=>({t:'Descartar '+BAYA[p].nombre,f:()=>{spend(b.coste);G.perks=G.perks.filter(x=>x!==p);G.perks.push(b.id);applyStats()}})))}break}
- case'caja':if(it.est==='idle'){const abrir=()=>{if(pay(COSTE_CAJA)){it.est='anim';it.t=3;it.bl=0;sfx('caja')}},
+   modal('Ya llevas 4 bebidas. ¿Cuál descartas para '+b.nombre+'?',G.perks.map(p=>({t:'Descartar '+BAYA[p].nombre,f:()=>{spend(b.coste);G.perks=G.perks.filter(x=>x!==p);G.perks.push(b.id);lgBeb();applyStats()}})))}break}
+ case'caja':if(it.est==='idle'){const abrir=()=>{if(pay(COSTE_CAJA)){it.est='anim';it.t=3;it.bl=0;it.por=G.act;lgCaja();sfx('caja')}},
    need=[...G.own].filter(id=>muniFalta(id)>0&&!panelDe(id));
   if(!need.length)abrir();else modal('Caja Misteriosa',[{t:'Abrir la caja — '+COSTE_CAJA+' ₽',f:abrir},...need.map(id=>({t:'Munición '+MOV[id].nombre+' — '+muniPrecio(id)+' ₽ ('+muniTot(id)+'/'+muniMax(MOV[id])+')',f:()=>comprarMuni(id)}))])}
   else if(it.est==='listo'){const id=it.res;if(G.own.has(id)){setCur(G.slots.indexOf(id));rellenar(id);msg('Ya tenías '+MOV[id].nombre+': munición al máximo');it.est='idle';mudarCaja(it)}else learn(id,0,()=>{it.est='idle';mudarCaja(it)})}break;
@@ -3827,7 +3928,7 @@ function show(id){if(id){const mu=$('muerte');if(mu)mu.style.display='none'}docu
 function modal(t,ops,noCancel,onCancel){if(G.act){if(NET.modo==='host'&&G.players[G.act].remote)netModal(t,ops,noCancel,onCancel);return}if(NET.modo==='local')G.pausa=true;G.modal=true;$('modalT').textContent=t;const b=$('modalB');b.innerHTML='';ops.forEach(o=>{const x=document.createElement('button');x.className='btn';x.textContent=o.t;x.onclick=()=>{close();o.f()};b.appendChild(x)});
  if(!noCancel){const c=document.createElement('button');c.className='btn sm';c.textContent=onCancel?'No, gracias':'Cancelar';c.onclick=()=>{close();if(onCancel)onCancel()};b.appendChild(c)}function close(){if(NET.modo==='local')G.pausa=false;G.modal=false;show(null)}show('modal')}
 function togglePause(){if(!G||G.estado==='fin'||G.modal)return;if(NET.modo!=='local'&&G.players.length>1){NET.ovl=!NET.ovl;if(NET.ovl){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(NET.ovl?'pausa':null);return}G.pausa=!G.pausa;if(G.pausa){$('pCtrl').style.display='none';$('pausa').classList.remove('ctrl');$('pVerCtrl').textContent='Ver controles'}show(G.pausa?'pausa':null)}
-function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';if(NET.modo==='host')netHostFin();save.record=Math.max(save.record,G.round);save.matados=(save.matados||0)+KT;
+function gameOver(){const KT=sumPl('kills'),CT=sumPl('candy');G.estado='fin';lgFlushAll();if(NET.modo==='host')netHostFin();save.record=Math.max(save.record,G.round);save.matados=(save.matados||0)+KT;
  save.records.push({nick:(G.players[0]&&G.players[0].nombre)||save.cfg.nick||'',ronda:G.round,matados:KT,cr:G.cr.stages[G.et].nombre,f:new Date().toLocaleDateString('es-ES'),dif:difKey(),mapa:MAPA_ID||''});save.records.sort((a,b)=>b.ronda-a.ronda||b.matados-a.matados);save.records=save.records.slice(0,8);persist();enviarRecord();accRecord();
  $('finTxt').style.cssText='display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:left';
  $('finTxt').innerHTML='<div class="finSp"></div><div>Jugador: <b>'+netClean((G.players[0]&&G.players[0].nombre)||save.cfg.nick||'')+'</b><br>Ronda alcanzada: <b>'+G.round+'</b><br>Enemigos derrotados: <b>'+KT+'</b><br>Dificultad: <b>'+DIFS[difKey()].n+'</b><br>Caramelos ganados: <b>'+CT+'</b> <br>Récord personal: <b>'+save.record+'</b></div>';$('finTxt').querySelector('.finSp').appendChild(battlerEl(G.cr.stages[G.et]));show('fin')}
@@ -3877,6 +3978,7 @@ $('salaGo').onclick=()=>netHostEmpezar();$('salaCancel').onclick=()=>netSalir();
 $('mapBack').onclick=()=>{if(NET.creando){NET.creando=false;show('online')}else show('menu')};$('sBack').onclick=()=>{if(NET.modo==='guest'){netSalir();return}buildMaps();show('mapSel')};
 $('sGo').onclick=()=>{audioInit();if(!MAPA_ID)return;selValida();mapaValido();if(NET.modo==='guest'&&NET.fase==='elegir'){netListo();return}if(NET.creando){NET.creando=false;netCrearSala(CRIATURAS.find(c=>c.id===selId));return}const nk=netClean($('sNick').value);if(!nk){$('sNickErr').textContent='Escribe un Nickname para jugar';$('sNick').focus();return}$('sNickErr').textContent='';$('sNick').value=nk;save.cfg.nick=nk;persist();newGame(CRIATURAS.find(c=>c.id===selId));G.players[0].nombre=nk;show(null)};
 $('mBest').onclick=()=>{if(!ACC.on){accAviso('🔒 El Bestiario solo está disponible para usuarios registrados.',true);return}buildBest();show('bestiario')};accPintaBest();$('bBack').onclick=()=>show('menu');
+$('mLogros').onclick=()=>{if(!ACC.on){accAviso('🔒 Los Logros solo están disponibles para usuarios registrados.',true);return}buildLogros();show('logros')};$('lgBack').onclick=()=>show('menu');
 function buildBest(){const box=$('bestCards');box.innerHTML='';let got=0;
  CRIATURAS.forEach(c=>{const mx=save.bestiario[c.id],ok=mx!==undefined;if(ok)got++;const et=ok?Math.min(mx,c.stages.length-1):0,st=c.stages[et];
   const d=document.createElement('div');d.className='card'+(ok?'':' lock');d.style.cursor='default';
@@ -4024,7 +4126,7 @@ function update(dt){const g=G;g.t+=dt;
   if(n>b.pn){for(let k=b.pn;k<n;k++){b.an[k]=.32;chips(b,k,true)}sfx('reparar');g.shake=Math.max(g.shake,.05)}
   else if(n<b.pn){for(let k=n;k<b.pn;k++)chips(b,k,false)}
   b.pn=n;for(let k=0;k<5;k++)if(b.an[k]>0)b.an[k]-=dt}
- for(const it of g.items)if(it.tipo==='caja'){if(it.est==='anim'){it.t-=dt;it.bl-=dt;if(it.t<=0){it.res=pickMove();it.est='listo';it.t=CAJA_T;sfx('cajaok')}}else if(it.est==='listo'){it.t-=dt;if(it.t<=0)it.est='idle'}}
+ for(const it of g.items)if(it.tipo==='caja'){if(it.est==='anim'){it.t-=dt;it.bl-=dt;if(it.t<=0){it.res=pickMove();lgLeg(it);it.est='listo';it.t=CAJA_T;sfx('cajaok')}}else if(it.est==='listo'){it.t-=dt;if(it.t<=0)it.est='idle'}}
  /* rondas */
  if(g.teleCd>0)g.teleCd-=dt;if(g.teleLock>0)g.teleLock-=dt;
  for(let i=0;i<g.players.length;i++){setActive(i);updAlto(dt);updEsc(dt);if(g.telep)updTele(dt);if(g.evo)updEvo(dt)}setActive(0);
@@ -4701,6 +4803,7 @@ function netGuestMsg(m){if(!m||!m.t)return;
  case'start':netGuestStart(m);break;
  case'snap':if(NET.fase==='juego'&&G){const t=performance.now();if(NET.lastSnapT){const d=Math.min(.25,Math.max(.02,(t-NET.lastSnapT)/1000));NET.sInt=NET.sInt?NET.sInt*.85+d*.15:d}NET.lastSnapT=t;NET.snap=NET.snap?netMergeSnap(NET.snap,m):m}break;
  case'msg':if(G)msg(...m.a);break;
+ case'lg':if(Array.isArray(m.a))lgProc(m.a[0],m.a[1]);break;
  case'banner':if(G)banner(...m.a);break;
  case'modal':if(G){const d=m.a;modal(d.t,d.o.map((l,i)=>({t:l,f:()=>netSend({t:'pick',id:d.id,i})})),d.nc,d.cl?()=>netSend({t:'pick',id:d.id,i:-1}):undefined);NET.modalId=d.id}break;
  case'modalClose':if(G&&G.modal){G.modal=false;show(null)}break;
