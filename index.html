@@ -522,6 +522,10 @@ body[data-tema=claro] #datosBox details{border-color:rgba(0,0,0,.25)}
 <span><kbd>1-5</kbd> / <kbd>rueda</kbd> / <kbd>X</kbd><kbd>Z</kbd> cambiar movimiento</span>
 <span><kbd>G</kbd> granada · <kbd>R</kbd> recargar · <kbd>Q</kbd> habilidad · <kbd>M</kbd> minimapa · <kbd>P</kbd> pausa</span>
 <span><kbd>E</kbd> interactuar (mantenla para reparar barricadas o revivir)</span></div>
+<div class="ayK"><b>Mando</b><span><kbd>Stick izq.</kbd> mover · <kbd>Stick der.</kbd> apuntar y atacar (o <kbd>RT</kbd> atacar)</span>
+<span><kbd>A</kbd> interactuar (mantén para reparar/revivir) · <kbd>B</kbd> habilidad · <kbd>X</kbd> recargar · <kbd>Y</kbd>/<kbd>LT</kbd> granada</span>
+<span><kbd>LB</kbd><kbd>RB</kbd> cambiar movimiento · <kbd>Select</kbd> minimapa · <kbd>Start</kbd> pausa</span>
+<span>En los menús: cruceta o stick izq. para moverte, <kbd>A</kbd> aceptar, <kbd>B</kbd> volver.</span></div>
 <div class="ayK"><b>Móvil</b><span>Joystick izquierdo: mover. Derecho: apuntar y atacar.</span>
 <span>Botones E, R, Q, G y ARMA. También puedes tocar un movimiento de la barra para elegirlo.</span>
 <span>En Ajustes puedes colocar cada botón donde quieras.</span></div>
@@ -1176,7 +1180,7 @@ const ENEMIGOS=[
  {id:'kamikaze',nombre:'Zombi bomba',hp:22,vel:48,dano:12,r:6,desde:8,peso:3,kamikaze:true,explota:true,tipos:['fuego'],z:{kind:'h',acc:'bomba',piel:'#b09070',camisa:'#3a3a3a',pant:'#6a4a2a',pelo:'#111'}},
  {id:'blindado',nombre:'Zombi blindado',hp:80,vel:22,dano:20,r:8,desde:10,peso:2,blindaje:.45,tipos:['acero','roca'],z:{kind:'h',acc:'blindado',piel:'#7f8f70',camisa:'#2e3a52',pant:'#3a3f48',pelo:'#222',gordo:1}},
  {id:'curandero',nombre:'Zombi curandero',hp:34,vel:26,dano:8,r:6,desde:12,peso:2,cura:{radio:80,cd:3.5,pct:.12},tipos:['hada','planta'],z:{kind:'h',acc:'cura',piel:'#c8d8b0',camisa:'#d8ecd8',pant:'#4a5a50',pelo:'#ddd',medico:1}},
- {id:'perro',nombre:'Perro zombi',hp:46,vel:72,dano:14,r:5,desde:99,peso:0,soloJefe:true,ladra:true,tipos:['siniestro','fantasma'],z:{kind:'d',piel:'#5a4a40',camisa:'#3a2a24'}}
+ {id:'perro',nombre:'Perro zombi',hp:46,vel:72,dano:14,r:5,desde:99,peso:0,soloJefe:true,ladra:true,tipos:['siniestro','fantasma','veneno'],z:{kind:'d',piel:'#5a4a40',camisa:'#3a2a24'}}
 ];
 const ENE=Object.fromEntries(ENEMIGOS.map(e=>[e.id,e]));
 /* Perro de La Jauría (jefe): conserva los stats originales para no desequilibrar esa pelea */
@@ -1214,7 +1218,7 @@ const TZ_MUL={};for(const a in TZ_TABLA){const m=TZ_MUL[a]={},t=TZ_TABLA[a];
  [['x',TZ_SUPER],['p',TZ_POCO],['i',TZ_INMUNE]].forEach(([k,v])=>(t[k]||'').split(' ').forEach(d=>{if(d)m[d]=v}))}
 function tipoMult(att,def){if(att==='normal')att='neutro';if(att==='neutro'&&def==='fantasma')return TZ_INMUNE_NORMAL;const t=TZ_MUL[att];return t&&t[def||'neutro']!==undefined?t[def||'neutro']:1}
 function pickTipo(def){const r=G?G.round:1;let pool=TZ_POOL.filter(p=>r>=p[1]);
- if(G&&def&&def.ladra&&def.tipos&&def.tipos.length===2){/* perros: alternan siniestro/fantasma, siempre 50% - 50% */if(G.perroAlt===undefined)G.perroAlt=Math.random()<.5;G.perroAlt=!G.perroAlt;return def.tipos[G.perroAlt?1:0]}
+ if(G&&def&&def.ladra&&def.tipos&&def.tipos.length>=2){/* perros: rotan entre sus tipos (siniestro/fantasma/veneno), a partes iguales */const n=def.tipos.length;G.perroAlt=typeof G.perroAlt==='number'?(G.perroAlt+1)%n:Math.random()*n|0;return def.tipos[G.perroAlt]}
  if(def&&def.tipos){const a=pool.filter(p=>def.tipos.includes(p[0]));if(a.length)pool=a;else return def.ladra?def.tipos[Math.random()*def.tipos.length|0]:def.tipos[0]}
  let tot=0;pool.forEach(p=>tot+=p[2]);let x=Math.random()*tot;for(const p of pool){x-=p[2];if(x<=0)return p[0]}return'neutro'}
 const TZ_COLC={};const tzCol=k=>TZ_COLC[k]||(TZ_COLC[k]=tipoColor(k));
@@ -1357,6 +1361,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
+   1.69   Los perros zombi también pueden ser de tipo Veneno (rotan Siniestro/Fantasma/Veneno), la Caja Misteriosa ya no da movimientos que ya tienes y soporte para jugar con mando (movimiento, apuntado, ataque, menús)
    1.68   Logros: nueva sección en el menú (solo con cuenta, guardados en perfiles.logros) con 18 logros, aviso con campanita y sonido al conseguirlos durante la partida
    1.67   Nuevos props para los mapas: pilar, estatua, brasero (con llama), amfora, barril, armero (estantería de armas), trono y sillar (gradas de piedra)
    1.66   Menú: 'Jugar' pasa a 'Jugar en solitario'; el Bestiario aparece bloqueado (candado) para invitados y solo avisa en lugar de llevar al login; 'Cómo se juega' reescrito en secciones desplegables y actualizado
@@ -1395,7 +1400,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
    1.33 · Nombre obligatorio en el cooperativo online + nombres sobre los personajes (opción en Ajustes) · scroll táctil del Bestiario ·
           detección de mapas más robusta (index.json flexible, GitHub Pages, aviso de mapas con errores) · mejoras de fluidez del invitado y de puertas/tablas
    1.32 · versión anterior */
-const VERSION='1.68';
+const VERSION='1.69';
 try{const _vi0=document.getElementById('verTagI');if(_vi0)_vi0.textContent='v.'+VERSION}catch(_e){}
 /* ---------- RANKING GLOBAL (Supabase) ----------
    Puntuación = (ronda x ronda + bajas x baja + jefes x jefe + dinero ganado x dinero) x multiplicador de dificultad */
@@ -3225,7 +3230,7 @@ const cv=$('c'),ctx=cv.getContext('2d');const DARK_RES=.5;   /* resolución de l
 const dk=document.createElement('canvas');dk.width=Math.ceil(W*DARK_RES);dk.height=Math.ceil(H*DARK_RES);const dctx=dk.getContext('2d');dctx.k=DARK_RES;
 const cam={x:0,y:0};const keys={},mouse={x:240,y:135,down:false};
 const sticks={l:{id:null,ox:0,oy:0,x:0,y:0},r:{id:null,ox:0,oy:0,x:0,y:0}};
-let selId='',touchOn=false;
+let selId='',touchOn=false,padOn=false;
 
 function pegarCaja(it){const z=it.z||zoneAt(it.x,it.y);if(!z)return;const ox=it.x,oy=it.y,M=14;
  if(z.abierto){it.cw=22;it.cd=12;it.cs='N';return}
@@ -3446,7 +3451,7 @@ function cycleWeapon(d){if(!G||G.pausa||G.estado==='fin')return;const n=G.nSlots
 const GREN={fuego:{R:56,dano:90,col:'#f52'},agua:{R:62,dano:55,col:'#2a9cf0'},planta:{R:58,dano:70,col:'#4aa832'},electrico:{R:60,dano:80,col:'#f5e642'}};
 function GRENof(el){return GREN[el]||{R:58,dano:75,col:(ELCOL[el]||ELCOL.fuego)[0]}}
 function throwGrenade(){if(!G||G.pausa||G.estado==='fin'||debil()||G.evo||G.telep||G.gcd>0)return;if(G.granadas<=0){msg('No te quedan granadas',1.2);sfx('error');return}
- G.granadas--;G.st.gren++;G.gcd=.4;const P=G.P,a=G.aim;let d=touchOn?110:clamp((()=>{const mw=mouseW();return dist(P.x,P.y,mw[0],mw[1])})(),45,150);
+ G.granadas--;G.st.gren++;G.gcd=.4;const P=G.P,a=G.aim;let d=touchOn||padOn?110:clamp((()=>{const mw=mouseW();return dist(P.x,P.y,mw[0],mw[1])})(),45,150);
  let tx=P.x+Math.cos(a)*d,ty=P.y+Math.sin(a)*d;d=Math.min(d,rayFree(P.x,P.y,a,d,zoneP()));tx=P.x+Math.cos(a)*d;ty=P.y+Math.sin(a)*d;if(zoneP().alto&&!walk(tx,ty,3)){for(let k=1;k<=20;k++){const dd=d+(k%2?1:-1)*Math.ceil(k/2)*8;if(dd<12||dd>170)continue;const x2=P.x+Math.cos(a)*dd,y2=P.y+Math.sin(a)*dd;if(walk(x2,y2,3)){d=dd;tx=x2;ty=y2;break}}}while(d>12&&!walk(tx,ty,3)){d-=8;tx=P.x+Math.cos(a)*d;ty=P.y+Math.sin(a)*d}
  G.gren.push({sx:P.x,sy:P.y,tx,ty,x:P.x,y:P.y,t:0,T:.35+d/260,z:0,el:G.cr.stages[G.et].tipos[0],o:G.act});sfx('lanzar');P.lx=-Math.cos(a)*1.5;P.ly=-Math.sin(a)*1.5}
 function updGren(dt){const g=G;
@@ -3921,7 +3926,7 @@ function teleDest(it){const o=G.items.find(i=>i.tipo==='tele'&&i!==it),z=o&&o.z;
 /* La Caja puede cambiar de sitio después de usarla */
 
 function mudarCaja(it){if(Math.random()>=CAJA_MUEVE)return;const otras=G.items.filter(i=>i.tipo==='caja'&&i!==it);if(!otras.length)return;const n=otras[Math.random()*otras.length|0];it.oculto=true;n.oculto=false;n.est='idle';msg('¡La Caja Misteriosa ha cambiado de sitio! Tendrás que encontrarla',4);sfx('caja')}
-function pickMove(){const pool=MOVIMIENTOS.filter(m=>!m.exclusivo&&m.id!=='placaje'&&permitido(m.id));const L=learnset(G.cr),w={común:50,rara:30,épica:15,legendaria:5},wm=m=>w[m.rareza]*(L.prop.has(m.id)?2:1);let tot=0;pool.forEach(m=>tot+=wm(m));let r=Math.random()*tot;for(const m of pool){r-=wm(m);if(r<=0)return m.id}return pool[0].id}
+function pickMove(){const base=MOVIMIENTOS.filter(m=>!m.exclusivo&&m.id!=='placaje'&&permitido(m.id));let pool=base.filter(m=>!G.own.has(m.id));if(!pool.length)pool=base;/* la Caja no da movimientos que ya tienes (salvo que los tengas todos) */const L=learnset(G.cr),w={común:50,rara:30,épica:15,legendaria:5},wm=m=>w[m.rareza]*(L.prop.has(m.id)?2:1);let tot=0;pool.forEach(m=>tot+=wm(m));let r=Math.random()*tot;for(const m of pool){r-=wm(m);if(r<=0)return m.id}return pool[0].id}
 
 /* ---------- Pantallas / modales ---------- */
 function show(id){if(id){const mu=$('muerte');if(mu)mu.style.display='none'}document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));if(id)$(id).classList.add('on');if(id==='menu'||id==='ajustes'||id==='pAjustes')refreshMenu();if(id==='ajustes'||id==='pausa'||id==='pAjustes')refreshFull();document.body.classList.toggle('jugando',!id&&!!G&&G.estado!=='fin');document.body.classList.toggle('pausado',id==='pausa'||id==='pAjustes')}
@@ -4052,7 +4057,7 @@ window.addEventListener('blur',()=>{if(G&&NET.modo==='local'&&!G.pausa&&G.estado
 window.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('wheel',e=>{cycleWeapon(e.deltaY>0?1:-1)});
 function cpos(e){const r=cv.getBoundingClientRect();mouse.x=(e.clientX-r.left)*W/r.width;mouse.y=(e.clientY-r.top)*H/r.height}
-window.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){cpos(e);if(touchOn){touchOn=false;document.body.classList.remove('touch')}}});
+window.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){cpos(e);if(Math.abs(e.movementX)+Math.abs(e.movementY)>0)padOn=false;if(touchOn){touchOn=false;document.body.classList.remove('touch')}}});
 window.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button===0){cpos(e);if(G&&!G.pausa&&G.estado!=='fin')mouse.down=true}else if(e.pointerType==='touch'&&!touchOn){touchOn=true;document.body.classList.add('touch')}});
 window.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')mouse.down=false});
 const tz=$('touch');
@@ -4109,7 +4114,7 @@ function updJugador(dt,p){const g=G,P=g.P;if(p.remote)netProcEv(p,dt);
   else moveE(P,mx*g.speed*dt,my*g.speed*dt,false);
   P.moving=L>.1;if(P.moving)P.anim+=dt*9;if(P.lx){P.lx*=.78;P.ly*=.78}
   const AU=B?null:autoApunta(P);
-  if(B)g.aim=B.aim;else if(AU&&AU.t)g.aim=AU.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)g.aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn){const mw=mouseW();g.aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
+  if(B)g.aim=B.aim;else if(AU&&AU.t)g.aim=AU.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)g.aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn&&!padOn){const mw=mouseW();g.aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
   if(B?B.fire:(!netBloq()&&((AU&&AU.fire)||mouse.down||keys[' ']||(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.35))))fire();
   if(g.t-g.lastHit>5&&P.hp<g.maxHp)P.hp=Math.min(g.maxHp,P.hp+8*dt*(1+.2*mj('regen')))}
  /* interacción */
@@ -4126,7 +4131,7 @@ function update(dt){const g=G;g.t+=dt;
   if(n>b.pn){for(let k=b.pn;k<n;k++){b.an[k]=.32;chips(b,k,true)}sfx('reparar');g.shake=Math.max(g.shake,.05)}
   else if(n<b.pn){for(let k=n;k<b.pn;k++)chips(b,k,false)}
   b.pn=n;for(let k=0;k<5;k++)if(b.an[k]>0)b.an[k]-=dt}
- for(const it of g.items)if(it.tipo==='caja'){if(it.est==='anim'){it.t-=dt;it.bl-=dt;if(it.t<=0){it.res=pickMove();lgLeg(it);it.est='listo';it.t=CAJA_T;sfx('cajaok')}}else if(it.est==='listo'){it.t-=dt;if(it.t<=0)it.est='idle'}}
+ for(const it of g.items)if(it.tipo==='caja'){if(it.est==='anim'){it.t-=dt;it.bl-=dt;if(it.t<=0){it.res=it.por==null?pickMove():withPlayer(it.por,pickMove);lgLeg(it);it.est='listo';it.t=CAJA_T;sfx('cajaok')}}else if(it.est==='listo'){it.t-=dt;if(it.t<=0)it.est='idle'}}
  /* rondas */
  if(g.teleCd>0)g.teleCd-=dt;if(g.teleLock>0)g.teleLock-=dt;
  for(let i=0;i<g.players.length;i++){setActive(i);updAlto(dt);updEsc(dt);if(g.telep)updTele(dt);if(g.evo)updEvo(dt)}setActive(0);
@@ -4915,7 +4920,7 @@ function netGuestFrame(dt){const g=G;
  /* entrada (se lee cada frame; se envía a NET_INPUT_HZ) */
  const P=g.P;let mx=0,my=0;{const v=moveVec();mx=v[0];my=v[1]}if(sticks.l.id!==null){mx+=sticks.l.x;my+=sticks.l.y}
  {const w=inW(mx,my);mx=w[0];my=w[1]}let aim=g.aim;const AU=autoApunta(P);
- if(AU&&AU.t)aim=AU.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn){const mw=mouseW();aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
+ if(AU&&AU.t)aim=AU.aim;else if(sticks.r.id!==null&&Math.hypot(sticks.r.x,sticks.r.y)>.2)aim=scrAng(sticks.r.x,sticks.r.y);else if(!touchOn&&!padOn){const mw=mouseW();aim=Math.atan2(mw[1]-P.y,mw[0]-P.x)}
  g.aim=aim;const bl=netBloq();if(bl){mx=0;my=0}
  NET.iAcc+=dt;
  if(NET.conn&&NET.conn.open&&(NET.iAcc>=1/NET_INPUT_HZ-1e-6||NET.evOut.length)){
@@ -4985,6 +4990,79 @@ window.PZNET=NET;
 refreshMenu();requestAnimationFrame(loop);INIT_P=initData();restoreSave();accInit();
 addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>{if(document.hidden)persist()});
 setTimeout(()=>{persist();setTimeout(()=>{if(!LS_OK&&!IDB_OK){const m=$('menu');if(m&&!$('mWarn')){const w=document.createElement('div');w.id='mWarn';w.style.cssText='color:#f88;font-size:12px;max-width:420px;margin-top:6px';w.textContent='⚠ Tu navegador está bloqueando el guardado (¿modo privado o vista previa dentro de otra página?). El progreso se perderá al cerrar. Abre el archivo directamente en el navegador.';$('mSub').after(w)}}},800)},400);
+
+/* ---------- Soporte de mando (Gamepad API) ----------
+   Juego: stick izq. = mover · stick der. = apuntar y atacar · RT = atacar · A = E · B = habilidad (Q) · X = recargar · Y/LT = granada · LB/RB = cambiar movimiento · Select = minimapa · Start = pausa.
+   Menús: cruceta / stick izq. = moverse · A = pulsar · B = volver. Usa el mismo sistema que el joystick táctil (sticks), así todo lo demás funciona igual. */
+(()=>{
+ if(!navigator.getGamepads)return;
+ const css=document.createElement('style');css.textContent='.padF{outline:3px solid #ffe36a!important;outline-offset:2px;box-shadow:0 0 12px #ffe36a!important;position:relative;z-index:5}';document.head.appendChild(css);
+ const DZ=.22;let prev=[],pf=false,pe=false,foc=null,navT=0,navDir='',scrId='',lastPad=null;
+ const dz=(x,y)=>{const l=Math.hypot(x,y);if(l<DZ)return[0,0];const k=Math.min(1,(l-DZ)/(1-DZ))/l;return[x*k,y*k]};
+ const setStick=(st,x,y)=>{if(x||y){st.id='pad';st.x=x;st.y=y}else if(st.id==='pad'){st.id=null;st.x=st.y=0}};
+ const pressed=(b)=>!!b&&(b.pressed||b.value>.45);
+ function screenOn(){return document.querySelector('.screen.on')}
+ function focusables(sc){const out=[];const all=sc.querySelectorAll('*');
+  for(const el of all){if(el.disabled)continue;const r=el.getBoundingClientRect();if(r.width<4||r.height<4)continue;const cs=getComputedStyle(el);if(cs.visibility==='hidden'||cs.display==='none'||cs.pointerEvents==='none')continue;
+   const ok=el.tagName==='BUTTON'||el.tagName==='SELECT'||(el.tagName==='INPUT'&&/checkbox|radio|range|button/.test(el.type))||(cs.cursor==='pointer'&&!(el.parentElement&&getComputedStyle(el.parentElement).cursor==='pointer'&&el.parentElement!==sc));
+   if(ok&&!out.some(o=>o.contains(el)))out.push(el)}
+  return out}
+ function setFoc(el){if(foc)foc.classList.remove('padF');foc=el;if(el){el.classList.add('padF');try{el.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}}}
+ function nav(sc,dx,dy){const list=focusables(sc);if(!list.length)return;
+  if(!foc||!list.includes(foc)){const m=list.find(e=>e.classList.contains('main'))||list[0];setFoc(m);return}
+  const r0=foc.getBoundingClientRect(),cx=r0.left+r0.width/2,cy=r0.top+r0.height/2;let best=null,bs=1e9;
+  for(const el of list){if(el===foc)continue;const r=el.getBoundingClientRect(),x=r.left+r.width/2-cx,y=r.top+r.height/2-cy,along=x*dx+y*dy;if(along<=2)continue;const side=Math.abs(x*dy)+Math.abs(y*dx);const sc2=along+side*2.2;if(sc2<bs){bs=sc2;best=el}}
+  if(best)setFoc(best)}
+ function back(sc){if(sc.id==='pausa'){togglePause();return}
+  const bs=[...sc.querySelectorAll('button')].filter(b=>!b.disabled&&b.getBoundingClientRect().width>0&&/cancelar|volver|cerrar|atr[aá]s|no, gracias|salir/i.test(b.textContent));if(bs.length)bs[bs.length-1].click()}
+ function frame(){
+  requestAnimationFrame(frame);
+  const gps=navigator.getGamepads(),gp=[...gps].find(g=>g&&g.connected);
+  if(!gp){if(lastPad){lastPad=null;setStick(sticks.l,0,0);setStick(sticks.r,0,0);if(pf){keys[' ']=false;pf=false}if(pe){keys.e=false;pe=false}if(foc)setFoc(null)}return}
+  if(!lastPad){try{if(typeof G!=='undefined'&&G&&G.estado)msg('🎮 Mando conectado',2)}catch(e){}}
+  lastPad=gp;
+  const b=gp.buttons,ax=gp.axes,P=i=>pressed(b[i]),down=i=>P(i)&&!prev[i];
+  let lx=ax[0]||0,ly=ax[1]||0,rx=ax[2]||0,ry=ax[3]||0;[lx,ly]=dz(lx,ly);[rx,ry]=dz(rx,ry);
+  const dpx=(P(15)?1:0)-(P(14)?1:0),dpy=(P(13)?1:0)-(P(12)?1:0);
+  const any=lx||ly||rx||ry||dpx||dpy||b.some((x,i)=>pressed(x));
+  const sc=screenOn(),ini=$('inicio').classList.contains('on');
+  if(any&&!sc)padOn=true;
+  if(sc||typeof G==='undefined'||!G||G.estado==='fin'){
+   /* ----- menús ----- */
+   setStick(sticks.l,0,0);setStick(sticks.r,0,0);if(pf){keys[' ']=false;pf=false}if(pe){keys.e=false;pe=false}
+   if(ini){if(b.some((x,i)=>down(i))||Math.abs(lx)+Math.abs(ly)>.5)titleGo();prev=b.map(pressed);return}
+   if(!sc){prev=b.map(pressed);return}
+   if(sc.id!==scrId){scrId=sc.id;setFoc(null)}
+   if(foc&&!document.contains(foc))setFoc(null);
+   let dx=dpx,dy=dpy;if(!dx&&!dy){if(Math.abs(lx)>.55||Math.abs(ly)>.55){if(Math.abs(lx)>Math.abs(ly)){dx=Math.sign(lx)}else dy=Math.sign(ly)}}
+   const now=performance.now(),dir=dx+','+dy;
+   if(dx||dy){if(dir!==navDir){navDir=dir;navT=now+380;nav(sc,dx,dy)}else if(now>navT){navT=now+120;nav(sc,dx,dy)}}else navDir='';
+   if(down(0)){if(!foc||!document.contains(foc)){nav(sc,0,0)}else foc.click()}
+   else if(down(1))back(sc);
+   else if(down(9)&&sc.id==='pausa')togglePause();
+   if(sc.id==='modal'&&!foc)nav(sc,0,0);
+   prev=b.map(pressed);return}
+  /* ----- partida ----- */
+  if(foc)setFoc(null);scrId='';
+  const lenL=Math.hypot(lx,ly);
+  if(lenL){setStick(sticks.l,lx,ly)}else if(dpx||dpy){const l=Math.hypot(dpx,dpy);setStick(sticks.l,dpx/l,dpy/l)}else setStick(sticks.l,0,0);
+  setStick(sticks.r,rx,ry);
+  const fire=P(7)&&!(rx||ry);
+  if(fire!==pf){keys[' ']=fire;pf=fire}
+  if(P(7)&&(rx||ry)&&!pf){/* RT + stick der.: el stick ya dispara */}
+  const e=P(0);if(e!==pe){keys.e=e;pe=e;if(e&&!G.pausa)G.ePress=true}
+  if(!G.pausa){
+   if(down(2))startReload(G.slots[G.cur]);
+   if(down(1))useHab();
+   if(down(3)||down(6))throwGrenade();
+   if(down(5))cycleWeapon(1);
+   if(down(4))cycleWeapon(-1);
+   if(down(8))G.mini=!G.mini}
+  if(down(9))togglePause();
+  prev=b.map(pressed)}
+ addEventListener('gamepadconnected',()=>{});
+ requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
