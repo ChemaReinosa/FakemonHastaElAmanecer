@@ -1361,7 +1361,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
-   1.69   Los perros zombi también pueden ser de tipo Veneno (rotan Siniestro/Fantasma/Veneno), la Caja Misteriosa ya no da movimientos que ya tienes y soporte para jugar con mando (movimiento, apuntado, ataque, menús)
+   1.69   El segundo panel de nivel 3 de un mapa siempre vende un movimiento de tipo afín. Los perros zombi también pueden ser de tipo Veneno (rotan Siniestro/Fantasma/Veneno), la Caja Misteriosa ya no da movimientos que ya tienes y soporte para jugar con mando (movimiento, apuntado, ataque, menús)
    1.68   Logros: nueva sección en el menú (solo con cuenta, guardados en perfiles.logros) con 18 logros, aviso con campanita y sonido al conseguirlos durante la partida
    1.67   Nuevos props para los mapas: pilar, estatua, brasero (con llama), amfora, barril, armero (estantería de armas), trono y sillar (gradas de piedra)
    1.66   Menú: 'Jugar' pasa a 'Jugar en solitario'; el Bestiario aparece bloqueado (candado) para invitados y solo avisa en lugar de llevar al login; 'Cómo se juega' reescrito en secciones desplegables y actualizado
@@ -1989,9 +1989,12 @@ function permitido(id){const m=MOV[id],c=G.cr;return !!m&&(id===c.exclusivo||lea
 /* Cada panel vende un movimiento de su nivel entre los que tu criatura puede aprender (más peso a sus tipos propios); es fijo para esa criatura y partida */
 function panelMov(it){if(it.mov)return it.mov;if(it._pm&&it._pc===G.cr.id)return it._pm;
  const c=G.cr,L=learnset(c);let pool=[];
+ /* Si el mapa tiene 2 o más paneles de nivel 3, el segundo (ordenado por posición) vende siempre un movimiento de tipo AFÍN (ni propio ni Normal), para garantizar variedad de tipos */
+ let soloAfin=false;if(it.tier===3){const t3=G.items.filter(o=>o.tipo==='panel'&&!o.mov&&o.tier===3).sort((a,b)=>a.x-b.x||a.y-b.y);soloAfin=t3.length>=2&&t3.indexOf(it)===1}
  /* Paneles de nivel 1-2 (PANEL_SOLO_TIPO): solo movimientos de su tipo o de su línea evolutiva. Desde el nivel 3 también pueden salir normales y afines. */
  const arma=estricto=>{const r=[];for(const m of MOVIMIENTOS)if(m.tier===it.tier&&!m.exclusivo&&L.ids.has(m.id)){const w=m.elem===c.tipo?4:L.prop.has(m.id)?3:(estricto?0:1);for(let i=0;i<w;i++)r.push(m.id)}return r};
- pool=arma(it.tier<=PANEL_SOLO_TIPO);if(!pool.length)pool=arma(false);
+ if(soloAfin){const r=[];for(const m of MOVIMIENTOS)if(m.tier===3&&!m.exclusivo&&L.ids.has(m.id)&&!L.prop.has(m.id)&&m.elem!=='normal'&&m.elem!=='neutro')r.push(m.id);pool=r}
+ if(!pool.length)pool=arma(it.tier<=PANEL_SOLO_TIPO);if(!pool.length)pool=arma(false);
  it._pc=c.id;return it._pm=pool.length?pool[hashS(c.id+'|'+it.x+'|'+it.y)%pool.length]:MOV_TIPO[c.tipo][it.tier-1]}
 
 /* ---------- Audio (Web Audio API) ---------- */
