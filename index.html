@@ -1361,7 +1361,7 @@ const NET_INTERP_SALTO=150;   /* distancia (px) a partir de la cual una entidad 
 /* ---------- VERSIÓN y HISTORIAL DE VERSIONES (se muestra en la esquina inferior derecha del menú de inicio) ----------
    Al sacar una versión nueva solo hay que cambiar VERSION y añadir una línea al historial.
    Historial:
-   1.69   El segundo panel de nivel 3 de un mapa siempre vende un movimiento de tipo afín. Los perros zombi también pueden ser de tipo Veneno (rotan Siniestro/Fantasma/Veneno), la Caja Misteriosa ya no da movimientos que ya tienes y soporte para jugar con mando (movimiento, apuntado, ataque, menús)
+   1.69   Los jefes (Brutus, Doctor Putrefacto, Matriarca) tienen una 2.ª fase: al bajar a la mitad de vida se enfurecen y atacan más rápido y con más fuerza. El segundo panel de nivel 3 de un mapa siempre vende un movimiento de tipo afín. Los perros zombi también pueden ser de tipo Veneno (rotan Siniestro/Fantasma/Veneno), la Caja Misteriosa ya no da movimientos que ya tienes y soporte para jugar con mando (movimiento, apuntado, ataque, menús)
    1.68   Logros: nueva sección en el menú (solo con cuenta, guardados en perfiles.logros) con 18 logros, aviso con campanita y sonido al conseguirlos durante la partida
    1.67   Nuevos props para los mapas: pilar, estatua, brasero (con llama), amfora, barril, armero (estantería de armas), trono y sillar (gradas de piedra)
    1.66   Menú: 'Jugar' pasa a 'Jugar en solitario'; el Bestiario aparece bloqueado (candado) para invitados y solo avisa en lugar de llevar al login; 'Cómo se juega' reescrito en secciones desplegables y actualizado
@@ -3063,7 +3063,7 @@ function drawGround(c){const k=SUELO_PRECALC?isoGround():null;if(k){const ox=ISO
 function drawDec(c){const pts=[s2w(0,0),s2w(W,0),s2w(0,H),s2w(W,H)];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const p of pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])}
  x0=Math.max(0,Math.floor(x0)-14);y0=Math.max(0,Math.floor(y0)-14);x1=Math.min(WW,Math.ceil(x1)+14);y1=Math.min(WH,Math.ceil(y1)+14);if(x1<=x0||y1<=y0)return;c.imageSmoothingEnabled=true;c.drawImage(decC,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);c.imageSmoothingEnabled=false}
 function entDraw(c,e){const sc=zdis(e.def.z)?1:Math.max(.85,e.r/6),sh=e.bs==='wind'?rnd(-1.5,1.5):0;setB(c,e.x+sh,e.y,0,6);
- if(e.boss){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,40,40,'+(.12+.07*Math.sin(G.t*5))+')';c.beginPath();c.arc(e.x,e.y-3,e.r*2.1,0,6.283);c.fill();c.globalCompositeOperation='source-over'}
+ if(e.boss){c.globalCompositeOperation='lighter';c.fillStyle=e.furia?'rgba(255,110,20,'+(.3+.12*Math.sin(G.t*9))+')':'rgba(255,40,40,'+(.12+.07*Math.sin(G.t*5))+')';c.beginPath();c.arc(e.x,e.y-3,e.r*(e.furia?2.6:2.1),0,6.283);c.fill();c.globalCompositeOperation='source-over'}
  const em=e.em!==undefined&&e.em<1?e.em:1;if(em<1){c.save();c.beginPath();c.rect(e.x-60,e.y-120,120,120+3);c.clip();c.translate(0,(1-em)*34*sc)}
  drawZombie(c,e.x+sh,e.y,Math.cos(e.ang)-Math.sin(e.ang)<0,Math.floor(e.anim)%4,e.def.z,sc,{flash:e.flash>0&&!A11Y.nof(),t:G.t,v:e.vr,tipo:e.tipo});if(em<1)c.restore();noT(c)}
 function playerDraw(c){const P=G.P;if(G.players[G.act].ausente)return;if(G.inv>0&&!G.telep&&!debil()&&Math.floor(G.t*14)%2)return;
@@ -3799,17 +3799,23 @@ function curanderoAI(e,dt,sp){const D=e.def.cura;chase(e,sp,dt,90);
  e.bt=(e.bt===undefined?rnd(1,D.cd):e.bt)-dt;
  if(e.bt<=0){let n=0;for(const o of G.enemies){if(o===e||o.muerto||o.boss||o.jauria||o.state==='out'||o.hp>=o.maxhp)continue;if(dist(o.x,o.y,e.x,e.y)>D.radio)continue;o.hp=Math.min(o.maxhp,o.hp+o.maxhp*D.pct);n++;partic(o.x,o.y,'#7f7',4,40,.4,1)}
   if(n){ring(e.x,e.y,D.radio*.5,'#7f7',.5);sfx('reparar')}e.bt=n?D.cd:.6}}
-function bossAI(e,dt,sp){const P=G.P,d=dist(e.x,e.y,P.x,P.y);
+/* Fase 2 de los jefes: al bajar de la mitad de vida se enfurecen (más daño y velocidad, onda de choque y ataques más rápidos/numerosos según su IA, ver bossAI) */
+const FURIA_HP=.5, FURIA_DANO=1.3, FURIA_VEL=1.2;
+function bossFuria(e){e.furia=true;e.dano*=FURIA_DANO;e.vel*=FURIA_VEL;e.stun=Math.max(e.stun||0,.7);e.bs=e.ia==='embiste'?'chase':e.bs;e.cdb=Math.min(e.cdb||0,.8);e.bt=Math.min(e.bt||0,1.2);
+ for(let i=0;i<14;i++)ebullet(e.x,e.y,i*Math.PI/7,95,e.dano*.5);
+ ring(e.x,e.y,50,'#f62',.7);ring(e.x,e.y,28,'#fc4',.5);partic(e.x,e.y,'#f62',30,120,.8,2);G.shake=Math.max(G.shake,.5);
+ if(e.def.bestia)bestiaSfx(e,'rugido',true);sfx('explosion');msg('¡'+e.def.nombre+' se enfurece!',2.8,true)}
+function bossAI(e,dt,sp){const P=G.P,d=dist(e.x,e.y,P.x,P.y);if(!e.furia&&e.hp>0&&e.hp<=e.maxhp*FURIA_HP)bossFuria(e);const F=e.furia;
  if(e.ia==='embiste'){e.cdb-=dt;
-  if(e.bs==='dash'){e.bt-=dt;const mv=moveE(e,e.dvx*dt,e.dvy*dt,false);if(!e.dh&&d<e.r+P.r+2){hurt(e.dano);e.dh=true}if(e.bt<=0||!mv){e.bs='rec';e.bt=1;e.dh=false}}
-  else if(e.bs==='wind'){e.bt-=dt;e.ang=Math.atan2(P.y-e.y,P.x-e.x);if(e.bt<=0){e.bs='dash';e.bt=.7;e.dvx=Math.cos(e.ang)*240;e.dvy=Math.sin(e.ang)*240}}
-  else if(e.bs==='rec'){e.bt-=dt;if(e.bt<=0){e.bs='chase';e.cdb=2.5}}
-  else{chase(e,sp,dt);if(d<170&&e.cdb<=0&&lineaLibre(e.x,e.y,P.x,P.y,e.r,e.r+P.r)){e.bs='wind';e.bt=.8}}}
+  if(e.bs==='dash'){e.bt-=dt;const mv=moveE(e,e.dvx*dt,e.dvy*dt,false);if(!e.dh&&d<e.r+P.r+2){hurt(e.dano);e.dh=true}if(e.bt<=0||!mv){e.bs='rec';e.bt=F?.6:1;e.dh=false;if(F){for(let i=0;i<8;i++)ebullet(e.x,e.y,i*Math.PI/4+rnd(0,.4),100,e.dano*.5);ring(e.x,e.y,34,'#f62',.4);G.shake=Math.max(G.shake,.25)}}}
+  else if(e.bs==='wind'){e.bt-=dt;e.ang=Math.atan2(P.y-e.y,P.x-e.x);if(e.bt<=0){const V=F?290:240;e.bs='dash';e.bt=.7;e.dvx=Math.cos(e.ang)*V;e.dvy=Math.sin(e.ang)*V}}
+  else if(e.bs==='rec'){e.bt-=dt;if(e.bt<=0){e.bs='chase';e.cdb=F?1.3:2.5}}
+  else{chase(e,sp,dt);if(d<170&&e.cdb<=0&&lineaLibre(e.x,e.y,P.x,P.y,e.r,e.r+P.r)){e.bs='wind';e.bt=F?.5:.8}}}
  else if(e.ia==='teleport'){e.bt-=dt;e.bt2-=dt;chase(e,sp*.6,dt,110);
-  if(e.bt2<=0){const a=Math.atan2(P.y-e.y,P.x-e.x);for(let i=-1;i<=1;i++)ebullet(e.x,e.y,a+i*.18,120,e.dano);e.bt2=1.6}
+  if(e.bt2<=0){const a=Math.atan2(P.y-e.y,P.x-e.x);for(let i=F?-2:-1;i<=(F?2:1);i++)ebullet(e.x,e.y,a+i*(F?.15:.18),F?135:120,e.dano);e.bt2=F?1.1:1.6}
   if(e.bt<=0){for(let k=0;k<40;k++){const a=rnd(0,6.28),r=rnd(80,130),nx=P.x+Math.cos(a)*r,ny=P.y+Math.sin(a)*r;if(okPos(nx,ny,e.r,false)&&(k>=26?fG:fW)[(ny>>4)*GW+(nx>>4)]>=0&&los(e.x,e.y,nx,ny,null)&&los(nx,ny,P.x,P.y,null)&&(!zoneAt(nx,ny).alto||zoneAt(nx,ny)===zoneAt(e.x,e.y))){partic(e.x,e.y,'#c9b8f0',12,60,.5,2);e.x=nx;e.y=ny;partic(nx,ny,'#fff',12,60,.5,2);break}}
-   for(let i=0;i<10;i++)ebullet(e.x,e.y,i*Math.PI/5,90,e.dano*.8);e.bt=3.6}}
- else if(e.ia==='invoca'){chase(e,sp,dt,100);e.bt-=dt;if(e.bt<=0){for(let i=0;i<2;i++){const x=e.x+rnd(-18,18),y=e.y+rnd(-18,18);if(okPos(x,y,6,false))mk(ENE.comun,x,y,'in',e.bar)}ring(e.x,e.y,30,'#9d6',.5);e.bt=5}}}
+   const NB=F?16:10;for(let i=0;i<NB;i++)ebullet(e.x,e.y,i*Math.PI*2/NB,F?105:90,e.dano*.8);e.bt=F?2.4:3.6}}
+ else if(e.ia==='invoca'){chase(e,sp,dt,100);e.bt-=dt;if(e.bt<=0){for(let i=0;i<(F?3:2);i++){const x=e.x+rnd(-18,18),y=e.y+rnd(-18,18);if(okPos(x,y,6,false))mk(ENE.comun,x,y,'in',e.bar)}ring(e.x,e.y,30,'#9d6',.5);e.bt=F?3:5}}}
 function updEnemies(dt){const N=G.players.length;G.bossRef=null;{const vv=G.enemies.filter(o=>!o.muerto),ult=G.estado==='ronda'&&G.porSpawn<=0&&!G.bossPend&&vv.length===1&&!vv[0].boss?vv[0]:null;for(const o of G.enemies)o.ultimo=(o===ult)}if(N>1)for(const q of G.players)q.alto=HAY_ALTO&&!!zoneAt(q.P.x,q.P.y).alto;{const P=G.P;if(Math.random()<dt*.08&&G.enemies.some(e=>!e.muerto&&dist(e.x,e.y,P.x,P.y)<200))sfx('groan')}
  for(const e of G.enemies){if(N>1)setActive(objetivo(e));const P=G.P;e.flash-=dt;e.cobro-=dt;e.cd-=dt;e.anim+=dt*(e.vel/20+3);
   if(e.quema>0){e.quema-=dt;e.hp-=6*dt}if(e.veneno>0){e.veneno-=dt;e.hp-=4*dt}if(e.lento>0)e.lento-=dt;if(e.stopT>0)e.stopT-=dt;if(e.marca>0)e.marca-=dt;
@@ -4083,7 +4089,7 @@ function hud(){const g=G,P=g.P;{const ap=$('hApagon');if(ap){const v=g.apagon?'b
  for(let i=0;i<g.nSlots;i++){const id=g.slots[i];let h='<b>'+(i+1)+'</b>',w=0,cd=false,mk='';if(id){const m=MOV[id],s=g.ms[id],E=eff(id);h+='<u>'+m.nombre+(s.mt?' ★':'')+'</u>';if(s.rel>0){w=100-s.rel/(E.rec/1000)*100;cd=true;h+=' ↻'}else if(m.pp){w=s.pp/m.pp*100;h+=' '+s.pp+'/'+s.res}else{w=Math.min(100,(now-s.last)/E.cad*100);cd=w<100;if(!sinLimite(m))h+=' ×'+s.res}if(tz&&m.elem&&m.modo!=='cura'){const ef=tipoMult(m.elem,tz.tipo);if(ef>1){mk='sup';h+='<i class="ef">▲</i>'}else if(ef<.3){mk='inm';h+='<i class="ef">✖</i>'}else if(ef<1){mk='poc';h+='<i class="ef">▼</i>'}}}else h+='<u style="opacity:.4">—</u>';
   parts.push([h,Math.round(w/5)*5,cd,i===g.cur,id?tipoColor(MOV[id].elem):'#444',mk])}
  sig=JSON.stringify(parts);if(sl._sig!==sig){sl._sig=sig;[...sl.children].forEach((d,i)=>{const p=parts[i];d.className='sl'+(p[3]?' on':'')+(p[2]?' cd':'')+(p[5]?' '+p[5]:'');d.style.setProperty('--tc',p[4]);d.innerHTML=p[0]+'<s style="width:'+p[1]+'%"></s>'})}
- const bo=g.bossRef,bd=$('boss');if(bo){bd.style.display='block';setT($('bossname'),bo.def.nombre);$('bossfill').style.width=Math.max(0,bo.hp/bo.maxhp*100)+'%'}else bd.style.display='none';
+ const bo=g.bossRef,bd=$('boss');if(bo){bd.style.display='block';setT($('bossname'),bo.def.nombre+(bo.furia?' 🔥':''));$('bossfill').style.background=bo.furia?'#f80':'';$('bossfill').style.width=Math.max(0,bo.hp/bo.maxhp*100)+'%'}else bd.style.display='none';
  if(g.msgT>0){g.msgT-=hudDt}else $('msg').style.display='none';
  let pt='';if(!debil()){const al=aliadoCaido(),it=nearItem();pt=al?(touchOn?'Mantén [E] para revivir…':'Mantén [E] para revivir a J'+numJ(al.idx)+' ('+Math.ceil(REVIVIR_TIEMPO-al.revP)+' s)'):it?itemPrompt(it):nearBar()?(g.repLatch?'Reparando… toca [E] para parar':touchOn?'Toca [E] para reparar':(nearBar().hoyo?'Mantén [E] para echar tierra al hoyo (+5 ₽ cada capa)':'Mantén [E] para poner tablones (+5 ₽ cada uno)')):''}else if(g.players.length>1&&!g.players[0].out){const p0=g.players[0];pt=p0.espera?'Caído: vuelves al empezar la siguiente ronda':'Caído: tu compañero puede revivirte ('+Math.ceil(p0.revT)+' s)'}const pr=$('prompt');if(pt){pr.style.display='block';setT(pr,pt)}else pr.style.display='none';hudJ2()}
 const netSw=(i,k)=>i===k?0:i===0?k:i;   /* intercambia el hueco 0 con el hueco k (el invitado se ve a sí mismo como jugador 0) */
@@ -4761,7 +4767,7 @@ function netSnap(){const g=G;savePl();const S={t:'snap',n:++NET.seq,T:r2(g.t)};
   d:p.deb?1:0,o:p.out?1:0,e:p.espera?1:0,rt:r1(p.revT||0),rp:r1(p.revP||0),au:p.ausente?1:0,al:p.alto?1:0,am:r2(p.s.aim||0)}));
  S._ss=g.players.map(p=>JSON.stringify(netPJ(p.s)));S.rt=g.players.map((p,i)=>i&&NET.gs[i]?Math.round(NET.gs[i].rtt||0):0);
  S.en=g.enemies.map(e=>[netDefKey(e.def),r1(e.x),r1(e.y),r1(e.hp),r1(e.maxhp),r2(e.ang||0),r2(e.anim||0),e.flash>0?1:0,e.vr|0,e.tipo,e.state||'',e.bs||'',
-  (e.boss?1:0)|(e.jauria?2:0)|(e.muerto?4:0)|(e.quema>0?8:0)|(e.lento>0||e.stopT>0?16:0)|(e.veneno>0?32:0)|(e.stun>0?64:0)|(e.marca>0?128:0),r1(e.r),e._u||(e._u=++NET.uid),e.em===undefined?1:r1(e.em)]);
+  (e.boss?1:0)|(e.jauria?2:0)|(e.muerto?4:0)|(e.quema>0?8:0)|(e.lento>0||e.stopT>0?16:0)|(e.veneno>0?32:0)|(e.stun>0?64:0)|(e.marca>0?128:0)|(e.furia?256:0),r1(e.r),e._u||(e._u=++NET.uid),e.em===undefined?1:r1(e.em)]);
  S.bo=g.bossRef?g.enemies.indexOf(g.bossRef):-1;
  S.bu=g.bullets.map(b=>{const m=b.m||{};return[r1(b.x),r1(b.y),r1(b.vx),r1(b.vy),b.r,b.color,MOV[m.id]===m?m.id:'',m.elem||'',m.efx||'',b.o|0,b.z?b.z.id:'',b.life>0?r2(b.life):0,b._u||(b._u=++NET.uid)]});
  S.eb=g.eb.map(b=>[r1(b.x),r1(b.y),r1(b.vx),r1(b.vy),b.r,r2(b.life),b._u||(b._u=++NET.uid)]);
@@ -4893,7 +4899,7 @@ function applySnap(S){const g=G,primera=NET.first;NET.first=false;
  {const nm=new Map(),list=[];for(const a of S.en){const def=netDefOf(a[0]);if(!def)continue;const f=a[12],u=a[14];let e=NET.eMap.get(u);
    if(!e){e={def,x:a[1],y:a[2],ang:a[5],anim:a[6],cobro:0};e._p=undefined}
    e.def=def;e.hp=a[3];e.maxhp=a[4];e.flash=a[7]?.1:0;e.vr=a[8];e.tipo=a[9];e.state=a[10];e.bs=a[11]||undefined;e.boss=!!(f&1);e.jauria=!!(f&2);e.muerto=!!(f&4);
-   e.quema=f&8?1:0;e.lento=f&16?1:0;e.veneno=f&32?1:0;e.stun=f&64?1:0;e.marca=f&128?1:0;e.r=a[13];e._u=u;if(a[15]!==undefined&&a[15]<1)e.em=a[15];else delete e.em;
+   e.quema=f&8?1:0;e.lento=f&16?1:0;e.veneno=f&32?1:0;e.stun=f&64?1:0;e.marca=f&128?1:0;e.furia=!!(f&256);e.r=a[13];e._u=u;if(a[15]!==undefined&&a[15]<1)e.em=a[15];else delete e.em;
    netSetT(e,a[1],a[2]);e._fa=e.ang;e._ta=a[5];e._fn=e.anim;e._tn=a[6];nm.set(u,e);list.push(e)}
   NET.eMap=nm;g.enemies=list}
  g.bossRef=S.bo>=0&&g.enemies[S.bo]?g.enemies[S.bo]:null;
